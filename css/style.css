@@ -2411,3 +2411,20 @@ h3,
     border-color: var(--accent-blue);
     box-shadow: 0 0 10px rgba(0,153,255,0.2);
 }
+
+/* API Credits Badge */
+.credits-badge {
+    font-family: "Orbitron", sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-dim);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s;
+}
+.credits-ok   { color: #00ff88; border-color: #00ff88; background: rgba(0,255,136,0.08); }
+.credits-warn { color: #ffc400; border-color: #ffc400; background: rgba(255,196,0,0.08); }
+.credits-low  { color: #ff3e3e; border-color: #ff3e3e; background: rgba(255,62,62,0.12); animation: pulse-red 1s infinite; }

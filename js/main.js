@@ -330,42 +330,106 @@ function runAIScan() {
     });
 }
 
-// Real-time Data Fetching from The Odds API
+// ============================================================
+//  GOLODDS — Smart API Engine v2.0
+//  - Credit monitoring (x-requests-remaining)
+//  - Per-league cache with 5-min TTL
+//  - Auto-fallback when credits are low
+// ============================================================
 let syncInterval = null;
+let apiCreditsRemaining = null;  // null = unknown
+const API_CACHE = {};            // { leagueKey: { ts, oddsData, scoresData } }
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+// Leagues to analyse
+const LEAGUES = [
+    { key: 'soccer_epl', name: 'Premier League' },
+    { key: 'soccer_uefa_champs_league', name: 'Champions League' },
+    { key: 'soccer_spain_la_liga', name: 'La Liga' },
+    { key: 'soccer_italy_serie_a', name: 'Serie A' },
+    { key: 'soccer_portugal_primeira_liga', name: 'Liga Portugal' },
+    { key: 'soccer_germany_bundesliga', name: 'Bundesliga' },
+    { key: 'soccer_france_ligue_one', name: 'Liga 1' }
+];
+
+// Update the credits badge in the UI
+function updateCreditsUI(remaining) {
+    const el = document.getElementById('api-credits-badge');
+    if (!el) return;
+    if (remaining === null) { el.textContent = '⚡ CRÉDITOS: --'; el.className = 'credits-badge'; return; }
+    if (remaining <= 5) { el.textContent = `⚠️ CRÉDITOS: ${remaining}`; el.className = 'credits-badge credits-low'; return; }
+    if (remaining <= 50) { el.textContent = `⚡ CRÉDITOS: ${remaining}`; el.className = 'credits-badge credits-warn'; return; }
+    el.textContent = `✅ CRÉDITOS: ${remaining}`;
+    el.className = 'credits-badge credits-ok';
+}
+
+// Smart fetch: checks cache, reads credit headers
+async function smartFetch(url, cacheKey) {
+    const now = Date.now();
+    if (API_CACHE[cacheKey] && (now - API_CACHE[cacheKey].ts < CACHE_TTL_MS)) {
+        console.log(`[CACHE HIT] ${cacheKey}`);
+        return { data: API_CACHE[cacheKey].data, fromCache: true };
+    }
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} on ${url}`);
+
+    // Read credit info from headers
+    const remaining = parseInt(res.headers.get('x-requests-remaining'));
+    const used = parseInt(res.headers.get('x-requests-used'));
+    const cost = parseInt(res.headers.get('x-requests-last'));
+    if (!isNaN(remaining)) {
+        apiCreditsRemaining = remaining;
+        updateCreditsUI(remaining);
+        console.log(`[API] Credits used: ${used} | cost this call: ${cost} | remaining: ${remaining}`);
+    }
+
+    const data = await res.json();
+    API_CACHE[cacheKey] = { ts: now, data };
+    return { data, fromCache: false };
+}
 
 async function fetchLiveMatches(isInitial = true) {
     const matrix = document.getElementById('competition-matrix');
-    const leagues = [
-        { key: 'soccer_epl', name: 'Premier League' },
-        { key: 'soccer_uefa_champs_league', name: 'Champions League' },
-        { key: 'soccer_spain_la_liga', name: 'La Liga' },
-        { key: 'soccer_italy_serie_a', name: 'Serie A' },
-        { key: 'soccer_portugal_primeira_liga', name: 'Liga Portugal' },
-        { key: 'soccer_germany_bundesliga', name: 'Bundesliga' },
-        { key: 'soccer_france_ligue_one', name: 'Liga 1' }
-    ];
 
     if (isInitial) {
         matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A CARREGAR PREVISÕES NEURAIS...</div>';
+        updateCreditsUI(apiCreditsRemaining);
     }
+
+    // If credits are critically low, go straight to neural projections
+    if (apiCreditsRemaining !== null && apiCreditsRemaining <= 5) {
+        console.warn('[API] Credits ≤ 5 — a preservar quota. Projeções neurais activadas.');
+        if (isInitial) loadMockData();
+        updateCreditsUI(apiCreditsRemaining);
+        return;
+    }
+
+    // Build the target date string from the global scoreboard date variable
+    const targetDate = new Date(currentScoreboardDate);
+    const targetDateStr = `${targetDate.getFullYear()}-${(targetDate.getMonth() + 1).toString().padStart(2, '0')}-${targetDate.getDate().toString().padStart(2, '0')}`;
 
     let dataFound = false;
     let tempMatches = [];
 
-    // Build the target date string from the global scoreboard date
-    const targetDate = new Date(currentScoreboardDate);
-    const targetDateStr = `${targetDate.getFullYear()}-${(targetDate.getMonth() + 1).toString().padStart(2, '0')}-${targetDate.getDate().toString().padStart(2, '0')}`;
+    for (const league of LEAGUES) {
+        // Skip remaining leagues if critically low mid-loop
+        if (apiCreditsRemaining !== null && apiCreditsRemaining <= 3) {
+            console.warn(`[API] Créditos críticos (${apiCreditsRemaining}). A parar sync.`);
+            break;
+        }
 
-    for (const league of leagues) {
         try {
-            const [oddsRes, scoresRes] = await Promise.all([
-                fetch(`${API_CONFIG.BASE_URL}${league.key}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h`),
-                fetch(`${API_CONFIG.BASE_URL}${league.key}/scores/?apiKey=${API_CONFIG.ODDS_API_KEY}&daysFrom=1`)
-            ]);
-            if (!oddsRes.ok) continue;
+            const oddsUrl = `${API_CONFIG.BASE_URL}${league.key}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h`;
+            const scoresUrl = `${API_CONFIG.BASE_URL}${league.key}/scores/?apiKey=${API_CONFIG.ODDS_API_KEY}&daysFrom=1`;
 
-            const oddsData = await oddsRes.json();
-            const scoresData = scoresRes.ok ? await scoresRes.json() : [];
+            const [oddsResult, scoresResult] = await Promise.all([
+                smartFetch(oddsUrl, `${league.key}_odds`),
+                smartFetch(scoresUrl, `${league.key}_scores`).catch(() => ({ data: [] }))
+            ]);
+
+            const oddsData = oddsResult.data;
+            const scoresData = scoresResult.data || [];
 
             const merged = oddsData
                 .filter(match => match.commence_time.split('T')[0] === targetDateStr)
@@ -391,20 +455,25 @@ async function fetchLiveMatches(isInitial = true) {
                 });
 
             if (merged.length > 0) { dataFound = true; tempMatches.push(...merged); }
-        } catch (e) { console.error(`Error on ${league.name}:`, e); }
+
+        } catch (e) {
+            console.error(`[API] Erro na liga ${league.name}:`, e.message);
+        }
     }
 
     if (dataFound) {
-        // Goal Detection
+        // Goal notifications
         tempMatches.forEach(newMatch => {
-            const oldMatch = allMatchesData.find(m => m.id === newMatch.id);
-            if (oldMatch && newMatch.live_score && oldMatch.live_score) {
-                if (newMatch.live_score[0].score !== oldMatch.live_score[0].score ||
-                    newMatch.live_score[1].score !== oldMatch.live_score[1].score) notifyGoal(newMatch);
+            const old = allMatchesData.find(m => m.id === newMatch.id);
+            if (old && newMatch.live_score && old.live_score) {
+                if (newMatch.live_score[0].score !== old.live_score[0].score ||
+                    newMatch.live_score[1].score !== old.live_score[1].score) notifyGoal(newMatch);
             }
         });
+
         allMatchesData = tempMatches;
         applyScoreboardFilters();
+
         const currentHome = document.querySelector('.team-home h2');
         if (currentHome) {
             const m = allMatchesData.find(m => m.home_team === currentHome.innerText);
@@ -414,22 +483,31 @@ async function fetchLiveMatches(isInitial = true) {
             updateOddsUI(allMatchesData[0]);
         }
     } else if (isInitial) {
-        console.warn('API: sem dados para hoje. A carregar previsões neurais do dia.');
+        console.warn('[API] Sem dados reais para hoje — a activar Projeções Neurais.');
         loadMockData();
     }
 
     updateNeuralTicker(getTopPicks());
+
+    // Status update
     const syncEl = document.getElementById('sync-status');
     if (syncEl) {
         const n = new Date();
-        syncEl.innerHTML = `<i class="fas fa-check-circle"></i> ATUALIZADO ${n.getHours().toString().padStart(2, '0')}:${n.getMinutes().toString().padStart(2, '0')}`;
+        const timeStr = `${n.getHours().toString().padStart(2, '0')}:${n.getMinutes().toString().padStart(2, '0')}`;
+        syncEl.innerHTML = `<i class="fas fa-check-circle"></i> ATUALIZADO ${timeStr}`;
         syncEl.style.color = '#00ff88';
-        setTimeout(() => { if (syncEl) { syncEl.innerHTML = '<i class="fas fa-satellite"></i> MONITORIZAÇÃO GLOBAL'; syncEl.style.color = ''; } }, 6000);
+        setTimeout(() => {
+            if (syncEl) { syncEl.innerHTML = '<i class="fas fa-satellite"></i> MONITORIZAÇÃO GLOBAL'; syncEl.style.color = ''; }
+        }, 6000);
     }
+
+    // Schedule next refresh (5 min to preserve credits)
     if (isInitial && !syncInterval) {
-        syncInterval = setInterval(() => fetchLiveMatches(false), 300000);
+        syncInterval = setInterval(() => fetchLiveMatches(false), 5 * 60 * 1000);
     }
 }
+
+
 
 function notifyGoal(match) {
     const toast = document.createElement('div');
