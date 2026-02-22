@@ -143,15 +143,15 @@ function initThree() {
 
     particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-    const pMaterial = new THREE.PointsMaterial({
-        color: 0x00ff88,
+    const material = new THREE.PointsMaterial({
+        color: 0x00f2ff,
         size: 3,
         transparent: true,
         opacity: 0.8,
         blending: THREE.AdditiveBlending
     });
 
-    const particleSystem = new THREE.Points(particles, pMaterial);
+    const particleSystem = new THREE.Points(particles, material);
     scene.add(particleSystem);
 
     // Create lines between points
@@ -989,10 +989,10 @@ async function updateMatchUI(match) {
         const s = document.createElement('style');
         s.id = 'crest-anim-styles';
         s.innerHTML = `
-            .crest-container { position: relative; overflow: hidden; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto 15px; border: 2px solid var(--accent-green); transition: 0.3s; }
-            .crest-container:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--accent-green); }
+            .crest-container { position: relative; overflow: hidden; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto 15px; border: 2px solid var(--accent-cyan); transition: 0.3s; }
+            .crest-container:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--accent-cyan); }
             .team-crest { width: 100%; height: 100%; object-fit: cover; }
-            .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); animation: scan-kv 2s linear infinite; }
+            .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan); animation: scan-kv 2s linear infinite; }
             @keyframes scan-kv { 0% { top: 0; } 100% { top: 100%; } }
         `;
         document.head.appendChild(s);
@@ -1125,7 +1125,7 @@ function updateOddsUI(match, extraData = null) {
             ${isValue ? '<span class="ai-badge"><i class="fas fa-microchip"></i> VALOR DETETADO</span>' : ''}
             <div class="market">${outcome.name === 'Draw' || outcome.name === 'X' ? 'EMPATE' : outcome.name.toUpperCase()}</div>
             <div class="prob">${outcome.price.toFixed(2)}</div>
-            <div class="ev" style="color: ${ev > 0 ? 'var(--accent-green)' : '#ff3e3e'}">${ev > 0 ? '+' : ''}${ev.toFixed(1)}% EV</div>
+            <div class="ev" style="color: ${ev > 0 ? 'var(--accent-cyan)' : '#ff3e3e'}">${ev > 0 ? '+' : ''}${ev.toFixed(1)}% EV</div>
             <div class="action-btn">FIXAR APOSTA</div>
         `;
         oddsList.appendChild(item);
