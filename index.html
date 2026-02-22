@@ -66,30 +66,8 @@
             <div class="nav-item" onclick="switchTab('news')"><i class="fas fa-newspaper"></i><span>Notícias da
                     Bola</span></div>
 
-            <div class="nav-group-title">LIGAS FIXAS</div>
-            <div class="sidebar-league-item" onclick="openLeaguePortal('Bundesliga')">
-                <img src="https://flagcdn.com/w40/de.png" class="sidebar-flag">
-                <span>Bundesliga</span>
-            </div>
-            <div class="sidebar-league-item" onclick="openLeaguePortal('La Liga')">
-                <img src="https://flagcdn.com/w40/es.png" class="sidebar-flag">
-                <span>LaLiga</span>
-            </div>
-            <div class="sidebar-league-item" onclick="openLeaguePortal('Liga 1')">
-                <img src="https://flagcdn.com/w40/fr.png" class="sidebar-flag">
-                <span>Liga 1</span>
-            </div>
-            <div class="sidebar-league-item" onclick="openLeaguePortal('Premier League')">
-                <img src="https://flagcdn.com/w40/gb.png" class="sidebar-flag">
-                <span>Premier League</span>
-            </div>
-            <div class="sidebar-league-item" onclick="openLeaguePortal('Serie A')">
-                <img src="https://flagcdn.com/w40/it.png" class="sidebar-flag">
-                <span>Série A</span>
-            </div>
-            <div class="sidebar-league-item" onclick="openLeaguePortal('Liga Portugal')">
-                <img src="https://flagcdn.com/w40/pt.png" class="sidebar-flag">
-                <span>Liga Portugal</span>
+            <div id="dynamic-leagues-sidebar">
+                <!-- Populated by JS from LEAGUE_DIRECTORY -->
             </div>
 
             <div class="nav-admin">

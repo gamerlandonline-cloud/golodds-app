@@ -1,10 +1,57 @@
-// GOLODDS Main Logic - API Configuration
+// ============================================================
+//  GOLODDS — Multi-Source API Configuration
+//  Source 1: The Odds API      → Odds + Live Scores (500 credits/month free)
+//  Source 2: Football-Data.org → Fixtures + Standings + H2H (free, 10 req/min)
+//  Source 3: TheSportsDB       → Team info + Logos (free, no key required)
+// ============================================================
 const API_CONFIG = {
-    FOOTBALL_DATA_KEY: '4a03e151af0446369dfac6c1088911b4',
+    // The Odds API (odds + scores)
     ODDS_API_KEY: 'b67e54e948f9f33d50930e9b19555271',
     BASE_URL: 'https://api.the-odds-api.com/v4/sports/',
-    STATS_URL: 'https://api.football-data.org/v4/'
+
+    // Football-Data.org (fixtures, standings, H2H) — free tier
+    FOOTBALL_DATA_KEY: '4a03e151af0446369dfac6c1088911b4',
+    STATS_URL: 'https://api.football-data.org/v4/',
+
+    // TheSportsDB (events, teams, logos) — completely free, no key needed
+    SPORTSDB_URL: 'https://www.thesportsdb.com/api/v1/json/3/'
 };
+
+// ============================================================
+//  LEAGUE DIRECTORY — All free-tier competitions
+//  odds_key    → The Odds API sport key (for odds + scores)
+//  fd_id       → Football-Data.org competition code (for fixtures & standings)
+//  sdb_id      → TheSportsDB league ID (for team data & events)
+// ============================================================
+const LEAGUE_DIRECTORY = [
+    // ── TOP EUROPE ───────────────────────────────────────────
+    { odds_key: 'soccer_epl', fd_id: 'PL', sdb_id: 4328, name: 'Premier League', flag: 'gb', region: 'Europa', icon: 'fa-crown', color: '#ffcc00' },
+    { odds_key: 'soccer_spain_la_liga', fd_id: 'PD', sdb_id: 4335, name: 'La Liga', flag: 'es', region: 'Europa', icon: 'fa-shield-alt', color: '#ff3e3e' },
+    { odds_key: 'soccer_germany_bundesliga', fd_id: 'BL1', sdb_id: 4331, name: 'Bundesliga', flag: 'de', region: 'Europa', icon: 'fa-futbol', color: '#ffcc00' },
+    { odds_key: 'soccer_italy_serie_a', fd_id: 'SA', sdb_id: 4332, name: 'Serie A', flag: 'it', region: 'Europa', icon: 'fa-star', color: '#0099ff' },
+    { odds_key: 'soccer_france_ligue_one', fd_id: 'FL1', sdb_id: 4334, name: 'Ligue 1', flag: 'fr', region: 'Europa', icon: 'fa-bolt', color: '#0099ff' },
+    { odds_key: 'soccer_portugal_primeira_liga', fd_id: 'PPL', sdb_id: 4344, name: 'Liga Portugal', flag: 'pt', region: 'Europa', icon: 'fa-certificate', color: '#00ff88' },
+    { odds_key: 'soccer_netherlands_eredivisie', fd_id: 'DED', sdb_id: 4337, name: 'Eredivisie', flag: 'nl', region: 'Europa', icon: 'fa-wind', color: '#ff6600' },
+    { odds_key: 'soccer_efl_champ', fd_id: 'ELC', sdb_id: 4329, name: 'Championship', flag: 'gb', region: 'Europa', icon: 'fa-trophy', color: '#ffcc00' },
+    { odds_key: 'soccer_spain_segunda_division', fd_id: 'SD', sdb_id: 4336, name: 'La Liga 2', flag: 'es', region: 'Europa', icon: 'fa-shield-alt', color: '#ff3e3e' },
+
+    // ── UEFA CUPS ─────────────────────────────────────────────
+    { odds_key: 'soccer_uefa_champs_league', fd_id: 'CL', sdb_id: 4480, name: 'Champions League', flag: 'eu', region: 'UEFA', icon: 'fa-trophy', color: '#ffffff' },
+    { odds_key: 'soccer_uefa_europa_league', fd_id: 'EL', sdb_id: 4481, name: 'Europa League', flag: 'eu', region: 'UEFA', icon: 'fa-trophy', color: '#ff9900' },
+    { odds_key: 'soccer_uefa_europa_conference_league', fd_id: 'UECL', sdb_id: 4966, name: 'Conference League', flag: 'eu', region: 'UEFA', icon: 'fa-trophy', color: '#00ffcc' },
+
+    // ── MAIS EUROPA ───────────────────────────────────────────
+    { odds_key: 'soccer_turkey_super_lig', fd_id: null, sdb_id: 4347, name: 'Süper Lig', flag: 'tr', region: 'Europa', icon: 'fa-moon', color: '#e30a17' },
+    { odds_key: 'soccer_belgium_first_div', fd_id: null, sdb_id: 4397, name: 'Pro League', flag: 'be', region: 'Europa', icon: 'fa-star', color: '#000000' },
+    { odds_key: 'soccer_spl', fd_id: null, sdb_id: 4330, name: 'Scottish Premiership', flag: 'gb', region: 'Europa', icon: 'fa-crown', color: '#005eb8' },
+    { odds_key: 'soccer_greece_super_league', fd_id: null, sdb_id: 4424, name: 'Super League Grécia', flag: 'gr', region: 'Europa', icon: 'fa-columns', color: '#005ba6' },
+
+    // ── MUNDIAL ───────────────────────────────────────────────
+    { odds_key: 'soccer_brazil_campeonato', fd_id: 'BSA', sdb_id: 4351, name: 'Brasileirão', flag: 'br', region: 'América', icon: 'fa-futbol', color: '#ffdf00' },
+    { odds_key: 'soccer_usa_mls', fd_id: null, sdb_id: 4346, name: 'MLS', flag: 'us', region: 'América', icon: 'fa-flag-usa', color: '#001f5b' },
+    { odds_key: 'soccer_argentina_primera_division', fd_id: null, sdb_id: 4406, name: 'Primera División', flag: 'ar', region: 'América', icon: 'fa-sun', color: '#75aadb' },
+    { odds_key: 'soccer_japan_j_league', fd_id: null, sdb_id: 4359, name: 'J1 League', flag: 'jp', region: 'Ásia', icon: 'fa-circle', color: '#bc002d' }
+];
 
 // Official Crest Mapping for Top Clubs (Football-Data.org IDs)
 const TEAM_CRESTS = {
@@ -341,16 +388,6 @@ let apiCreditsRemaining = null;  // null = unknown
 const API_CACHE = {};            // { leagueKey: { ts, oddsData, scoresData } }
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-// Leagues to analyse
-const LEAGUES = [
-    { key: 'soccer_epl', name: 'Premier League' },
-    { key: 'soccer_uefa_champs_league', name: 'Champions League' },
-    { key: 'soccer_spain_la_liga', name: 'La Liga' },
-    { key: 'soccer_italy_serie_a', name: 'Serie A' },
-    { key: 'soccer_portugal_primeira_liga', name: 'Liga Portugal' },
-    { key: 'soccer_germany_bundesliga', name: 'Bundesliga' },
-    { key: 'soccer_france_ligue_one', name: 'Liga 1' }
-];
 
 // Update the credits badge in the UI
 function updateCreditsUI(remaining) {
@@ -389,6 +426,37 @@ async function smartFetch(url, cacheKey) {
     return { data, fromCache: false };
 }
 
+// Fetch league standings via Football-Data.org (free tier, 10 req/min)
+async function fetchStandingsFromFD(fdCode) {
+    if (!fdCode) return null;
+    const cacheKey = `fd_standings_${fdCode}`;
+    const now = Date.now();
+    if (API_CACHE[cacheKey] && (now - API_CACHE[cacheKey].ts < CACHE_TTL_MS)) return API_CACHE[cacheKey].data;
+    try {
+        const res = await fetch(`${API_CONFIG.STATS_URL}competitions/${fdCode}/standings`, {
+            headers: { 'X-Auth-Token': API_CONFIG.FOOTBALL_DATA_KEY }
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        API_CACHE[cacheKey] = { ts: now, data };
+        return data;
+    } catch (e) { return null; }
+}
+
+// Fetch next events from TheSportsDB (free, no key needed)
+async function fetchEventsFromSportsDB(leagueId) {
+    const cacheKey = `sdb_events_${leagueId}`;
+    const now = Date.now();
+    if (API_CACHE[cacheKey] && (now - API_CACHE[cacheKey].ts < CACHE_TTL_MS)) return API_CACHE[cacheKey].data;
+    try {
+        const res = await fetch(`${API_CONFIG.SPORTSDB_URL}eventsnextleague.php?id=${leagueId}`);
+        if (!res.ok) return null;
+        const json = await res.json();
+        API_CACHE[cacheKey] = { ts: now, data: json.events || [] };
+        return json.events || [];
+    } catch (e) { return null; }
+}
+
 async function fetchLiveMatches(isInitial = true) {
     const matrix = document.getElementById('competition-matrix');
 
@@ -399,7 +467,7 @@ async function fetchLiveMatches(isInitial = true) {
 
     // If credits are critically low, go straight to neural projections
     if (apiCreditsRemaining !== null && apiCreditsRemaining <= 5) {
-        console.warn('[API] Credits ≤ 5 — a preservar quota. Projeções neurais activadas.');
+        console.warn('[API] Créditos ≤ 5 — Projeções neurais activadas.');
         if (isInitial) loadMockData();
         updateCreditsUI(apiCreditsRemaining);
         return;
@@ -412,20 +480,20 @@ async function fetchLiveMatches(isInitial = true) {
     let dataFound = false;
     let tempMatches = [];
 
-    for (const league of LEAGUES) {
-        // Skip remaining leagues if critically low mid-loop
+    for (const league of LEAGUE_DIRECTORY) {
+        // Stop if critically low mid-loop
         if (apiCreditsRemaining !== null && apiCreditsRemaining <= 3) {
             console.warn(`[API] Créditos críticos (${apiCreditsRemaining}). A parar sync.`);
             break;
         }
 
         try {
-            const oddsUrl = `${API_CONFIG.BASE_URL}${league.key}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h`;
-            const scoresUrl = `${API_CONFIG.BASE_URL}${league.key}/scores/?apiKey=${API_CONFIG.ODDS_API_KEY}&daysFrom=1`;
+            const oddsUrl = `${API_CONFIG.BASE_URL}${league.odds_key}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h`;
+            const scoresUrl = `${API_CONFIG.BASE_URL}${league.odds_key}/scores/?apiKey=${API_CONFIG.ODDS_API_KEY}&daysFrom=1`;
 
             const [oddsResult, scoresResult] = await Promise.all([
-                smartFetch(oddsUrl, `${league.key}_odds`),
-                smartFetch(scoresUrl, `${league.key}_scores`).catch(() => ({ data: [] }))
+                smartFetch(oddsUrl, `${league.odds_key}_odds`),
+                smartFetch(scoresUrl, `${league.odds_key}_scores`).catch(() => ({ data: [] }))
             ]);
 
             const oddsData = oddsResult.data;
@@ -608,16 +676,9 @@ function formatMatchTime(isoString) {
 }
 
 function getLeagueFlag(leagueName) {
-    const flags = {
-        'Premier League': 'https://flagcdn.com/w40/gb.png',
-        'La Liga': 'https://flagcdn.com/w40/es.png',
-        'Bundesliga': 'https://flagcdn.com/w40/de.png',
-        'Serie A': 'https://flagcdn.com/w40/it.png',
-        'Liga 1': 'https://flagcdn.com/w40/fr.png',
-        'Liga Portugal': 'https://flagcdn.com/w40/pt.png',
-        'Champions League': 'https://flagcdn.com/w40/eu.png'
-    };
-    return flags[leagueName] || 'https://flagcdn.com/w40/un.png';
+    const league = LEAGUE_DIRECTORY.find(l => l.name === leagueName);
+    if (league) return `https://flagcdn.com/w40/${league.flag}.png`;
+    return 'https://flagcdn.com/w40/un.png';
 }
 
 function getAIPrediction(match) {
@@ -886,13 +947,40 @@ function updateOddsUI(match) {
 
 let allMatchesData = [];
 
+function renderSidebarLeagues() {
+    const sidebar = document.getElementById('dynamic-leagues-sidebar');
+    if (!sidebar) return;
+    sidebar.innerHTML = '';
+
+    const regions = [...new Set(LEAGUE_DIRECTORY.map(l => l.region))];
+
+    regions.forEach(region => {
+        const title = document.createElement('div');
+        title.className = 'nav-group-title';
+        title.innerText = region.toUpperCase();
+        sidebar.appendChild(title);
+
+        const leagues = LEAGUE_DIRECTORY.filter(l => l.region === region);
+        leagues.forEach(league => {
+            const item = document.createElement('div');
+            item.className = 'sidebar-league-item';
+            item.onclick = () => openLeaguePortal(league.name);
+            item.innerHTML = `
+                <img src="https://flagcdn.com/w40/${league.flag}.png" class="sidebar-flag">
+                <span>${league.name}</span>
+            `;
+            sidebar.appendChild(item);
+        });
+    });
+}
+
 function openLeaguePortal(leagueName) {
     switchTab('league-portal');
 
-    // Update Active Sidebar (Custom logic for league items)
+    // Update Active Sidebar
     document.querySelectorAll('.sidebar-league-item').forEach(item => {
         const text = item.querySelector('span').innerText;
-        if (text === leagueName || (leagueName === 'La Liga' && text === 'LaLiga') || (leagueName === 'Serie A' && text === 'Série A')) {
+        if (text === leagueName) {
             item.style.color = 'var(--accent-blue)';
             item.style.background = 'rgba(0, 153, 255, 0.1)';
         } else {
@@ -901,27 +989,17 @@ function openLeaguePortal(leagueName) {
         }
     });
 
+    const league = LEAGUE_DIRECTORY.find(l => l.name === leagueName);
     const header = document.getElementById('league-portal-header');
     const content = document.getElementById('league-portal-content');
 
-    const icons = {
-        'Liga Portugal': { icon: 'fa-certificate', color: '#00ff88' },
-        'Premier League': { icon: 'fa-crown', color: '#ffcc00' },
-        'La Liga': { icon: 'fa-shield-alt', color: '#ff3e3e' },
-        'LaLiga': { icon: 'fa-shield-alt', color: '#ff3e3e' },
-        'Serie A': { icon: 'fa-star', color: '#0099ff' },
-        'Série A': { icon: 'fa-star', color: '#0099ff' },
-        'Bundesliga': { icon: 'fa-futbol', color: '#ffcc00' },
-        'Liga 1': { icon: 'fa-bolt', color: '#0099ff' },
-        'Champions League': { icon: 'fa-trophy', color: '#ffffff' }
-    };
-
-    const style = icons[leagueName] || { icon: 'fa-futbol', color: '#fff' };
+    const icon = league ? league.icon : 'fa-futbol';
+    const color = league ? league.color : '#0099ff';
 
     header.innerHTML = `
-        <div class="league-portal-banner" style="border-left: 5px solid ${style.color};">
-            <div class="league-icon-large" style="color: ${style.color};">
-                <i class="fas ${style.icon}"></i>
+        <div class="league-portal-banner" style="border-left: 5px solid ${color};">
+            <div class="league-icon-large" style="color: ${color};">
+                <i class="fas ${icon}"></i>
             </div>
             <div class="league-portal-info">
                 <h1>PORTAL ${leagueName.toUpperCase()}</h1>
@@ -930,8 +1008,7 @@ function openLeaguePortal(leagueName) {
         </div>
     `;
 
-    const normalizedName = leagueName === 'LaLiga' ? 'La Liga' : (leagueName === 'Série A' ? 'Serie A' : leagueName);
-    const filtered = allMatchesData.filter(m => m.league_name === normalizedName);
+    const filtered = allMatchesData.filter(m => m.league_name === leagueName);
     content.innerHTML = '';
 
     if (filtered.length === 0) {
@@ -940,7 +1017,6 @@ function openLeaguePortal(leagueName) {
     }
 
     renderLeagueSection(leagueName, filtered, content);
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1353,6 +1429,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initInteractions();
     runAIScan();
     fetchLiveMatches();
+    renderSidebarLeagues();
     renderAds();
     renderNews();
     updateDateHeader();
