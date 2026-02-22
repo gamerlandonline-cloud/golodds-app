@@ -1235,3 +1235,31 @@ h3,
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+
+/* Match Time display */
+.match-time-hero {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent-gold);
+    color: black;
+    padding: 5px 20px;
+    font-size: 11px;
+    font-weight: 900;
+    font-family: 'Orbitron', sans-serif;
+    clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    z-index: 10;
+}
+
+@media (max-width: 768px) {
+    .match-time-hero {
+        position: static;
+        transform: none;
+        margin: 0 auto 20px;
+        clip-path: none;
+        border-radius: 5px;
+        display: inline-block;
+    }
+}

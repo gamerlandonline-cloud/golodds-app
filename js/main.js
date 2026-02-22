@@ -398,6 +398,13 @@ function loadMockData() {
     updateOddsUI(mockMatches[0]);
 }
 
+function formatMatchTime(isoString) {
+    const d = new Date(isoString);
+    const date = d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
+    const time = d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    return `${date} às ${time}`;
+}
+
 function renderLeagueSection(name, matches) {
     const matrix = document.getElementById('competition-matrix');
 
@@ -424,7 +431,7 @@ function renderLeagueSection(name, matches) {
 
         card.innerHTML = `
             <div class="mini-match-header">
-                <span>INÍCIO: ${new Date(match.commence_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <span>INÍCIO: ${formatMatchTime(match.commence_time)}</span>
                 <span class="badge">DADOS EM DIRETO</span>
             </div>
             <div class="mini-vs">
@@ -463,6 +470,7 @@ async function updateMatchUI(match) {
     const probContainer = document.getElementById('neural-probability');
 
     vsContainer.innerHTML = `
+        <div class="match-time-hero">${formatMatchTime(match.commence_time)}</div>
         <div class="team team-home">
             <div class="crest-container">
                 <img src="${getCrestUrl(match.home_team)}" class="team-crest">
@@ -613,7 +621,7 @@ function renderMarketOdds() {
         card.innerHTML = `
             <div class="market-match-header">
                 <h3>${match.home_team} vs ${match.away_team}</h3>
-                <span class="badge">ID JOGO: ${Math.random().toString(36).substring(7).toUpperCase()}</span>
+                <span class="badge">${formatMatchTime(match.commence_time)}</span>
             </div>
             <div class="odds-table-header">
                 <div>Casa de Apostas</div>
@@ -706,6 +714,7 @@ function renderTopPicks() {
         card.innerHTML = `
             <div class="rank-number">#${index + 1}</div>
             <div class="pick-info">
+                <div style="font-size: 10px; color: var(--accent-gold); margin-bottom: 5px;">${formatMatchTime(rec.match.commence_time)}</div>
                 <h4>${rec.match.home_team} vs ${rec.match.away_team}</h4>
                 <div class="pick-market">PICK: ${rec.outcome.name === 'Draw' || rec.outcome.name === 'X' ? 'EMPATE' : rec.outcome.name.toUpperCase()} (ODDS: ${rec.outcome.price.toFixed(2)})</div>
             </div>
