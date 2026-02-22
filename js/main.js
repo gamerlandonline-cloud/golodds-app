@@ -377,6 +377,9 @@ async function fetchLiveMatches() {
             '<i class="fas fa-exclamation-triangle"></i> ELABORAÇÃO DE LINK FRACA. A CARREGAR DADOS NEURAIS SIMULADOS...</div>';
         loadMockData();
     }
+
+    // Update Ticker after sync
+    updateNeuralTicker(getTopPicks());
 }
 
 // Fallback logic for demo purposes if API fails
@@ -393,9 +396,11 @@ function loadMockData() {
             bookmakers: [{ markets: [{ outcomes: [{ name: 'Benfica', price: 1.95 }, { name: 'Draw', price: 3.2 }, { name: 'Porto', price: 3.8 }] }] }]
         }
     ];
+    allMatchesData = mockMatches;
     renderLeagueSection('Projeções Simuladas', mockMatches);
     updateMatchUI(mockMatches[0]);
     updateOddsUI(mockMatches[0]);
+    updateNeuralTicker(getTopPicks());
 }
 
 function formatMatchTime(isoString) {
@@ -674,16 +679,9 @@ function renderMarketOdds() {
     });
 }
 
-function renderTopPicks() {
-    const grid = document.getElementById('picks-grid');
-    grid.innerHTML = '';
+function getTopPicks() {
+    if (allMatchesData.length === 0) return [];
 
-    if (allMatchesData.length === 0) {
-        grid.innerHTML = '<div class="live-indicator">DADOS QUÂNTICOS INDISPONÍVEIS. A SINCRONIZAR...</div>';
-        return;
-    }
-
-    // Extraction and Value Calculation
     let recommendations = [];
     allMatchesData.forEach(match => {
         const bookmaker = match.bookmakers[0];
@@ -691,9 +689,7 @@ function renderTopPicks() {
         const outcomes = bookmaker.markets[0].outcomes;
 
         outcomes.forEach(outcome => {
-            // Implied Probability from Odds
             const impliedProb = (1 / outcome.price) * 100;
-            // Simulated AI Analysis (Historical + Trend)
             const aiProb = impliedProb + (Math.random() * 15 - 5);
             const valueScore = aiProb * outcome.price;
 
@@ -706,9 +702,48 @@ function renderTopPicks() {
         });
     });
 
-    // Sort by Value Score and take Top 10
     recommendations.sort((a, b) => b.valueScore - a.valueScore);
-    const top10 = recommendations.slice(0, 10);
+    return recommendations.slice(0, 10);
+}
+
+function updateNeuralTicker(top10) {
+    const ticker = document.getElementById('neural-ticker');
+    if (!ticker) return;
+
+    if (!top10 || top10.length === 0) {
+        ticker.innerHTML = '<span class="ticker-item">A SINCRONIZAR PROJEÇÕES DA MATRIX...</span>';
+        return;
+    }
+
+    const items = top10.map((rec, index) => {
+        const betName = rec.outcome.name === 'Draw' || rec.outcome.name === 'X' ? 'EMPATE' : rec.outcome.name.toUpperCase();
+        return `
+            <span class="ticker-item">
+                <span style="color:var(--accent-gold); margin-right:5px;">#${index + 1}</span>
+                <span class="match-names">${rec.match.home_team} VS ${rec.match.away_team}</span>
+                <span class="pick-bet">PICK: ${betName}</span>
+                <span class="pick-odds">@${rec.outcome.price.toFixed(2)}</span>
+            </span>
+        `;
+    }).join('');
+
+    // Duplicate for seamless loop
+    ticker.innerHTML = items + items;
+}
+
+function renderTopPicks() {
+    const grid = document.getElementById('picks-grid');
+    grid.innerHTML = '';
+
+    const top10 = getTopPicks();
+
+    if (top10.length === 0) {
+        grid.innerHTML = '<div class="live-indicator">DADOS QUÂNTICOS INDISPONÍVEIS. A SINCRONIZAR...</div>';
+        return;
+    }
+
+    // Always keep ticker updated
+    updateNeuralTicker(top10);
 
     top10.forEach((rec, index) => {
         const card = document.createElement('div');

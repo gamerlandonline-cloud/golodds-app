@@ -1381,3 +1381,86 @@ h3,
     font-weight: 800;
     cursor: pointer;
 }
+
+/* Top Rolling Ticker */
+.top-ticker-bar {
+    height: 35px;
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(255, 204, 0, 0.2);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    position: sticky;
+    top: 70px; /* Below Header */
+    z-index: 95;
+    backdrop-filter: blur(5px);
+}
+
+.ticker-label {
+    background: var(--accent-gold);
+    color: black;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 20px 0 15px;
+    font-size: 10px;
+    font-weight: 900;
+    font-family: 'Orbitron', sans-serif;
+    clip-path: polygon(0 0, 85% 0, 100% 100%, 0% 100%);
+    z-index: 10;
+    white-space: nowrap;
+    text-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+.ticker-content {
+    flex-grow: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.ticker-move {
+    display: inline-block;
+    white-space: nowrap;
+    animation: ticker-scroll 60s linear infinite;
+    padding-left: 20px;
+}
+
+.ticker-item {
+    display: inline-block;
+    padding: 0 40px;
+    font-size: 11px;
+    color: var(--text-main);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.ticker-item .match-names {
+    color: var(--text-dim);
+    margin-right: 8px;
+}
+
+.ticker-item .pick-bet {
+    color: var(--accent-blue);
+    margin-right: 8px;
+}
+
+.ticker-item .pick-odds {
+    color: var(--accent-gold);
+    background: rgba(255, 204, 0, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+@keyframes ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); } /* Halfway for seamless loop if duplicated */
+}
+
+@media (max-width: 768px) {
+    .top-ticker-bar { top: 70px; }
+    .ticker-label { font-size: 8px; padding: 0 10px; }
+}
