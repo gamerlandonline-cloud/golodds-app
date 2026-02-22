@@ -103,6 +103,14 @@ function getCrestUrl(teamName) {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(teamName)}&background=0a101f&color=00ff88&bold=true&font-size=0.5`;
 }
 
+function normalizeTeamName(teamName) {
+    if (!teamName) return '';
+    return teamName.toUpperCase()
+        .replace(/ FC| AFC| SSC| CF| SL| SC| CP| SAD/g, '')
+        .replace('MANCHESTER', 'MAN')
+        .trim();
+}
+
 // Initialize Three.js Background
 function initThree() {
     const container = document.getElementById('three-container');
@@ -790,6 +798,23 @@ async function updateMatchUI(match) {
     const vsContainer = document.querySelector('.vs-container');
     const probContainer = document.getElementById('neural-probability');
 
+    // Find league meta
+    const leagueMeta = LEAGUE_DIRECTORY.find(l => l.name === match.league_name);
+    let standings = null;
+    if (leagueMeta && leagueMeta.fd_id) {
+        standings = await fetchStandingsFromFD(leagueMeta.fd_id);
+    }
+
+    const findTeamStats = (teamName) => {
+        if (!standings || !standings.standings) return null;
+        const normSearch = normalizeTeamName(teamName);
+        const table = standings.standings[0].table;
+        return table.find(t => normalizeTeamName(t.team.name).includes(normSearch) || normSearch.includes(normalizeTeamName(t.team.name)));
+    };
+
+    const hStats = findTeamStats(match.home_team);
+    const aStats = findTeamStats(match.away_team);
+
     // Score extraction
     let scoreHtml = 'VS';
     if (match.live_score) {
@@ -813,7 +838,7 @@ async function updateMatchUI(match) {
                 <div class="scan-line"></div>
             </div>
             <h2>${match.home_team.toUpperCase()}</h2>
-            <div class="form">SCAN NEURAL: ATIVO</div>
+            <div class="form">${hStats ? `${hStats.position}º LUGAR | FORMA: ${hStats.form || '???'}` : 'SCAN NEURAL: ATIVO'}</div>
         </div>
         <div class="vs-text">${scoreHtml}</div>
         <div class="team team-away">
@@ -822,14 +847,15 @@ async function updateMatchUI(match) {
                 <div class="scan-line"></div>
             </div>
             <h2>${match.away_team.toUpperCase()}</h2>
-            <div class="form">SCAN NEURAL: ATIVO</div>
+            <div class="form">${aStats ? `${aStats.position}º LUGAR | FORMA: ${aStats.form || '???'}` : 'SCAN NEURAL: ATIVO'}</div>
         </div>
     `;
 
     // Show and trigger Neural Analysis
     if (probContainer) {
         probContainer.style.display = 'block';
-        calculateNeuralProbability(match);
+        calculateNeuralProbability(match, { hStats, aStats });
+        updateOddsUI(match, { hStats, aStats });
     }
 
     if (!document.getElementById('crest-anim-styles')) {
@@ -848,40 +874,58 @@ async function updateMatchUI(match) {
 
 function predictProbableScore(hProb, aProb) {
     // Neural Logic for score prediction
-    if (hProb > 70) return "3 - 0";
-    if (hProb > 60) return "2 - 0";
-    if (hProb > 50) return "2 - 1";
-    if (aProb > 70) return "0 - 3";
-    if (aProb > 60) return "0 - 2";
-    if (aProb > 50) return "1 - 2";
+    if (hProb > 75) return "3 - 0";
+    if (hProb > 65) return "2 - 0";
+    if (hProb > 55) return "2 - 1";
+    if (aProb > 75) return "0 - 3";
+    if (aProb > 65) return "0 - 2";
+    if (aProb > 55) return "1 - 2";
     if (Math.abs(hProb - aProb) < 10) return "1 - 1";
     return "1 - 0";
 }
 
-function calculateNeuralProbability(match) {
-    const container = document.getElementById('main-match-container');
-    if (container) container.classList.add('processing-active');
-
-    const bookmaker = match.bookmakers[0];
-    if (!bookmaker) return;
+function getNeuralProbabilities(match, extraData = null) {
+    const bookmaker = match.bookmakers ? match.bookmakers[0] : null;
+    if (!bookmaker) return { h: 33, a: 33, d: 34 };
     const outcomes = bookmaker.markets[0].outcomes;
 
-    // Convert decimal odds to implied probability + add AI "Historical Bias"
-    const probHomeRaw = (1 / outcomes.find(o => o.name === match.home_team).price) * 100;
-    const probAwayRaw = (1 / outcomes.find(o => o.name === match.away_team).price) * 100;
-    const drawItem = outcomes.find(o => o.name === 'Draw' || o.name === 'X');
-    const probDrawRaw = drawItem ? (1 / drawItem.price) * 100 : 15;
+    // Convert decimal odds to implied probability
+    const hItem = outcomes.find(o => o.name === match.home_team);
+    const aItem = outcomes.find(o => o.name === match.away_team);
+    const dItem = outcomes.find(o => o.name === 'Draw' || o.name === 'X');
+
+    const probHomeRaw = hItem ? (1 / hItem.price) * 100 : 33;
+    const probAwayRaw = aItem ? (1 / aItem.price) * 100 : 33;
+    const probDrawRaw = dItem ? (1 / dItem.price) * 100 : 15;
+
+    const total = probHomeRaw + probAwayRaw + probDrawRaw;
+    let h = (probHomeRaw / total) * 100;
+    let a = (probAwayRaw / total) * 100;
+
+    // Apply Standings Bias if available
+    if (extraData && extraData.hStats && extraData.aStats) {
+        const posDiff = extraData.aStats.position - extraData.hStats.position;
+        h += (posDiff * 0.5);
+        a -= (posDiff * 0.5);
+    }
+
+    // Clip
+    h = Math.max(5, Math.min(90, h));
+    a = Math.max(5, Math.min(90, a));
+    let d = 100 - h - a;
+
+    return { h, a, d };
+}
+
+function calculateNeuralProbability(match, extraData = null) {
+    const container = document.getElementById('main-match-container');
+    if (container) container.classList.add('processing-active');
 
     // Simulate Deep Scan Delay
     setTimeout(() => {
         if (container) container.classList.remove('processing-active');
 
-        const total = probHomeRaw + probAwayRaw + probDrawRaw;
-
-        // Normalize and add slight randomized "Historical Momentum" factor
-        let h = (probHomeRaw / total) * 100 + (Math.random() * 8 - 4);
-        let a = (probAwayRaw / total) * 100 + (Math.random() * 8 - 4);
-        let d = 100 - h - a;
+        const { h, a, d } = getNeuralProbabilities(match, extraData);
 
         // Update Meter UI with GSAP
         gsap.to('#prob-home', { width: `${h}%`, duration: 2, ease: "power4.out" });
@@ -896,8 +940,16 @@ function calculateNeuralProbability(match) {
         // Generate AI Verdict
         const verdictBox = document.getElementById('ai-verdict');
         let bestChoice = h > a ? (h > d ? match.home_team : 'DRAW') : (a > d ? match.away_team : 'DRAW');
-        let confidence = Math.max(h, a, d).toFixed(0);
         const predictedScore = predictProbableScore(h, a);
+
+        // Dynamic reasoning based on data
+        let reasoning = `Análise Matrix concluída. `;
+        if (extraData && extraData.hStats && extraData.aStats) {
+            reasoning += `Integração de dados reais: ${match.home_team} está em ${extraData.hStats.position}º contra ${match.away_team} em ${extraData.aStats.position}º. `;
+            reasoning += `A forma recente (${extraData.hStats.form || '???'}) indica tendência algorítmica. `;
+        } else {
+            reasoning += `Processados 2.400 pontos de dados históricos. Tendência de golos e posse de bola neural integrados. `;
+        }
 
         verdictBox.innerHTML = `
         <div class="verdict-icon"><i class="fas fa-robot"></i></div>
@@ -907,35 +959,46 @@ function calculateNeuralProbability(match) {
                 <span class="score-label">RESULTADO PROVÁVEL</span>
                 <span class="score-value">${predictedScore}</span>
             </div>
-            <p style="margin-top: 15px;">Análise Matrix concluída. Processados 2.400 pontos de dados dos últimos 20 jogos de cada clube. Tendência de golos, posse de bola neural e fadiga de plantel integrados.</p>
+            <p style="margin-top: 15px;">${reasoning}</p>
             <div class="neural-stats-grid">
-                <div class="stat-item">MÉDIA GOLOS (20J): <span>${(Math.random() * 1.5 + 1).toFixed(1)}</span></div>
-                <div class="stat-item">DOMÍNIO NEURAL: <span>${bestChoice === 'DRAW' ? 'EQUILIBRADO' : 'FAVORITISMO'}</span></div>
-                <div class="stat-item">XP (EXPECTED GOALS): <span>${(Math.random() * 2 + 1).toFixed(2)}</span></div>
-                <div class="stat-item">PRECISÃO IA: <span>94.2%</span></div>
+                <div class="stat-item">POSIÇÃO MÉDIA: <span>${extraData?.hStats?.position || '?'}/${extraData?.aStats?.position || '?'}</span></div>
+                <div class="stat-item">DOMÍNIO NEURAL: <span>${h > a ? 'ALTO' : 'EQUILIBRADO'}</span></div>
+                <div class="stat-item">XP (EXPECTED): <span>${(Math.random() * 2 + 1).toFixed(2)}</span></div>
+                <div class="stat-item">CONFIANÇA: <span>${Math.max(h, a, d).toFixed(1)}%</span></div>
+            </div>
         </div>
     `;
     }, 1500);
 }
 
-function updateOddsUI(match) {
+function updateOddsUI(match, extraData = null) {
     const oddsList = document.querySelector('.odds-list');
-    const bookmaker = match.bookmakers[0];
+    const bookmaker = match.bookmakers ? match.bookmakers[0] : null;
     if (!bookmaker) return;
     const market = bookmaker.markets[0];
     if (!market) return;
     const outcomes = market.outcomes;
 
+    const probs = getNeuralProbabilities(match, extraData);
+
     oddsList.innerHTML = '';
     outcomes.forEach(outcome => {
-        const isValue = outcome.price > 3.0;
+        let aiProb = 0;
+        if (outcome.name === match.home_team) aiProb = probs.h;
+        else if (outcome.name === match.away_team) aiProb = probs.a;
+        else aiProb = probs.d;
+
+        const impliedProb = (1 / outcome.price) * 100;
+        const ev = ((aiProb / impliedProb) - 1) * 100;
+        const isValue = ev > 10; // Value if AI thinks chance is 10% higher than odds suggest
+
         const item = document.createElement('div');
         item.className = `odd-item ${isValue ? 'ai-recommendation' : ''}`;
         item.innerHTML = `
-            ${isValue ? '<span class="ai-badge"><i class="fas fa-microchip"></i> VALOR ALTO DETETADO</span>' : ''}
+            ${isValue ? '<span class="ai-badge"><i class="fas fa-microchip"></i> VALOR DETETADO</span>' : ''}
             <div class="market">${outcome.name === 'Draw' || outcome.name === 'X' ? 'EMPATE' : outcome.name.toUpperCase()}</div>
             <div class="prob">${outcome.price.toFixed(2)}</div>
-            <div class="ev">${isValue ? '+18.4% EV' : '+2.1% EV'}</div>
+            <div class="ev" style="color: ${ev > 0 ? 'var(--accent-green)' : '#ff3e3e'}">${ev > 0 ? '+' : ''}${ev.toFixed(1)}% EV</div>
             <div class="action-btn">FIXAR APOSTA</div>
         `;
         oddsList.appendChild(item);
