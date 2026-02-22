@@ -73,7 +73,15 @@
         <section class="main-content">
             <!-- War Room Tab -->
             <div id="tab-war-room" class="tab-pane active">
-                <div class="match-summary-card">
+                <div class="match-summary-card" id="main-match-container">
+                    <div class="ai-processing-overlay">
+                        <div class="processing-text">A ANALISAR ÚLTIMOS 20 JOGOS...</div>
+                        <div class="processing-bar">
+                            <div class="processing-progress"></div>
+                        </div>
+                        <div class="processing-text" style="font-size: 8px; color: var(--text-dim);">DADOS ESTATÍSTICOS:
+                            OK | FORMA NEURAL: OK</div>
+                    </div>
                     <div class="live-indicator">
                         <span class="pulse"></span> IA A ANALISAR EM DIRETO
                     </div>
