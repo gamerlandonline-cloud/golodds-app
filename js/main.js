@@ -6,7 +6,7 @@ function initThree() {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    
+
     renderer.setSize(window.innerWidth, window.innerHeight);
     container.appendChild(renderer.domElement);
 
@@ -21,14 +21,14 @@ function initThree() {
         );
     }
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    
-    const material = new THREE.PointsMaterial({ 
-        color: 0x00ff88, 
+
+    const material = new THREE.PointsMaterial({
+        color: 0x00ff88,
         size: 2,
         transparent: true,
-        opacity: 0.5 
+        opacity: 0.5
     });
-    
+
     const points = new THREE.Points(geometry, material);
     scene.add(points);
 
@@ -55,13 +55,13 @@ function initAnimations() {
     gsap.from(".cyber-header", { y: -100, opacity: 0, duration: 1, ease: "power4.out" });
     gsap.from(".sidebar", { x: -240, opacity: 0, duration: 1, delay: 0.5, ease: "power4.out" });
     gsap.from(".match-summary-card", { scale: 0.9, opacity: 0, duration: 0.8, delay: 0.8, ease: "back.out(1.7)" });
-    gsap.from(".card", { 
-        y: 50, 
-        opacity: 0, 
-        duration: 0.8, 
-        delay: 1, 
-        stagger: 0.2, 
-        ease: "power3.out" 
+    gsap.from(".card", {
+        y: 50,
+        opacity: 0,
+        duration: 0.8,
+        delay: 1,
+        stagger: 0.2,
+        ease: "power3.out"
     });
 
     // Animate probability numbers
@@ -93,24 +93,24 @@ function initInteractions() {
         btn.addEventListener('click', () => {
             btn.innerHTML = '<i class="fas fa-check"></i> SYNCED';
             btn.style.background = '#00e5ff';
-            
+
             // Notification effect
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.innerHTML = 'SYNCING TO BETTING MATRIX...';
             document.body.appendChild(toast);
-            
-            gsap.to(toast, { 
-                bottom: 20, 
-                opacity: 1, 
-                duration: 0.5 
+
+            gsap.to(toast, {
+                bottom: 20,
+                opacity: 1,
+                duration: 0.5
             });
-            
+
             setTimeout(() => {
-                gsap.to(toast, { 
-                    opacity: 0, 
-                    duration: 0.5, 
-                    onComplete: () => toast.remove() 
+                gsap.to(toast, {
+                    opacity: 0,
+                    duration: 0.5,
+                    onComplete: () => toast.remove()
                 });
             }, 2000);
         });
@@ -139,9 +139,50 @@ style.innerHTML = `
 `;
 document.head.appendChild(style);
 
+// Admin Portal Logic
+function toggleAdmin() {
+    const overlay = document.getElementById('admin-overlay');
+    const isVisible = overlay.style.display === 'flex';
+    overlay.style.display = isVisible ? 'none' : 'flex';
+
+    if (!isVisible) {
+        gsap.from(".admin-modal", { scale: 0.8, opacity: 0, duration: 0.4, ease: "back.out(1.7)" });
+    }
+}
+
+function loginAdmin() {
+    const user = document.getElementById('admin-user').value;
+    const error = document.getElementById('admin-error');
+
+    // Simple mock logic for preview
+    if (user === "admin") {
+        alert("WELCOME TO THE MATRIX, ADMIN. Loading Marketing Management...");
+        window.location.reload(); // Simple mock refresh
+    } else {
+        error.style.display = 'block';
+        gsap.to(".admin-modal", { x: [-10, 10, -10, 10, 0], duration: 0.4 });
+    }
+}
+
+// AI "Deep Scan" Simulation
+function runAIScan() {
+    const aiItems = document.querySelectorAll('.ai-recommendation');
+    aiItems.forEach((item, index) => {
+        gsap.to(item, {
+            borderColor: '#00e5ff',
+            boxShadow: '0 0 20px rgba(0, 229, 255, 0.4)',
+            duration: 1,
+            repeat: -1,
+            yoyo: true,
+            delay: index * 0.5
+        });
+    });
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initThree();
     initAnimations();
     initInteractions();
+    runAIScan();
 });

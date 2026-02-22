@@ -4,9 +4,11 @@
     --accent-green: #00ff88;
     --accent-blue: #00e5ff;
     --accent-pink: #ff007f;
+    --accent-gold: #ffcc00;
     --text-main: #e2e8f0;
     --text-dim: #94a3b8;
     --neon-glow: 0 0 15px rgba(0, 255, 136, 0.4);
+    --gold-glow: 0 0 15px rgba(255, 204, 0, 0.4);
     --glass-border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -28,7 +30,10 @@ body {
     background: radial-gradient(circle at center, #0a101f 0%, #050810 100%);
 }
 
-h1, h2, h3, .logo-text {
+h1,
+h2,
+h3,
+.logo-text {
     font-family: 'Orbitron', sans-serif;
     letter-spacing: 1px;
 }
@@ -41,7 +46,7 @@ h1, h2, h3, .logo-text {
     width: 100%;
     height: 100%;
     background: radial-gradient(circle at 10% 20%, rgba(0, 229, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 90% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+        radial-gradient(circle at 90% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
     pointer-events: none;
     z-index: -1;
 }
@@ -185,7 +190,8 @@ h1, h2, h3, .logo-text {
     font-weight: 600;
 }
 
-.nav-item:hover, .nav-item.active {
+.nav-item:hover,
+.nav-item.active {
     color: var(--accent-green);
     background: rgba(0, 255, 136, 0.05);
     border-left: 3px solid var(--accent-green);
@@ -195,9 +201,111 @@ h1, h2, h3, .logo-text {
     font-size: 20px;
 }
 
-.logout {
-    margin-top: auto;
+.nav-item.logout {
+    margin-top: 20px;
     color: var(--accent-pink);
+}
+
+.nav-admin {
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 20px;
+}
+
+.admin-link {
+    color: var(--accent-gold);
+    border-left-color: var(--accent-gold) !important;
+}
+
+/* Promo Box */
+.promo-box {
+    background: linear-gradient(45deg, rgba(255, 204, 0, 0.1), rgba(255, 0, 127, 0.1));
+    border: 1px solid var(--accent-gold);
+    border-radius: 15px;
+    margin: 20px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: var(--gold-glow);
+}
+
+.promo-box h4 {
+    font-size: 10px;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+}
+
+.promo-content {
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.promo-btn {
+    display: inline-block;
+    background: var(--accent-gold);
+    color: black;
+    padding: 5px 15px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 900;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.promo-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px var(--accent-gold);
+}
+
+/* Admin Modal */
+#admin-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(20px);
+}
+
+.admin-modal {
+    background: #0f172a;
+    border: 1px solid var(--accent-gold);
+    width: 400px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: var(--gold-glow);
+}
+
+.admin-modal h2 {
+    color: var(--accent-gold);
+    margin-bottom: 25px;
+}
+
+.admin-modal input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px;
+    color: white;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.admin-btn-submit {
+    width: 100%;
+    padding: 15px;
+    background: var(--accent-gold);
+    border: none;
+    border-radius: 8px;
+    font-weight: 900;
+    cursor: pointer;
 }
 
 .main-content {
@@ -248,9 +356,20 @@ h1, h2, h3, .logo-text {
 }
 
 @keyframes pulse-kf {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.5); opacity: 0.5; }
-    100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .vs-container {
@@ -382,6 +501,23 @@ h1, h2, h3, .logo-text {
     display: flex;
     flex-direction: column;
     gap: 15px;
+}
+
+.ai-recommendation {
+    background: rgba(0, 229, 255, 0.1) !important;
+    border: 1px dashed var(--accent-blue) !important;
+    position: relative;
+    padding-top: 25px !important;
+}
+
+.ai-badge {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    font-size: 9px;
+    color: var(--accent-blue);
+    font-weight: 900;
+    text-transform: uppercase;
 }
 
 .odd-item {

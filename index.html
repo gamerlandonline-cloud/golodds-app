@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOLODDS | AI Football Prediction War Room</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@400;700;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body class="bg-dark">
     <!-- Background FX -->
     <div class="glow-overlay"></div>
@@ -44,6 +48,19 @@
             <div class="nav-item"><i class="fas fa-history"></i><span>Past Timelines</span></div>
             <div class="nav-item"><i class="fas fa-chart-line"></i><span>Market Odds</span></div>
             <div class="nav-item"><i class="fas fa-shield-alt"></i><span>Risk Shield</span></div>
+
+            <div class="nav-admin">
+                <div class="nav-item admin-link" onclick="toggleAdmin()"><i class="fas fa-user-shield"></i><span>ADMIN
+                        PORTAL</span></div>
+            </div>
+
+            <!-- Promo/Ads Box -->
+            <div class="promo-box">
+                <h4>Partner Spotlight</h4>
+                <div class="promo-content">CLAIM 200% BONUS ON BET365</div>
+                <a href="#" class="promo-btn">REDEEM NOW</a>
+            </div>
+
             <div class="nav-item logout"><i class="fas fa-sign-out-alt"></i><span>Exit Matrix</span></div>
         </aside>
 
@@ -81,7 +98,9 @@
                         <div class="overlay-stats">
                             <div class="stat-box">
                                 <label>Attack Pressure</label>
-                                <div class="progress-bar"><div class="fill" style="width: 78%"></div></div>
+                                <div class="progress-bar">
+                                    <div class="fill" style="width: 78%"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -91,9 +110,11 @@
                 <div class="card prediction-card">
                     <div class="card-header">
                         <h3><i class="fas fa-brain"></i> Neural Link Output</h3>
+                        <span class="badge" style="background: var(--accent-blue);">AI ENGINE v2.5</span>
                     </div>
                     <div class="odds-list">
-                        <div class="odd-item best-value">
+                        <div class="odd-item ai-recommendation">
+                            <span class="ai-badge"><i class="fas fa-microchip"></i> DEEP ANALYTICS CHOICE</span>
                             <div class="market">HOME WIN</div>
                             <div class="prob">58.4%</div>
                             <div class="ev">+12.5% EV</div>
@@ -105,7 +126,8 @@
                             <div class="ev">+4.2% EV</div>
                             <div class="action-btn">LOCK IN</div>
                         </div>
-                        <div class="odd-item">
+                        <div class="odd-item ai-recommendation">
+                            <span class="ai-badge"><i class="fas fa-robot"></i> BOT SYNERGY SCORE</span>
                             <div class="market">BTTS: YES</div>
                             <div class="prob">65.0%</div>
                             <div class="ev">+2.1% EV</div>
@@ -138,9 +160,25 @@
         </section>
     </main>
 
+    <!-- Admin Management Portal (Modal) -->
+    <div id="admin-overlay" onclick="if(event.target == this) toggleAdmin()">
+        <div class="admin-modal">
+            <h2><i class="fas fa-lock"></i> ADMIN ACCESS</h2>
+            <p style="color: var(--text-dim); margin-bottom: 20px; font-size: 13px;">Manage Ads, Marketing Assets, and
+                Revenue Stream.</p>
+            <input type="text" placeholder="Admin Username" id="admin-user">
+            <input type="password" placeholder="Matrix Key" id="admin-pass">
+            <button class="admin-btn-submit" onclick="loginAdmin()">DECRYPT ACCESS</button>
+            <div id="admin-error"
+                style="color: var(--accent-pink); font-size: 12px; margin-top: 15px; text-align: center; display: none;">
+                ACCESS DENIED: INVALID QUANTUM KEY</div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>
