@@ -417,6 +417,27 @@ function loadMockData() {
             commence_time: new Date().toISOString(),
             live_score: [{ name: 'Benfica', score: '0' }, { name: 'Porto', score: '0' }],
             bookmakers: [{ markets: [{ outcomes: [{ name: 'Benfica', price: 1.95 }, { name: 'Draw', price: 3.2 }, { name: 'Porto', price: 3.8 }] }] }]
+        },
+        {
+            id: 'mock-3',
+            home_team: 'Arsenal', away_team: 'Liverpool',
+            league_name: 'Premier League',
+            commence_time: new Date().toISOString(),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Arsenal', price: 2.4 }, { name: 'Draw', price: 3.5 }, { name: 'Liverpool', price: 2.8 }] }] }]
+        },
+        {
+            id: 'mock-4',
+            home_team: 'Barcelona', away_team: 'Atletico Madrid',
+            league_name: 'La Liga',
+            commence_time: new Date().toISOString(),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Barcelona', price: 1.8 }, { name: 'Draw', price: 3.6 }, { name: 'Atletico Madrid', price: 4.2 }] }] }]
+        },
+        {
+            id: 'mock-5',
+            home_team: 'Inter', away_team: 'Juventus',
+            league_name: 'Serie A',
+            commence_time: new Date().toISOString(),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Inter', price: 2.0 }, { name: 'Draw', price: 3.2 }, { name: 'Juventus', price: 3.6 }] }] }]
         }
     ];
     allMatchesData = mockMatches;
@@ -445,54 +466,8 @@ function renderLeagueSection(name, matches) {
     grid.className = 'match-grid';
 
     matches.forEach(match => {
-        const bookmaker = match.bookmakers[0];
-        if (!bookmaker) return;
-        const market = bookmaker.markets[0];
-        const outcomes = market ? market.outcomes : [];
-
-        const card = document.createElement('div');
-        card.className = 'mini-match-card';
-        card.onclick = () => {
-            updateMatchUI(match);
-            updateOddsUI(match);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        card.innerHTML = `
-            <div class="mini-match-header">
-                <span>INÍCIO: ${formatMatchTime(match.commence_time)}</span>
-                <span class="badge">DADOS EM DIRETO</span>
-            </div>
-            <div class="mini-vs">
-                <div class="mini-team">
-                    <img src="${getCrestUrl(match.home_team)}" class="mini-crest">
-                    <span>${match.home_team}</span>
-                </div>
-                <div class="vs-text" style="font-size: 14px;">
-                    ${match.live_score ? `
-                        <div class="mini-score">${match.live_score[0].score} - ${match.live_score[1].score}</div>
-                        <div class="live-badge-mini">LIVE</div>
-                    ` : 'VS'}
-                </div>
-                <div class="mini-team">
-                    <img src="${getCrestUrl(match.away_team)}" class="mini-crest">
-                    <span>${match.away_team}</span>
-                </div>
-            </div>
-            <div class="mini-odds">
-                ${outcomes.map(o => {
-            let displayName = o.name;
-            if (displayName === 'Draw' || displayName === 'X') displayName = 'EMPATE';
-            return `
-                        <div class="mini-odd">
-                            <label>${displayName}</label>
-                            <span class="val">${o.price.toFixed(2)}</span>
-                        </div>
-                    `;
-        }).join('')}
-            </div>
-        `;
-        grid.appendChild(card);
+        const card = createMatchCard(match);
+        if (card) grid.appendChild(card);
     });
 
     section.appendChild(grid);
@@ -709,46 +684,58 @@ function openLeaguePortal(leagueName) {
 
     // Reuse render logic but for portal container
     filtered.forEach(match => {
-        const bookmaker = match.bookmakers[0];
-        if (!bookmaker) return;
-        const market = bookmaker.markets[0];
-        const outcomes = market ? market.outcomes : [];
-
-        const card = document.createElement('div');
-        card.className = 'mini-match-card';
-        card.onclick = () => {
-            switchTab('war-room');
-            updateMatchUI(match);
-            updateOddsUI(match);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        card.innerHTML = `
-            <div class="mini-match-header">
-                <span>PORTAL: ${leagueName}</span>
-                <span class="badge">ESTATÍSTICAS ATIVAS</span>
-            </div>
-            <div class="mini-vs">
-                <div class="mini-team">
-                    <img src="${getCrestUrl(match.home_team)}" class="mini-crest">
-                    <span>${match.home_team}</span>
-                </div>
-                <div class="vs-text">
-                    ${match.live_score ? `<div class="mini-score">${match.live_score[0].score} - ${match.live_score[1].score}</div>` : 'VS'}
-                </div>
-                <div class="mini-team">
-                    <img src="${getCrestUrl(match.away_team)}" class="mini-crest">
-                    <span>${match.away_team}</span>
-                </div>
-            </div>
-            <div class="mini-odds">
-                ${outcomes.map(o => `<div class="mini-odd"><label>${o.name === 'Draw' || o.name === 'X' ? 'EMPATE' : o.name}</label><span>${o.price.toFixed(2)}</span></div>`).join('')}
-            </div>
-        `;
-        content.appendChild(card);
+        const card = createMatchCard(match, leagueName);
+        if (card) content.appendChild(card);
     });
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function createMatchCard(match, contextName = null) {
+    const bookmaker = match.bookmakers ? match.bookmakers[0] : null;
+    const market = bookmaker ? bookmaker.markets[0] : null;
+    const outcomes = market ? market.outcomes : [];
+
+    const card = document.createElement('div');
+    card.className = 'mini-match-card';
+    card.onclick = () => {
+        if (contextName) switchTab('war-room');
+        updateMatchUI(match);
+        updateOddsUI(match);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    card.innerHTML = `
+        <div class="mini-match-header">
+            <span>${contextName ? `PORTAL: ${contextName}` : `INÍCIO: ${formatMatchTime(match.commence_time)}`}</span>
+            <span class="badge">${match.live_score ? 'EM DIRETO' : 'DADOS ATIVOS'}</span>
+        </div>
+        <div class="mini-vs">
+            <div class="mini-team">
+                <img src="${getCrestUrl(match.home_team)}" class="mini-crest">
+                <span>${match.home_team}</span>
+            </div>
+            <div class="vs-text">
+                ${match.live_score ? `
+                    <div class="mini-score">${match.live_score[0].score} - ${match.live_score[1].score}</div>
+                    <div class="live-badge-mini">LIVE</div>
+                ` : 'VS'}
+            </div>
+            <div class="mini-team">
+                <img src="${getCrestUrl(match.away_team)}" class="mini-crest">
+                <span>${match.away_team}</span>
+            </div>
+        </div>
+        <div class="mini-odds">
+            ${outcomes.length > 0 ? outcomes.map(o => `
+                <div class="mini-odd">
+                    <label>${o.name === 'Draw' || o.name === 'X' ? 'EMPATE' : o.name}</label>
+                    <span class="val">${o.price.toFixed(2)}</span>
+                </div>
+            `).join('') : '<div class="mini-odd" style="width:100%; text-align:center;"><label>ODDS INDISPONÍVEIS</label></div>'}
+        </div>
+    `;
+    return card;
 }
 
 function switchTab(tabId) {
