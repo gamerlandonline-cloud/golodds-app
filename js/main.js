@@ -287,24 +287,30 @@ function createAdBox(link, text) {
 }
 
 function createAdMarkup(link, label) {
-    const isYoutube = link.includes('youtube.com') || link.includes('youtu.be');
+    const l = link.toLowerCase();
+    let icon = 'fa-link';
+    let typeClass = 'icon-generic';
+    let platformName = 'LINK EXTERNO';
 
-    if (isYoutube) {
-        return `
-            <div class="youtube-card">
-                <div class="yt-icon-wrapper"><i class="fab fa-youtube"></i></div>
-                <div class="yt-info">
-                    <h4>${label}</h4>
-                    <p>VER NO YOUTUBE <i class="fas fa-external-link-alt"></i></p>
-                </div>
-            </div>
-        `;
+    if (l.includes('youtube.com') || l.includes('youtu.be')) {
+        icon = 'fab fa-youtube'; typeClass = 'icon-youtube'; platformName = 'YOUTUBE';
+    } else if (l.includes('instagram.com')) {
+        icon = 'fab fa-instagram'; typeClass = 'icon-instagram'; platformName = 'INSTAGRAM';
+    } else if (l.includes('facebook.com')) {
+        icon = 'fab fa-facebook-f'; typeClass = 'icon-facebook'; platformName = 'FACEBOOK';
+    } else if (l.includes('twitter.com') || l.includes('x.com')) {
+        icon = 'fab fa-x-twitter'; typeClass = 'icon-twitter'; platformName = 'X / TWITTER';
+    } else if (l.includes('twitch.tv')) {
+        icon = 'fab fa-twitch'; typeClass = 'icon-twitch'; platformName = 'TWITCH';
     }
 
     return `
-        <div style="padding: 20px; text-align: center;">
-            <div style="color: var(--accent-blue); font-weight: 800;">LINK PATROCINADO</div>
-            <div style="font-size: 10px; color: var(--text-dim); margin-top: 5px;">CLIQUE PARA ACEDER</div>
+        <div class="platform-card">
+            <div class="platform-icon ${typeClass}"><i class="${icon}"></i></div>
+            <div class="platform-info">
+                <h4>${label}</h4>
+                <p>ACEDER AO ${platformName} <i class="fas fa-external-link-alt"></i></p>
+            </div>
         </div>
     `;
 }
