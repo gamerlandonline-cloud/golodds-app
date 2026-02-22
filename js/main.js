@@ -349,21 +349,33 @@ async function fetchLiveMatches() {
     for (const league of leagues) {
         try {
             console.log(`MATRIX: Syncing ${league.name}...`);
-            // Expanded bookmakers to include Bet365, Bwin, Betclic, etc.
-            const response = await fetch(`${API_CONFIG.BASE_URL}${league.key}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h&bookmakers=bet365,bwin,betclic,williamhill,betfair_ex_eu,pinnacle`);
 
-            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-            const data = await response.json();
+            // Simultaneously fetch Odds and Scores
+            const [oddsRes, scoresRes] = await Promise.all([
+                fetch(`${API_CONFIG.BASE_URL}${league.key}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h`),
+                fetch(`${API_CONFIG.BASE_URL}${league.key}/scores/?apiKey=${API_CONFIG.ODDS_API_KEY}&daysFrom=1`)
+            ]);
 
-            if (data && data.length > 0) {
+            if (!oddsRes.ok || !scoresRes.ok) throw new Error(`API Error on ${league.name}`);
+
+            const oddsData = await oddsRes.json();
+            const scoresData = await scoresRes.json();
+
+            // Merge Scores into Odds Data
+            const mergedData = oddsData.map(match => {
+                const liveScore = scoresData.find(s => s.id === match.id);
+                return { ...match, live_score: liveScore ? liveScore.scores : null, completed: liveScore ? liveScore.completed : false };
+            });
+
+            if (mergedData && mergedData.length > 0) {
                 if (!dataFound) matrix.innerHTML = '';
-                renderLeagueSection(league.name, data);
+                renderLeagueSection(league.name, mergedData);
                 dataFound = true;
-                allMatchesData.push(...data);
+                allMatchesData.push(...mergedData);
 
                 if (!document.querySelector('.team-home h2')) {
-                    updateMatchUI(data[0]);
-                    updateOddsUI(data[0]);
+                    updateMatchUI(mergedData[0]);
+                    updateOddsUI(mergedData[0]);
                 }
             }
         } catch (error) {
@@ -386,13 +398,17 @@ async function fetchLiveMatches() {
 function loadMockData() {
     const mockMatches = [
         {
+            id: 'mock-1',
             home_team: 'Real Madrid', away_team: 'Man City',
             commence_time: new Date().toISOString(),
+            live_score: [{ name: 'Real Madrid', score: '2' }, { name: 'Man City', score: '1' }],
             bookmakers: [{ markets: [{ outcomes: [{ name: 'Real Madrid', price: 2.1 }, { name: 'Draw', price: 3.4 }, { name: 'Man City', price: 3.1 }] }] }]
         },
         {
+            id: 'mock-2',
             home_team: 'Benfica', away_team: 'Porto',
             commence_time: new Date().toISOString(),
+            live_score: [{ name: 'Benfica', score: '0' }, { name: 'Porto', score: '0' }],
             bookmakers: [{ markets: [{ outcomes: [{ name: 'Benfica', price: 1.95 }, { name: 'Draw', price: 3.2 }, { name: 'Porto', price: 3.8 }] }] }]
         }
     ];
@@ -444,7 +460,12 @@ function renderLeagueSection(name, matches) {
                     <img src="${getCrestUrl(match.home_team)}" class="mini-crest">
                     <span>${match.home_team}</span>
                 </div>
-                <div class="vs-text" style="font-size: 14px;">VS</div>
+                <div class="vs-text" style="font-size: 14px;">
+                    ${match.live_score ? `
+                        <div class="mini-score">${match.live_score[0].score} - ${match.live_score[1].score}</div>
+                        <div class="live-badge-mini">LIVE</div>
+                    ` : 'VS'}
+                </div>
                 <div class="mini-team">
                     <img src="${getCrestUrl(match.away_team)}" class="mini-crest">
                     <span>${match.away_team}</span>
@@ -474,6 +495,21 @@ async function updateMatchUI(match) {
     const vsContainer = document.querySelector('.vs-container');
     const probContainer = document.getElementById('neural-probability');
 
+    // Score extraction
+    let scoreHtml = 'VS';
+    if (match.live_score) {
+        scoreHtml = `
+            <div class="live-score-container">
+                <div class="live-badge-mini" style="margin-bottom: 5px;">EM DIRETO</div>
+                <div class="live-score-value">
+                    <span>${match.live_score[0].score}</span>
+                    <span style="font-size: 14px; opacity: 0.5;">-</span>
+                    <span>${match.live_score[1].score}</span>
+                </div>
+            </div>
+        `;
+    }
+
     vsContainer.innerHTML = `
         <div class="match-time-hero">${formatMatchTime(match.commence_time)}</div>
         <div class="team team-home">
@@ -484,7 +520,7 @@ async function updateMatchUI(match) {
             <h2>${match.home_team.toUpperCase()}</h2>
             <div class="form">SCAN NEURAL: ATIVO</div>
         </div>
-        <div class="vs-text">VS</div>
+        <div class="vs-text">${scoreHtml}</div>
         <div class="team team-away">
             <div class="crest-container">
                 <img src="${getCrestUrl(match.away_team)}" class="team-crest">

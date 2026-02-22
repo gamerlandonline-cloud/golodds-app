@@ -1569,3 +1569,51 @@ h3,
     color: var(--accent-green);
     letter-spacing: 2px;
 }
+
+/* Live Score Styling */
+.live-score-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.live-score-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent-green);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(0, 255, 136, 0.1);
+    padding: 5px 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    text-shadow: 0 0 15px var(--accent-green);
+}
+
+.mini-score {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    color: var(--accent-green);
+    font-size: 16px;
+    margin: 0 10px;
+}
+
+.live-badge-mini {
+    background: #ff3e3e;
+    color: white;
+    font-size: 8px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: 800;
+    animation: blink 1s infinite;
+    text-transform: uppercase;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
