@@ -194,10 +194,20 @@ function initAnimations() {
 function initInteractions() {
     const searchBar = document.querySelector('.search-bar');
     const whistle = document.querySelector('.referee-whistle');
+    const searchInput = document.getElementById('match-search');
 
-    searchBar.addEventListener('mouseenter', () => {
-        gsap.to(whistle, { rotation: 15, duration: 0.2, repeat: 3, yoyo: true });
-    });
+    if (searchBar) {
+        searchBar.addEventListener('mouseenter', () => {
+            gsap.to(whistle, { rotation: 15, duration: 0.2, repeat: 3, yoyo: true });
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            applyScoreboardFilters(term);
+        });
+    }
 
     // Mock "Action" buttons
     document.querySelectorAll('.action-btn').forEach(btn => {
@@ -312,10 +322,21 @@ function renderAds() {
     sideList.innerHTML = '';
     mainGrid.innerHTML = '';
 
+    // Default Ads if none in Storage
+    const defaultSide = [
+        { link: 'https://youtube.com', text: 'MELHORES MOMENTOS' },
+        { link: 'https://twitter.com', text: 'NOTÍCIAS FLASH' }
+    ];
+    const defaultMain = [
+        { link: 'https://instagram.com', text: 'BASTIDORES GOLODDS' },
+        { link: 'https://twitch.tv', text: 'LIVE STREAMING MATRIX' },
+        { link: 'https://facebook.com', text: 'COMUNIDADE MATRIX' }
+    ];
+
     // Render Side Ads
-    [1, 2].forEach(i => {
-        const link = localStorage.getItem(`sideAdLink_${i}`);
-        const text = localStorage.getItem(`sideAdText_${i}`) || "PARCEIRO";
+    [1, 2].forEach((i, idx) => {
+        const link = localStorage.getItem(`sideAdLink_${i}`) || defaultSide[idx].link;
+        const text = localStorage.getItem(`sideAdText_${i}`) || defaultSide[idx].text;
         if (link) {
             const adBox = createAdBox(link, text);
             sideList.appendChild(adBox);
@@ -323,9 +344,9 @@ function renderAds() {
     });
 
     // Render Main Ads
-    [1, 2, 3].forEach(i => {
-        const link = localStorage.getItem(`mainAdLink_${i}`);
-        const text = localStorage.getItem(`mainAdText_${i}`) || "PATROCINADOR";
+    [1, 2, 3].forEach((i, idx) => {
+        const link = localStorage.getItem(`mainAdLink_${i}`) || defaultMain[idx].link;
+        const text = localStorage.getItem(`mainAdText_${i}`) || defaultMain[idx].text;
         if (link) {
             const adBox = createAdBox(link, text);
             mainGrid.appendChild(adBox);
@@ -1349,15 +1370,15 @@ function renderTopPicks() {
 }
 
 const NEWS_DATA = [
-    { league: 'portugal', source: 'A Bola', title: 'Benfica prepara ataque ao mercado de verão', excerpt: 'As águias estão atentas a novos talentos para reforçar o plantel na próxima época.', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.abola.pt' },
-    { league: 'portugal', source: 'Record', title: 'Sporting focado na renovação do título', excerpt: 'Rúben Amorim mantém o grupo unido e focado nos objetivos traçados.', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.record.pt' },
-    { league: 'portugal', source: 'O Jogo', title: 'FC Porto estuda novas opções para o ataque', excerpt: 'Sérgio Conceição quer mais eficácia na finalização e procura soluções no mercado internacional.', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400', date: 'Ontem', url: 'https://www.ojogo.pt' },
-    { league: 'england', source: 'Sky Sports', title: 'Man City and Arsenal in thrilling title race', excerpt: 'The Premier League summit remains contested as both teams show incredible consistency.', image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.skysports.com/football' },
-    { league: 'england', source: 'BBC Sport', title: 'Liverpool legend weighs in on tactical shifts', excerpt: 'Analysis of how the midfield dynamic has changed the Reds strategy this season.', image: 'https://images.unsplash.com/photo-1518091043644-c1d445eb9519?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.bbc.com/sport/football' },
-    { league: 'spain', source: 'MARCA', title: 'Mbappé brilla en los entrenamientos del Real Madrid', excerpt: 'El astro francés muestra una adaptación inmediata al esquema de Ancelotti.', image: 'https://images.unsplash.com/photo-1529900903110-d02f0acff528?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.marca.com' },
-    { league: 'spain', source: 'AS', title: 'Barcelona busca blindar a sus jóvenes promesas', excerpt: 'El club catalán inicia conversa para renovar contratos clave en La Masía.', image: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=400', date: 'Ontem', url: 'https://as.com' },
-    { league: 'italy', source: 'Gazzetta dello Sport', title: 'Inter domina o mercado italiano', excerpt: 'A estratégia dos nerazzurri para manter a hegemonia na Série A.', image: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.gazzetta.it' },
-    { league: 'germany', source: 'BILD', title: 'Bayern busca reconstrução sob novo comando', excerpt: 'As mudanças táticas esperadas para a próxima temporada na Baviera.', image: 'https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&q=80&w=400', date: 'Ontem', url: 'https://www.bild.de' }
+    { league: 'portugal', source: 'A Bola', title: 'Benfica prepara ataque ao mercado de verão', excerpt: 'As águias estão atentas a novos talentos para reforçar o plantel na próxima época.', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://www.abola.pt' },
+    { league: 'portugal', source: 'Record', title: 'Sporting focado na renovação do título', excerpt: 'Rúben Amorim mantém o grupo unido e focado nos objetivos traçados.', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://www.record.pt' },
+    { league: 'portugal', source: 'O Jogo', title: 'FC Porto estuda novas opções para o ataque', excerpt: 'Sérgio Conceição quer mais eficácia na finalização e procura soluções no mercado internacional.', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400', date: '21 FEV 2026', url: 'https://www.ojogo.pt' },
+    { league: 'england', source: 'Sky Sports', title: 'Man City and Arsenal in thrilling title race', excerpt: 'The Premier League summit remains contested as both teams show incredible consistency.', image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://www.skysports.com/football' },
+    { league: 'england', source: 'The Guardian', title: 'Klopp projeta futuro promissor para o Liverpool', excerpt: 'O treinador discute os planos a longo prazo e a integração de jovens talentos.', image: 'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://www.theguardian.com/football' },
+    { league: 'spain', source: 'MARCA', title: 'Real Madrid foca na renovação do meio-campo', excerpt: 'A estratégia merengue para garantir a sucessão de seus veteranos consagrados.', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400', date: '21 FEV 2026', url: 'https://www.marca.com' },
+    { league: 'spain', source: 'AS', title: 'Barcelona busca blindar a sus jóvenes promesas', excerpt: 'El club catalán inicia conversa para renovar contratos clave en La Masía.', image: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=400', date: '21 FEV 2026', url: 'https://as.com' },
+    { league: 'italy', source: 'Gazzetta dello Sport', title: 'Inter domina o mercado italiano', excerpt: 'A estratégia dos nerazzurri para manter a hegemonia na Série A.', image: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://www.gazzetta.it' },
+    { league: 'germany', source: 'BILD', title: 'Bayern busca reconstrução sob novo comando', excerpt: 'As mudanças táticas esperadas para a próxima temporada na Baviera.', image: 'https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&q=80&w=400', date: '20 FEV 2026', url: 'https://www.bild.de' }
 ];
 
 function renderNews(category = 'all') {
@@ -1413,16 +1434,20 @@ function updateDateHeader() {
     if (el) el.innerText = dateStr;
 }
 
-function changeScoreboardDate(offset) {
+async function resetToToday() {
+    currentScoreboardDate = new Date();
+    updateDateHeader();
+    const matrix = document.getElementById('competition-matrix');
+    matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A RETORNAR A HOJE...</div>';
+    await fetchLiveMatches(true);
+}
+
+async function changeScoreboardDate(offset) {
     currentScoreboardDate.setDate(currentScoreboardDate.getDate() + offset);
     updateDateHeader();
-
     const matrix = document.getElementById('competition-matrix');
     matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A RECALIBRAR DATAS...</div>';
-
-    setTimeout(() => {
-        applyScoreboardFilters();
-    }, 600);
+    await fetchLiveMatches(true);
 }
 
 function filterScoreboard(type, btn) {
@@ -1434,11 +1459,21 @@ function filterScoreboard(type, btn) {
     applyScoreboardFilters();
 }
 
-function applyScoreboardFilters() {
+function applyScoreboardFilters(searchTerm = '') {
     const matrix = document.getElementById('competition-matrix');
+    if (!matrix) return;
     matrix.innerHTML = '';
 
     let filtered = [...allMatchesData];
+
+    // Search filter
+    if (searchTerm) {
+        filtered = filtered.filter(m =>
+            m.home_team.toLowerCase().includes(searchTerm) ||
+            m.away_team.toLowerCase().includes(searchTerm) ||
+            m.league_name.toLowerCase().includes(searchTerm)
+        );
+    }
 
     if (currentScoreboardFilter === 'live') {
         filtered = filtered.filter(m => m.live_score && !m.completed);
@@ -1451,7 +1486,7 @@ function applyScoreboardFilters() {
     }
 
     if (filtered.length === 0) {
-        matrix.innerHTML = '<div class="live-indicator">SEM JOGOS NESTA CATEGORIA / DATA</div>';
+        matrix.innerHTML = '<div class="live-indicator">SEM JOGOS DISPONÍVEIS COM ESTE FILTRO</div>';
         return;
     }
 

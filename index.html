@@ -148,9 +148,14 @@
                     </div>
                     <div class="date-nav">
                         <i class="fas fa-chevron-left" onclick="changeScoreboardDate(-1)" title="Dia anterior"></i>
-                        <div class="date-display">
-                            <i class="far fa-calendar-alt"></i>
-                            <span id="current-date-header">--/-- ---</span>
+                        <div class="calendar-group" onclick="resetToToday()"
+                            style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+                            <div class="date-display">
+                                <i class="far fa-calendar-alt"></i>
+                                <span id="current-date-header">--/-- ---</span>
+                            </div>
+                            <span class="badge"
+                                style="background: var(--accent-blue); font-size: 8px; padding: 2px 6px;">HOJE</span>
                         </div>
                         <i class="fas fa-chevron-right" onclick="changeScoreboardDate(1)" title="Próximo dia"></i>
                     </div>
@@ -188,47 +193,49 @@
                         <div class="live-indicator"><span class="pulse"></span> A COMPILAR DADOS DAS CASAS...</div>
                     </div>
                 </div>
-                <!-- News Tab -->
-                <div id="tab-news" class="tab-pane">
-                    <div class="card-header">
-                        <h2><i class="fas fa-newspaper"></i> Central de Notícias da Bola</h2>
-                        <span class="badge" style="background: var(--accent-gold);">FEED GLOBAL</span>
-                    </div>
-                    <div class="news-categories">
-                        <button class="news-cat-btn active" onclick="filterNews('all')">Todas</button>
-                        <button class="news-cat-btn" onclick="filterNews('portugal')">Portugal</button>
-                        <button class="news-cat-btn" onclick="filterNews('england')">Inglaterra</button>
-                        <button class="news-cat-btn" onclick="filterNews('spain')">Espanha</button>
-                        <button class="news-cat-btn" onclick="filterNews('italy')">Itália</button>
-                        <button class="news-cat-btn" onclick="filterNews('germany')">Alemanha</button>
-                    </div>
-                    <div id="news-feed-grid" class="news-feed-grid">
-                        <!-- Dynamically filled by JS -->
-                        <div class="live-indicator"><span class="pulse"></span> A SINCRONIZAR COM AS REDAÇÕES...</div>
-                    </div>
-                </div>
+            </div>
 
-                <!-- League Portal Tab -->
-                <div id="tab-league-portal" class="tab-pane">
-                    <div id="league-portal-header">
-                        <!-- Dynamic League Banner -->
-                    </div>
-                    <div class="card-header">
-                        <h2><i class="fas fa-futbol"></i> Jogos e Análises Neurais</h2>
-                        <span class="badge" style="background: var(--accent-blue);">DADOS FILTRADOS</span>
-                    </div>
-                    <div id="league-portal-content" class="match-grid">
-                        <!-- Dynamically filled by JS -->
-                        <div class="live-indicator"><span class="pulse"></span> A CARREGAR MERCADO SELECIONADO...</div>
-                    </div>
+            <!-- News Tab -->
+            <div id="tab-news" class="tab-pane">
+                <div class="card-header">
+                    <h2><i class="fas fa-newspaper"></i> Central de Notícias da Bola</h2>
+                    <span class="badge" style="background: var(--accent-gold);">FEED GLOBAL</span>
                 </div>
-                <!-- Multi-Sponsor Main Grid -->
-                <div class="card-header" style="margin-top: 60px; border:none; background:none;">
-                    <h2 style="font-size: 14px;"><i class="fas fa-handshake"></i> NOSSOS PARCEIROS</h2>
+                <div class="news-categories">
+                    <button class="news-cat-btn active" onclick="filterNews('all')">Todas</button>
+                    <button class="news-cat-btn" onclick="filterNews('portugal')">Portugal</button>
+                    <button class="news-cat-btn" onclick="filterNews('england')">Inglaterra</button>
+                    <button class="news-cat-btn" onclick="filterNews('spain')">Espanha</button>
+                    <button class="news-cat-btn" onclick="filterNews('italy')">Itália</button>
+                    <button class="news-cat-btn" onclick="filterNews('germany')">Alemanha</button>
                 </div>
-                <div id="main-ads-grid" class="main-ads-grid">
-                    <!-- Dynamically filled -->
+                <div id="news-feed-grid" class="news-feed-grid">
+                    <!-- Dynamically filled by JS -->
+                    <div class="live-indicator"><span class="pulse"></span> A SINCRONIZAR COM AS REDAÇÕES...</div>
                 </div>
+            </div>
+
+            <!-- League Portal Tab -->
+            <div id="tab-league-portal" class="tab-pane">
+                <div id="league-portal-header">
+                    <!-- Dynamic League Banner -->
+                </div>
+                <div class="card-header">
+                    <h2><i class="fas fa-futbol"></i> Jogos e Análises Neurais</h2>
+                    <span class="badge" style="background: var(--accent-blue);">DADOS FILTRADOS</span>
+                </div>
+                <div id="league-portal-content" class="match-grid">
+                    <!-- Dynamically filled by JS -->
+                    <div class="live-indicator"><span class="pulse"></span> A CARREGAR MERCADO SELECIONADO...</div>
+                </div>
+            </div>
+            <!-- Multi-Sponsor Main Grid -->
+            <div class="card-header" style="margin-top: 60px; border:none; background:none;">
+                <h2 style="font-size: 14px;"><i class="fas fa-handshake"></i> NOSSOS PARCEIROS</h2>
+            </div>
+            <div id="main-ads-grid" class="main-ads-grid">
+                <!-- Dynamically filled -->
+            </div>
         </section>
     </main>
 
