@@ -361,12 +361,14 @@ async function fetchLiveMatches(isInitial = true) {
         // Filter only Soccer (just in case 'upcoming' returns other sports)
         const soccerOdds = oddsData.filter(o => o.sport_key.includes('soccer'));
 
+        const now = new Date();
+        const todayStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
         tempMatches = soccerOdds.map(match => {
             const liveScore = scoresData.find(s => s.id === match.id);
             let scoresObj = null;
 
             if (liveScore && liveScore.scores) {
-                // If it's live but scores array is empty, it's 0-0
                 const hScore = liveScore.scores.find(s => s.name === match.home_team);
                 const aScore = liveScore.scores.find(s => s.name === match.away_team);
                 scoresObj = [
@@ -374,7 +376,6 @@ async function fetchLiveMatches(isInitial = true) {
                     { name: match.away_team, score: aScore ? aScore.score : '0' }
                 ];
             } else if (liveScore && !liveScore.completed) {
-                // In-progress but no score data specifically - assume 0-0 for UI
                 scoresObj = [{ name: match.home_team, score: '0' }, { name: match.away_team, score: '0' }];
             }
 
@@ -384,6 +385,10 @@ async function fetchLiveMatches(isInitial = true) {
                 completed: liveScore ? liveScore.completed : false,
                 league_name: match.sport_title.replace('Soccer', '').trim()
             };
+        }).filter(match => {
+            // Only show matches from today or currently Live
+            const matchDate = match.commence_time.split('T')[0];
+            return matchDate === todayStr || (match.live_score && !match.completed);
         });
 
         if (tempMatches.length > 0) dataFound = true;
