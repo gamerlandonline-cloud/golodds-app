@@ -945,3 +945,80 @@ h3,
     border-radius: 50%;
     box-shadow: 0 0 10px var(--accent-blue);
 }
+/* Market Comparison Grid */
+.market-grid-compare {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.market-match-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+}
+
+.market-match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 15px;
+}
+
+.market-match-header h3 {
+    font-size: 16px;
+    color: var(--accent-green);
+    font-family: 'Orbitron', sans-serif;
+}
+
+.odds-table-header {
+    display: grid;
+    grid-template-columns: 180px 1fr 1fr 1fr;
+    padding: 10px 15px;
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 5px;
+    text-align: center;
+}
+
+.odds-table-header div:first-child { text-align: left; }
+
+.bookmaker-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 1fr 1fr;
+    padding: 15px;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: 0.2s;
+}
+
+.bookmaker-row:hover {
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.bookmaker-name {
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--text-main);
+}
+
+.odd-val-cell {
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-dim);
+}
+
+.best-odd {
+    color: var(--accent-green);
+    text-shadow: 0 0 10px var(--accent-green);
+}

@@ -52,7 +52,8 @@
             <div class="nav-item" onclick="switchTab('top-picks')"><i class="fas fa-crown"></i><span>Neural Top
                     10</span></div>
             <div class="nav-item"><i class="fas fa-history"></i><span>Past Timelines</span></div>
-            <div class="nav-item"><i class="fas fa-chart-line"></i><span>Market Odds</span></div>
+            <div class="nav-item" onclick="switchTab('market-odds')"><i class="fas fa-chart-line"></i><span>Market
+                    Odds</span></div>
             <div class="nav-item"><i class="fas fa-shield-alt"></i><span>Risk Shield</span></div>
 
             <div class="nav-admin">
@@ -129,6 +130,19 @@
                 </div>
                 <div class="picks-grid" id="picks-grid">
                     <div class="live-indicator"><span class="pulse"></span> CALIBRATING NEURAL WEIGHTS...</div>
+                </div>
+            </div>
+
+            <!-- Market Odds Tab -->
+            <div id="tab-market-odds" class="tab-pane">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> Market Intelligence Feed</h2>
+                    <span class="badge" style="background: var(--accent-blue);">MULTI-SOURCE SYNC</span>
+                </div>
+                <div class="market-odds-container">
+                    <div id="market-odds-grid" class="market-grid-compare">
+                        <div class="live-indicator"><span class="pulse"></span> COMPILING GLOBAL BOOKMAKER DATA...</div>
+                    </div>
                 </div>
             </div>
         </section>
