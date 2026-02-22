@@ -331,20 +331,27 @@ function runAIScan() {
 }
 
 // Real-time Data Fetching from The Odds API
-async function fetchLiveMatches() {
+// Real-time Data Fetching from The Odds API
+let syncInterval = null;
+
+async function fetchLiveMatches(isInitial = true) {
     const matrix = document.getElementById('competition-matrix');
     const leagues = [
         { key: 'soccer_epl', name: 'Premier League' },
         { key: 'soccer_uefa_champs_league', name: 'Champions League' },
         { key: 'soccer_spain_la_liga', name: 'La Liga' },
         { key: 'soccer_italy_serie_a', name: 'Serie A' },
-        { key: 'soccer_portugal_primeira_liga', name: 'Liga Portugal' }
+        { key: 'soccer_portugal_primeira_liga', name: 'Liga Portugal' },
+        { key: 'soccer_germany_bundesliga', name: 'Bundesliga' },
+        { key: 'soccer_france_ligue_one', name: 'Liga 1' }
     ];
 
-    matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A INICIALIZAR LINK SEGURO...</div>';
+    if (isInitial) {
+        matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A ESTABELECER LIGAÇÃO PRIORITÁRIA...</div>';
+    }
 
     let dataFound = false;
-    allMatchesData = [];
+    let tempMatches = [];
 
     for (const league of leagues) {
         try {
@@ -374,7 +381,7 @@ async function fetchLiveMatches() {
 
             if (mergedData && mergedData.length > 0) {
                 dataFound = true;
-                allMatchesData.push(...mergedData);
+                tempMatches.push(...mergedData);
             }
         } catch (error) {
             console.error(`Error on ${league.name}:`, error);
@@ -382,20 +389,45 @@ async function fetchLiveMatches() {
     }
 
     if (dataFound) {
+        allMatchesData = tempMatches;
         applyScoreboardFilters();
-        if (!document.querySelector('.team-home h2')) {
+
+        // Update currently selected match if it's live
+        const currentHome = document.querySelector('.team-home h2');
+        if (currentHome) {
+            const currentMatch = allMatchesData.find(m => m.home_team === currentHome.innerText);
+            if (currentMatch && currentMatch.live_score) {
+                updateMatchUI(currentMatch);
+            }
+        } else if (isInitial) {
             updateMatchUI(allMatchesData[0]);
             updateOddsUI(allMatchesData[0]);
         }
-    } else {
+    } else if (isInitial) {
         console.warn("MATRIX: A entrar em MODO SOMBRA (Fallback).");
         matrix.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--accent-gold); border: 1px dashed var(--accent-gold); border-radius: 10px; margin: 20px;">' +
             '<i class="fas fa-exclamation-triangle"></i> ELABORAÇÃO DE LINK FRACA. A CARREGAR DADOS NEURAIS SIMULADOS...</div>';
         loadMockData();
     }
 
-    // Update Ticker after sync
     updateNeuralTicker(getTopPicks());
+
+    // Update sync status text
+    const syncEl = document.getElementById('sync-status');
+    if (syncEl) {
+        const now = new Date();
+        syncEl.innerHTML = `<i class="fas fa-check-circle"></i> ATUALIZADO ÀS ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+        syncEl.style.color = '#00ff88';
+        setTimeout(() => {
+            syncEl.style.color = 'var(--accent-blue)';
+            syncEl.innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> SINCRONIA ATIVA`;
+        }, 5000);
+    }
+
+    // Auto-schedule next sync
+    if (isInitial && !syncInterval) {
+        syncInterval = setInterval(() => fetchLiveMatches(false), 60000); // Sync every 60 seconds
+    }
 }
 
 // Fallback logic for demo purposes if API fails
