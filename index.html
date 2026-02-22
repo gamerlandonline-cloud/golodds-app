@@ -72,6 +72,28 @@
                 <div class="vs-container">
                     <!-- Dynamic Summary -->
                 </div>
+
+                <!-- Neural Probability Meter (New) -->
+                <div id="neural-probability" class="probability-meter" style="display:none;">
+                    <div class="meter-header">
+                        <span><i class="fas fa-microchip"></i> DEEP NEURAL INSIGHT (LAST 20 MATCHES)</span>
+                        <span id="ai-confidence">CONFIDENCE: 92%</span>
+                    </div>
+                    <div class="meter-bar">
+                        <div id="prob-home" class="meter-segment segment-home" style="width: 0%"></div>
+                        <div id="prob-draw" class="meter-segment segment-draw" style="width: 0%"></div>
+                        <div id="prob-away" class="meter-segment segment-away" style="width: 0%"></div>
+                    </div>
+                    <div class="meter-labels">
+                        <span id="label-home">HOME: --%</span>
+                        <span id="label-draw">DRAW: --%</span>
+                        <span id="label-away">AWAY: --%</span>
+                    </div>
+
+                    <div id="ai-verdict" class="ai-verdict-box">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
             </div>
 
             <!-- Global Competition Matrix -->

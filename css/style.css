@@ -426,7 +426,90 @@ h3,
     font-weight: 900;
 }
 
-/* Match Summary Card */
+/* Neural Probability Meter */
+.probability-meter {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    border: 1px dashed rgba(0, 255, 136, 0.2);
+}
+
+.meter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+}
+
+.meter-bar {
+    height: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.meter-segment {
+    height: 100%;
+    transition: 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+    position: relative;
+}
+
+.segment-home {
+    background: linear-gradient(90deg, var(--accent-green), #00cc6a);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+}
+
+.segment-draw {
+    background: #475569;
+}
+
+.segment-away {
+    background: linear-gradient(90deg, #3b82f6, var(--accent-blue));
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+.meter-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.ai-verdict-box {
+    margin-top: 20px;
+    padding: 15px;
+    background: linear-gradient(90deg, rgba(0, 255, 136, 0.1), transparent);
+    border-left: 3px solid var(--accent-green);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.verdict-icon {
+    font-size: 24px;
+    color: var(--accent-green);
+    filter: drop-shadow(0 0 10px var(--accent-green));
+}
+
+.verdict-text h4 {
+    font-size: 13px;
+    color: var(--accent-green);
+    margin-bottom: 2px;
+}
+
+.verdict-text p {
+    font-size: 11px;
+    color: var(--text-dim);
+}
+
 .match-summary-card {
     background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.7) 100%);
     border: var(--glass-border);
