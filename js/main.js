@@ -331,21 +331,10 @@ function runAIScan() {
 }
 
 // Real-time Data Fetching from The Odds API
-// Real-time Data Fetching from The Odds API
 let syncInterval = null;
 
 async function fetchLiveMatches(isInitial = true) {
     const matrix = document.getElementById('competition-matrix');
-    const leagues = [
-        { key: 'soccer_epl', name: 'Premier League' },
-        { key: 'soccer_uefa_champs_league', name: 'Champions League' },
-        { key: 'soccer_spain_la_liga', name: 'La Liga' },
-        { key: 'soccer_italy_serie_a', name: 'Serie A' },
-        { key: 'soccer_portugal_primeira_liga', name: 'Liga Portugal' },
-        { key: 'soccer_germany_bundesliga', name: 'Bundesliga' },
-        { key: 'soccer_france_ligue_one', name: 'Liga 1' },
-        { key: 'soccer_portugal_league_2', name: 'Liga Portugal 2' }
-    ];
 
     if (isInitial) {
         matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A ESTABELECER LIGAÇÃO PRIORITÁRIA...</div>';
@@ -354,49 +343,62 @@ async function fetchLiveMatches(isInitial = true) {
     let dataFound = false;
     let tempMatches = [];
 
-    for (const league of leagues) {
-        try {
-            console.log(`MATRIX: Syncing ${league.name}...`);
+    try {
+        console.log("MATRIX: Global Sync initiated...");
 
-            // Simultaneously fetch Odds and Scores
-            const [oddsRes, scoresRes] = await Promise.all([
-                fetch(`${API_CONFIG.BASE_URL}${league.key}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h`),
-                fetch(`${API_CONFIG.BASE_URL}${league.key}/scores/?apiKey=${API_CONFIG.ODDS_API_KEY}&daysFrom=1`)
-            ]);
+        // Optimized Global Sync (Uses 1-2 credits for ALL soccer instead of per league)
+        // Using 'upcoming' sport key to get the main games across all soccer leagues
+        const [oddsRes, scoresRes] = await Promise.all([
+            fetch(`${API_CONFIG.BASE_URL}upcoming/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h`),
+            fetch(`${API_CONFIG.BASE_URL}upcoming/scores/?apiKey=${API_CONFIG.ODDS_API_KEY}&daysFrom=1`)
+        ]);
 
-            if (!oddsRes.ok || !scoresRes.ok) throw new Error(`API Error on ${league.name}`);
+        if (!oddsRes.ok || !scoresRes.ok) throw new Error("API Limit reached or Invalid Key");
 
-            const oddsData = await oddsRes.json();
-            const scoresData = await scoresRes.json();
+        const oddsData = await oddsRes.json();
+        const scoresData = await scoresRes.json();
 
-            // Merge Scores into Odds Data
-            const mergedData = oddsData.map(match => {
-                const liveScore = scoresData.find(s => s.id === match.id);
-                return {
-                    ...match,
-                    live_score: liveScore ? liveScore.scores : null,
-                    completed: liveScore ? liveScore.completed : false,
-                    league_name: league.name
-                };
-            });
+        // Filter only Soccer (just in case 'upcoming' returns other sports)
+        const soccerOdds = oddsData.filter(o => o.sport_key.includes('soccer'));
 
-            if (mergedData && mergedData.length > 0) {
-                dataFound = true;
-                tempMatches.push(...mergedData);
+        tempMatches = soccerOdds.map(match => {
+            const liveScore = scoresData.find(s => s.id === match.id);
+            let scoresObj = null;
+
+            if (liveScore && liveScore.scores) {
+                // If it's live but scores array is empty, it's 0-0
+                const hScore = liveScore.scores.find(s => s.name === match.home_team);
+                const aScore = liveScore.scores.find(s => s.name === match.away_team);
+                scoresObj = [
+                    { name: match.home_team, score: hScore ? hScore.score : '0' },
+                    { name: match.away_team, score: aScore ? aScore.score : '0' }
+                ];
+            } else if (liveScore && !liveScore.completed) {
+                // In-progress but no score data specifically - assume 0-0 for UI
+                scoresObj = [{ name: match.home_team, score: '0' }, { name: match.away_team, score: '0' }];
             }
-        } catch (error) {
-            console.error(`Error on ${league.name}:`, error);
-        }
+
+            return {
+                ...match,
+                live_score: scoresObj,
+                completed: liveScore ? liveScore.completed : false,
+                league_name: match.sport_title.replace('Soccer', '').trim()
+            };
+        });
+
+        if (tempMatches.length > 0) dataFound = true;
+
+    } catch (error) {
+        console.error("Sync Error:", error);
     }
 
     if (dataFound) {
-        // Goal Detection Logic
+        // Goal Detection
         tempMatches.forEach(newMatch => {
             const oldMatch = allMatchesData.find(m => m.id === newMatch.id);
             if (oldMatch && newMatch.live_score && oldMatch.live_score) {
-                const newScore = `${newMatch.live_score[0].score}-${newMatch.live_score[1].score}`;
-                const oldScore = `${oldMatch.live_score[0].score}-${oldMatch.live_score[1].score}`;
-                if (newScore !== oldScore) {
+                if (newMatch.live_score[0].score !== oldMatch.live_score[0].score ||
+                    newMatch.live_score[1].score !== oldMatch.live_score[1].score) {
                     notifyGoal(newMatch);
                 }
             }
@@ -405,41 +407,33 @@ async function fetchLiveMatches(isInitial = true) {
         allMatchesData = tempMatches;
         applyScoreboardFilters();
 
-        // Update currently selected match if it's live
+        // Update selection
         const currentHome = document.querySelector('.team-home h2');
         if (currentHome) {
             const currentMatch = allMatchesData.find(m => m.home_team === currentHome.innerText);
-            if (currentMatch && currentMatch.live_score) {
-                updateMatchUI(currentMatch);
-            }
+            if (currentMatch) updateMatchUI(currentMatch);
         } else if (isInitial) {
             updateMatchUI(allMatchesData[0]);
             updateOddsUI(allMatchesData[0]);
         }
     } else if (isInitial) {
-        console.warn("MATRIX: A entrar em MODO SOMBRA (Fallback).");
-        matrix.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--accent-gold); border: 1px dashed var(--accent-gold); border-radius: 10px; margin: 20px;">' +
-            '<i class="fas fa-exclamation-triangle"></i> ELABORAÇÃO DE LINK FRACA. A CARREGAR DADOS NEURAIS SIMULADOS...</div>';
+        console.warn("MATRIX: No live API data. Fallback to Neural Projections.");
         loadMockData();
     }
 
     updateNeuralTicker(getTopPicks());
 
-    // Update sync status text
+    // Status Update
     const syncEl = document.getElementById('sync-status');
     if (syncEl) {
         const now = new Date();
-        syncEl.innerHTML = `<i class="fas fa-check-circle"></i> ATUALIZADO ÀS ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+        syncEl.innerHTML = `<i class="fas fa-check-circle"></i> LINK SEGURO ATIVO | ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
         syncEl.style.color = '#00ff88';
-        setTimeout(() => {
-            syncEl.style.color = 'var(--accent-blue)';
-            syncEl.innerHTML = `<i class="fas fa-sync-alt fa-spin"></i> SINCRONIA ATIVA`;
-        }, 5000);
+        setTimeout(() => { if (syncEl) syncEl.innerHTML = `<i class="fas fa-satellite"></i> MONITORIZAÇÃO GLOBAL`; }, 5000);
     }
 
-    // Auto-schedule next sync
     if (isInitial && !syncInterval) {
-        syncInterval = setInterval(() => fetchLiveMatches(false), 45000); // 45s sync
+        syncInterval = setInterval(() => fetchLiveMatches(false), 300000); // 5 minute sync to save credits
     }
 }
 
@@ -587,8 +581,8 @@ function renderLeagueSection(name, matches, targetElement = null) {
                 </div>
             </div>
             <div class="match-scores-col">
-                <div class="score-val">${match.live_score ? match.live_score[0].score : '-'}</div>
-                <div class="score-val">${match.live_score ? match.live_score[1].score : '-'}</div>
+                <div class="score-val">${match.live_score ? match.live_score[0].score : (match.completed ? '0' : '-')}</div>
+                <div class="score-val">${match.live_score ? match.live_score[1].score : (match.completed ? '0' : '-')}</div>
             </div>
             <div class="match-icons-col">
                 <a href="https://www.flashscore.pt/procurar/?q=${match.home_team}+vs+${match.away_team}" target="_blank" class="flashscore-btn" title="Ver no Flashscore Real-Time">
