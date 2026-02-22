@@ -1022,3 +1022,29 @@ h3,
     color: var(--accent-green);
     text-shadow: 0 0 10px var(--accent-green);
 }
+
+/* Cyber Footer */
+.cyber-footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(10, 16, 31, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.cyber-footer p {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* Adjust for sidebar on desktop */
+@media (min-width: 769px) {
+    .cyber-footer {
+        padding-left: 240px; /* Offset by sidebar width */
+    }
+}
