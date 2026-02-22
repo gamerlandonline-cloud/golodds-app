@@ -70,92 +70,23 @@
                     <span class="pulse"></span> AI ANALYSING LIVE
                 </div>
                 <div class="vs-container">
-                    <div class="team team-home">
-                        <img src="https://crests.football-data.org/86.png" class="team-crest" alt="Real Madrid">
-                        <h2>REAL MADRID</h2>
-                        <div class="form">W W D W W</div>
-                    </div>
-                    <div class="vs-text">VS</div>
-                    <div class="team team-away">
-                        <img src="https://crests.football-data.org/65.png" class="team-crest" alt="Man City">
-                        <h2>MAN CITY</h2>
-                        <div class="form">W W W L W</div>
-                    </div>
+                    <!-- Dynamic Summary -->
                 </div>
             </div>
 
-            <div class="analysis-grid">
-                <!-- 3D Pitch Visualization -->
-                <div class="card pitch-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-futbol"></i> Tactical Probability Heatmap</h3>
-                        <div class="card-controls">
-                            <span class="badge">3D ACTIVE</span>
-                        </div>
-                    </div>
-                    <div id="canvas-wrapper">
-                        <!-- Three.js will inject here -->
-                        <div class="overlay-stats">
-                            <div class="stat-box">
-                                <label>Attack Pressure</label>
-                                <div class="progress-bar">
-                                    <div class="fill" style="width: 78%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- Global Competition Matrix -->
+            <div class="card-header">
+                <h2><i class="fas fa-globe"></i> Global Market Feed</h2>
+                <span class="badge" style="background: var(--accent-gold);">LIVE SYNC</span>
+            </div>
 
-                <!-- Prediction Odds -->
-                <div class="card prediction-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-brain"></i> Neural Link Output</h3>
-                        <span class="badge" style="background: var(--accent-blue);">AI ENGINE v2.5</span>
-                    </div>
-                    <div class="odds-list">
-                        <div class="odd-item ai-recommendation">
-                            <span class="ai-badge"><i class="fas fa-microchip"></i> DEEP ANALYTICS CHOICE</span>
-                            <div class="market">HOME WIN</div>
-                            <div class="prob">58.4%</div>
-                            <div class="ev">+12.5% EV</div>
-                            <div class="action-btn">LOCK IN</div>
-                        </div>
-                        <div class="odd-item">
-                            <div class="market">OVER 2.5</div>
-                            <div class="prob">72.1%</div>
-                            <div class="ev">+4.2% EV</div>
-                            <div class="action-btn">LOCK IN</div>
-                        </div>
-                        <div class="odd-item ai-recommendation">
-                            <span class="ai-badge"><i class="fas fa-robot"></i> BOT SYNERGY SCORE</span>
-                            <div class="market">BTTS: YES</div>
-                            <div class="prob">65.0%</div>
-                            <div class="ev">+2.1% EV</div>
-                            <div class="action-btn">LOCK IN</div>
-                        </div>
-                    </div>
-                </div>
+            <div id="competition-matrix" class="competition-matrix">
+                <!-- Dynamically filled by JS -->
+                <div class="live-indicator"><span class="pulse"></span> CONNECTING TO GLOBAL SATELLITE NETWORK...</div>
+            </div>
 
-                <!-- Simulation/Timeline -->
-                <div class="card timeline-card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-random"></i> Monte Carlo Timelines</h3>
-                    </div>
-                    <div class="timeline-visual">
-                        <div class="timeline-branch">
-                            <div class="outcome">2-1 (34%)</div>
-                            <div class="branch-line"></div>
-                        </div>
-                        <div class="timeline-branch">
-                            <div class="outcome">1-1 (22%)</div>
-                            <div class="branch-line"></div>
-                        </div>
-                        <div class="timeline-branch">
-                            <div class="outcome">1-2 (15%)</div>
-                            <div class="branch-line"></div>
-                        </div>
-                    </div>
-                </div>
+            <div class="analysis-grid" style="margin-top: 40px;">
+                <!-- Analysis Grid for selected match -->
             </div>
         </section>
     </main>

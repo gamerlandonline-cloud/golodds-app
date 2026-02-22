@@ -187,48 +187,100 @@ function runAIScan() {
 
 // Real-time Data Fetching from The Odds API
 async function fetchLiveMatches() {
-    const matchContainer = document.querySelector('.vs-container');
+    const matrix = document.getElementById('competition-matrix');
+    const leagues = [
+        { key: 'soccer_epl', name: 'Premier League' },
+        { key: 'soccer_uefa_champs_league', name: 'Champions League' },
+        { key: 'soccer_spain_la_liga', name: 'La Liga' },
+        { key: 'soccer_italy_serie_a', name: 'Serie A' },
+        { key: 'soccer_portugal_primeira_liga', name: 'Liga Portugal' }
+    ];
 
-    // UI Feedback: Connecting
-    console.log("MATRIX: Analysing live feeds...");
-    matchContainer.innerHTML = `<div class="live-indicator"><span class="pulse"></span> CONNECTING TO SATELLITE...</div>`;
-
-    // List of leagues to try (The Odds API uses specific keys)
-    const leagues = ['soccer_epl', 'soccer_uefa_champs_league', 'soccer_spain_la_liga', 'soccer_italy_serie_a'];
+    matrix.innerHTML = '';
 
     for (const league of leagues) {
         try {
-            console.log(`MATRIX: Attempting to sync with ${league}...`);
-            const response = await fetch(`${API_CONFIG.BASE_URL}${league}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h&bookmakers=bet365`);
+            console.log(`MATRIX: Syncing ${league.name}...`);
+            const response = await fetch(`${API_CONFIG.BASE_URL}${league.key}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h&bookmakers=bet365`);
             const data = await response.json();
 
             if (data && data.length > 0) {
-                console.log(`MATRIX: Stream established for ${league}.`);
-                const match = data.find(m => m.bookmakers && m.bookmakers.length > 0) || data[0];
-                updateMatchUI(match);
-                updateOddsUI(match);
-                return; // Stop after finding data
+                renderLeagueSection(league.name, data);
+                // Set the first match found as the initial War Room summary
+                if (!document.querySelector('.team-home h2')) {
+                    updateMatchUI(data[0]);
+                    updateOddsUI(data[0]);
+                }
             }
         } catch (error) {
-            console.error(`Link Error on ${league}:`, error);
+            console.error(`Error on ${league.name}:`, error);
         }
     }
+}
 
-    // If no data found after all attempts
-    matchContainer.innerHTML = `<div style="text-align:center; color: var(--accent-pink);">SYNC FAILED: NO ACTIVE DATA IN MATRIX</div>`;
+function renderLeagueSection(name, matches) {
+    const matrix = document.getElementById('competition-matrix');
+
+    const section = document.createElement('div');
+    section.className = 'league-section';
+    section.innerHTML = `<h3 class="league-title">${name}</h3>`;
+
+    const grid = document.createElement('div');
+    grid.className = 'match-grid';
+
+    matches.forEach(match => {
+        const bookmaker = match.bookmakers[0];
+        if (!bookmaker) return;
+        const market = bookmaker.markets[0];
+        const outcomes = market ? market.outcomes : [];
+
+        const card = document.createElement('div');
+        card.className = 'mini-match-card';
+        card.onclick = () => {
+            updateMatchUI(match);
+            updateOddsUI(match);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        card.innerHTML = `
+            <div class="mini-match-header">
+                <span>COMMENCING: ${new Date(match.commence_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <span class="badge">LIVE DATA</span>
+            </div>
+            <div class="mini-vs">
+                <div class="mini-team">
+                    <img src="https://ui-avatars.com/api/?name=${match.home_team}&background=random" class="mini-crest">
+                    <span>${match.home_team}</span>
+                </div>
+                <div class="vs-text" style="font-size: 14px;">VS</div>
+                <div class="mini-team">
+                    <img src="https://ui-avatars.com/api/?name=${match.away_team}&background=random" class="mini-crest">
+                    <span>${match.away_team}</span>
+                </div>
+            </div>
+            <div class="mini-odds">
+                ${outcomes.map(o => `
+                    <div class="mini-odd">
+                        <label>${o.name}</label>
+                        <span class="val">${o.price.toFixed(2)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    matrix.appendChild(section);
 }
 
 async function updateMatchUI(match) {
     const vsContainer = document.querySelector('.vs-container');
 
-    // Default crests (fallbacks)
-    let homeCrest = `https://ui-avatars.com/api/?name=${match.home_team}&background=random`;
-    let awayCrest = `https://ui-avatars.com/api/?name=${match.away_team}&background=random`;
-
     vsContainer.innerHTML = `
         <div class="team team-home">
             <div class="crest-container">
-                <img src="${homeCrest}" class="team-crest" alt="${match.home_team}">
+                <img src="https://ui-avatars.com/api/?name=${match.home_team}&background=random" class="team-crest">
                 <div class="scan-line"></div>
             </div>
             <h2>${match.home_team.toUpperCase()}</h2>
@@ -237,7 +289,7 @@ async function updateMatchUI(match) {
         <div class="vs-text">VS</div>
         <div class="team team-away">
             <div class="crest-container">
-                <img src="${awayCrest}" class="team-crest" alt="${match.away_team}">
+                <img src="https://ui-avatars.com/api/?name=${match.away_team}&background=random" class="team-crest">
                 <div class="scan-line"></div>
             </div>
             <h2>${match.away_team.toUpperCase()}</h2>
@@ -245,7 +297,6 @@ async function updateMatchUI(match) {
         </div>
     `;
 
-    // Add CSS for the scan animation if not present
     if (!document.getElementById('crest-anim-styles')) {
         const s = document.createElement('style');
         s.id = 'crest-anim-styles';
@@ -264,18 +315,13 @@ function updateOddsUI(match) {
     const oddsList = document.querySelector('.odds-list');
     const bookmaker = match.bookmakers[0];
     if (!bookmaker) return;
-
     const market = bookmaker.markets[0];
     if (!market) return;
-
     const outcomes = market.outcomes;
 
     oddsList.innerHTML = '';
-
     outcomes.forEach(outcome => {
-        // Simple AI logic: high price (low probability) is marked as a potential "Value" play by the simulated engine
         const isValue = outcome.price > 3.0;
-
         const item = document.createElement('div');
         item.className = `odd-item ${isValue ? 'ai-recommendation' : ''}`;
         item.innerHTML = `
@@ -288,7 +334,6 @@ function updateOddsUI(match) {
         oddsList.appendChild(item);
     });
 
-    // Re-trigger interactions and AI pulse effect
     initInteractions();
     runAIScan();
 }
@@ -299,5 +344,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initAnimations();
     initInteractions();
     runAIScan();
-    fetchLiveMatches(); // Inicia a conexão com os dados
+    fetchLiveMatches();
 });

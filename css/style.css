@@ -314,6 +314,118 @@ h3,
     overflow-y: auto;
 }
 
+/* Competition Matrix */
+.competition-matrix {
+    margin-top: 20px;
+}
+
+.league-section {
+    margin-bottom: 40px;
+}
+
+.league-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    color: var(--accent-blue);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-transform: uppercase;
+}
+
+.league-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--accent-blue), transparent);
+}
+
+.match-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.mini-match-card {
+    background: var(--card-bg);
+    border: var(--glass-border);
+    border-radius: 15px;
+    padding: 20px;
+    transition: 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.mini-match-card:hover {
+    border-color: var(--accent-green);
+    transform: translateY(-5px);
+    box-shadow: var(--neon-glow);
+}
+
+.mini-match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 11px;
+    color: var(--text-dim);
+}
+
+.mini-vs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.mini-team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+    text-align: center;
+}
+
+.mini-crest {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+}
+
+.mini-team span {
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.mini-odds {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.mini-odd {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.mini-odd label {
+    display: block;
+    font-size: 9px;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+}
+
+.mini-odd .val {
+    color: var(--accent-green);
+    font-weight: 900;
+}
+
 /* Match Summary Card */
 .match-summary-card {
     background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.7) 100%);
