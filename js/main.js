@@ -196,17 +196,24 @@ async function fetchLiveMatches() {
         { key: 'soccer_portugal_primeira_liga', name: 'Liga Portugal' }
     ];
 
-    matrix.innerHTML = '';
+    matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> INITIALIZING SECURE LINK...</div>';
+
+    let dataFound = false;
 
     for (const league of leagues) {
         try {
             console.log(`MATRIX: Syncing ${league.name}...`);
-            const response = await fetch(`${API_CONFIG.BASE_URL}${league.key}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h&bookmakers=bet365`);
+            // Expanded bookmakers to ensure results
+            const response = await fetch(`${API_CONFIG.BASE_URL}${league.key}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h&bookmakers=bet365,pinnacle,williamhill,betfair_ex_eu`);
+
+            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
             const data = await response.json();
 
             if (data && data.length > 0) {
+                if (!dataFound) matrix.innerHTML = '';
                 renderLeagueSection(league.name, data);
-                // Set the first match found as the initial War Room summary
+                dataFound = true;
+
                 if (!document.querySelector('.team-home h2')) {
                     updateMatchUI(data[0]);
                     updateOddsUI(data[0]);
@@ -216,6 +223,32 @@ async function fetchLiveMatches() {
             console.error(`Error on ${league.name}:`, error);
         }
     }
+
+    if (!dataFound) {
+        console.warn("MATRIX: Entering SHADOW MODE (Fallback).");
+        matrix.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--accent-gold); border: 1px dashed var(--accent-gold); border-radius: 10px; margin: 20px;">' +
+            '<i class="fas fa-exclamation-triangle"></i> SATELLITE LINK WEAK. LOADING SIMULATED NEURAL DATA...</div>';
+        loadMockData();
+    }
+}
+
+// Fallback logic for demo purposes if API fails
+function loadMockData() {
+    const mockMatches = [
+        {
+            home_team: 'Real Madrid', away_team: 'Man City',
+            commence_time: new Date().toISOString(),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Real Madrid', price: 2.1 }, { name: 'Draw', price: 3.4 }, { name: 'Man City', price: 3.1 }] }] }]
+        },
+        {
+            home_team: 'Benfica', away_team: 'Porto',
+            commence_time: new Date().toISOString(),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Benfica', price: 1.95 }, { name: 'Draw', price: 3.2 }, { name: 'Porto', price: 3.8 }] }] }]
+        }
+    ];
+    renderLeagueSection('Simulated Projections', mockMatches);
+    updateMatchUI(mockMatches[0]);
+    updateOddsUI(mockMatches[0]);
 }
 
 function renderLeagueSection(name, matches) {
