@@ -191,25 +191,31 @@ async function fetchLiveMatches() {
 
     // UI Feedback: Connecting
     console.log("MATRIX: Analysing live feeds...");
+    matchContainer.innerHTML = `<div class="live-indicator"><span class="pulse"></span> CONNECTING TO SATELLITE...</div>`;
 
-    try {
-        // Fetching soccer matches (upcoming) for major leagues
-        // We use 'soccer_uefa_champions_league' as a target, or just 'soccer' for general
-        const response = await fetch(`${API_CONFIG.BASE_URL}soccer/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h&bookmakers=bet365`);
-        const data = await response.json();
+    // List of leagues to try (The Odds API uses specific keys)
+    const leagues = ['soccer_epl', 'soccer_uefa_champs_league', 'soccer_spain_la_liga', 'soccer_italy_serie_a'];
 
-        if (data && data.length > 0) {
-            // Pick a match that has odds
-            const match = data.find(m => m.bookmakers && m.bookmakers.length > 0) || data[0];
-            updateMatchUI(match);
-            updateOddsUI(match);
-        } else {
-            console.warn("No active matches found in the stream.");
+    for (const league of leagues) {
+        try {
+            console.log(`MATRIX: Attempting to sync with ${league}...`);
+            const response = await fetch(`${API_CONFIG.BASE_URL}${league}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h&bookmakers=bet365`);
+            const data = await response.json();
+
+            if (data && data.length > 0) {
+                console.log(`MATRIX: Stream established for ${league}.`);
+                const match = data.find(m => m.bookmakers && m.bookmakers.length > 0) || data[0];
+                updateMatchUI(match);
+                updateOddsUI(match);
+                return; // Stop after finding data
+            }
+        } catch (error) {
+            console.error(`Link Error on ${league}:`, error);
         }
-
-    } catch (error) {
-        console.error("Link Terminado: Erro na Matrix de dados", error);
     }
+
+    // If no data found after all attempts
+    matchContainer.innerHTML = `<div style="text-align:center; color: var(--accent-pink);">SYNC FAILED: NO ACTIVE DATA IN MATRIX</div>`;
 }
 
 async function updateMatchUI(match) {
