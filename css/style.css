@@ -1658,3 +1658,127 @@ h3,
     border-radius: 2px;
     opacity: 0.7;
 }
+
+/* Mobile Optimizations */
+@media (max-width: 900px) {
+    .dashboard {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 10px 0;
+        border-right: none;
+        border-bottom: var(--glass-border);
+        position: sticky;
+        top: 105px; /* header + ticker */
+        z-index: 90;
+        background: rgba(10, 16, 31, 0.95);
+        backdrop-filter: blur(15px);
+    }
+
+    .nav-item {
+        padding: 10px 20px;
+        white-space: nowrap;
+        border-left: none;
+        border-bottom: 2px solid transparent;
+    }
+
+    .nav-item:hover, .nav-item.active {
+        border-left: none;
+        border-bottom: 2px solid var(--accent-green);
+    }
+
+    .nav-group-title, .nav-admin, .league-nav-item, .side-ads-list {
+        display: none; /* Hide advanced sidebar items on mobile for cleaner UI */
+    }
+
+    .main-content {
+        padding: 15px;
+    }
+
+    .match-summary-card {
+        padding: 40px 15px 20px;
+    }
+
+    .vs-container {
+        gap: 10px;
+    }
+
+    .team h2 {
+        font-size: 14px;
+    }
+
+    .score-value {
+        font-size: 24px;
+    }
+
+    .match-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cyber-header {
+        padding: 0 15px;
+    }
+
+    .logo span {
+        font-size: 14px;
+    }
+
+    .search-container {
+        display: none; /* Hide search on mobile header to save space */
+    }
+}
+
+/* Touch targets for mobile */
+@media (max-pointer: coarse) {
+    .nav-item, .league-nav-item, .news-cat-btn, .action-btn {
+        min-height: 44px;
+    }
+}
+
+/* Final Mobile Polish */
+@media (max-width: 600px) {
+    .cyber-header {
+        height: 60px;
+    }
+    
+    .top-ticker-bar {
+        top: 60px;
+    }
+    
+    .sidebar {
+        top: 95px; /* header(60) + ticker(35) */
+    }
+    
+    .vs-text {
+        font-size: 10px;
+    }
+    
+    .team-crest {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .crest-container {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .score-value {
+        font-size: 20px;
+        padding: 5px 10px;
+    }
+    
+    .mini-match-card {
+        padding: 15px;
+    }
+    
+    .pick-card {
+        padding: 15px;
+    }
+}
