@@ -220,7 +220,9 @@ function loginAdmin() {
 
         // Load current values
         document.getElementById('input-side-ad').value = localStorage.getItem('sideAdLink') || '';
+        document.getElementById('input-side-text').value = localStorage.getItem('sideAdText') || '';
         document.getElementById('input-main-ad').value = localStorage.getItem('mainAdLink') || '';
+        document.getElementById('input-main-text').value = localStorage.getItem('mainAdText') || '';
     } else {
         error.style.display = 'block';
         gsap.to(".admin-modal", { x: [-10, 10, -10, 10, 0], duration: 0.4 });
@@ -229,10 +231,14 @@ function loginAdmin() {
 
 function saveAds() {
     const sideLink = document.getElementById('input-side-ad').value;
+    const sideText = document.getElementById('input-side-text').value;
     const mainLink = document.getElementById('input-main-ad').value;
+    const mainText = document.getElementById('input-main-text').value;
 
     localStorage.setItem('sideAdLink', sideLink);
+    localStorage.setItem('sideAdText', sideText);
     localStorage.setItem('mainAdLink', mainLink);
+    localStorage.setItem('mainAdText', mainText);
 
     alert("CONFIGURAÇÕES DE PUBLICIDADE SALVAS!");
     renderAds();
@@ -244,16 +250,24 @@ function renderAds() {
     const mainContainer = document.getElementById('dynamic-main-ad');
 
     const sideLink = localStorage.getItem('sideAdLink');
+    const sideText = localStorage.getItem('sideAdText') || "CANAL PARCEIRO";
     const mainLink = localStorage.getItem('mainAdLink');
+    const mainText = localStorage.getItem('mainAdText') || "DESTAQUE DA SEMANA";
 
     if (sideLink) {
-        sideContainer.innerHTML = createAdMarkup(sideLink, "CANAL PARCEIRO");
+        sideContainer.innerHTML = createAdMarkup(sideLink, sideText);
         sideContainer.onclick = () => window.open(sideLink, '_blank');
+        sideContainer.style.display = 'block';
+    } else {
+        sideContainer.style.display = 'none';
     }
 
     if (mainLink) {
-        mainContainer.innerHTML = createAdMarkup(mainLink, "DESTAQUE DA SEMANA");
+        mainContainer.innerHTML = createAdMarkup(mainLink, mainText);
         mainContainer.onclick = () => window.open(mainLink, '_blank');
+        mainContainer.style.display = 'block';
+    } else {
+        mainContainer.style.display = 'none';
     }
 }
 
