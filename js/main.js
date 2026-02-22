@@ -111,44 +111,117 @@ function normalizeTeamName(teamName) {
         .trim();
 }
 
-// Initialize Three.js Background
+// Initialize Three.js Background — Upgraded to 3D Neural Web
 function initThree() {
     const container = document.getElementById('three-container');
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 1, 10000);
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     container.appendChild(renderer.domElement);
 
-    // Create a particle field
-    const geometry = new THREE.BufferGeometry();
-    const vertices = [];
-    for (let i = 0; i < 5000; i++) {
-        vertices.push(
-            Math.random() * 2000 - 1000,
-            Math.random() * 2000 - 1000,
-            Math.random() * 2000 - 1000
-        );
-    }
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    camera.position.z = 800;
 
-    const material = new THREE.PointsMaterial({
+    // Create a 3D grid of points with connection lines
+    const particleCount = 120;
+    const particles = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = Math.random() * 2000 - 1000;
+        positions[i * 3 + 1] = Math.random() * 2000 - 1000;
+        positions[i * 3 + 2] = Math.random() * 2000 - 1000;
+        velocities.push({
+            x: (Math.random() - 0.5) * 1.5,
+            y: (Math.random() - 0.5) * 1.5,
+            z: (Math.random() - 0.5) * 1.5
+        });
+    }
+
+    particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const pMaterial = new THREE.PointsMaterial({
         color: 0x00ff88,
-        size: 2,
+        size: 3,
         transparent: true,
-        opacity: 0.5
+        opacity: 0.8,
+        blending: THREE.AdditiveBlending
     });
 
-    const points = new THREE.Points(geometry, material);
-    scene.add(points);
+    const particleSystem = new THREE.Points(particles, pMaterial);
+    scene.add(particleSystem);
 
-    camera.position.z = 500;
+    // Create lines between points
+    const lineMaterial = new THREE.LineBasicMaterial({
+        color: 0x00e5ff,
+        transparent: true,
+        opacity: 0.15,
+        blending: THREE.AdditiveBlending
+    });
+
+    const lineGeometry = new THREE.BufferGeometry();
+    const linePositions = new Float32Array(particleCount * particleCount * 6);
+    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    const lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
+    scene.add(lineMesh);
+
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX - window.innerWidth / 2) * 0.1;
+        mouseY = (e.clientY - window.innerHeight / 2) * 0.1;
+    });
 
     function animate() {
         requestAnimationFrame(animate);
-        points.rotation.x += 0.0005;
-        points.rotation.y += 0.001;
+
+        const posAttr = particles.getAttribute('position');
+        const posArray = posAttr.array;
+        let lineIdx = 0;
+
+        for (let i = 0; i < particleCount; i++) {
+            posArray[i * 3] += velocities[i].x;
+            posArray[i * 3 + 1] += velocities[i].y;
+            posArray[i * 3 + 2] += velocities[i].z;
+
+            if (posArray[i * 3] > 1000 || posArray[i * 3] < -1000) velocities[i].x *= -1;
+            if (posArray[i * 3 + 1] > 1000 || posArray[i * 3 + 1] < -1000) velocities[i].y *= -1;
+            if (posArray[i * 3 + 2] > 1000 || posArray[i * 3 + 2] < -1000) velocities[i].z *= -1;
+        }
+
+        posAttr.needsUpdate = true;
+
+        // Dynamic Line Mesh logic
+        const linePosArray = lineGeometry.getAttribute('position').array;
+        let lineCount = 0;
+        for (let i = 0; i < particleCount; i++) {
+            for (let j = i + 1; j < particleCount; j++) {
+                const dist = Math.sqrt(
+                    Math.pow(posArray[i * 3] - posArray[j * 3], 2) +
+                    Math.pow(posArray[i * 3 + 1] - posArray[j * 3 + 1], 2) +
+                    Math.pow(posArray[i * 3 + 2] - posArray[j * 3 + 2], 2)
+                );
+
+                if (dist < 400 && lineCount < 2000) {
+                    linePosArray[lineCount * 6] = posArray[i * 3];
+                    linePosArray[lineCount * 6 + 1] = posArray[i * 3 + 1];
+                    linePosArray[lineCount * 6 + 2] = posArray[i * 3 + 2];
+                    linePosArray[lineCount * 6 + 3] = posArray[j * 3];
+                    linePosArray[lineCount * 6 + 4] = posArray[j * 3 + 1];
+                    linePosArray[lineCount * 6 + 5] = posArray[j * 3 + 2];
+                    lineCount++;
+                }
+            }
+        }
+        lineGeometry.setDrawRange(0, lineCount * 2);
+        lineGeometry.getAttribute('position').needsUpdate = true;
+
+        camera.position.x += (mouseX - camera.position.x) * 0.05;
+        camera.position.y += (-mouseY - camera.position.y) * 0.05;
+        camera.lookAt(scene.position);
+
         renderer.render(scene, camera);
     }
 
@@ -209,11 +282,44 @@ function initInteractions() {
         });
     }
 
+    // 3D Tilt Motion Logic
+    document.addEventListener('mousemove', (e) => {
+        const cards = document.querySelectorAll('.match-summary-card, .mini-match-card, .news-card');
+        const x = e.clientX;
+        const y = e.clientY;
+
+        cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            if (x > rect.left && x < rect.right && y > rect.top && y < rect.bottom) {
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const deltaX = (x - centerX) / (rect.width / 2);
+                const deltaY = (y - centerY) / (rect.height / 2);
+
+                gsap.to(card, {
+                    rotationY: deltaX * 10,
+                    rotationX: -deltaY * 10,
+                    translateZ: 30,
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+            } else {
+                gsap.to(card, {
+                    rotationY: 0,
+                    rotationX: 0,
+                    translateZ: 0,
+                    duration: 0.8,
+                    ease: "power2.out"
+                });
+            }
+        });
+    });
+
     // Mock "Action" buttons
     document.querySelectorAll('.action-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             btn.innerHTML = '<i class="fas fa-check"></i> SINCRONIZADO';
-            btn.style.background = '#00e5ff';
+            btn.style.background = 'var(--accent-blue)';
 
             // Notification effect
             const toast = document.createElement('div');
