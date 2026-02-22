@@ -8,20 +8,40 @@ const API_CONFIG = {
 
 // Official Crest Mapping for Top Clubs (Football-Data.org IDs)
 const TEAM_CRESTS = {
-    'REAL MADRID': '86', 'BARCELONA': '81', 'BARCA': '81',
-    'MANCHESTER CITY': '65', 'MAN CITY': '65', 'LIVERPOOL': '64',
-    'ARSENAL': '57', 'MANCHESTER UNITED': '66', 'MAN UTD': '66',
-    'CHELSEA': '61', 'TOTTENHAM': '73', 'SPURS': '73',
-    'BENFICA': '1903', 'PORTO': '503', 'SPORTING': '498',
-    'VITORIA': '554', 'BRAGA': '561', 'BOAVISTA': '810', 'FAMALICAO': '582',
-    'BAYERN': '5', 'DORTMUND': '4', 'BVB': '4', 'LEIPZIG': '721',
-    'JUVENTUS': '108', 'INTER': '108', 'MILAN': '98', 'NAPOLI': '113', 'ROMA': '100',
-    'PSG': '524', 'PARIS': '524', 'MONACO': '548', 'LYON': '521'
+    // PORTUGAL
+    'BENFICA': '1903', 'SL BENFICA': '1903', 'PORTO': '503', 'FC PORTO': '503',
+    'SPORTING': '498', 'SPORTING CP': '498', 'BRAGA': '561', 'SC BRAGA': '561',
+    'VITORIA': '554', 'GUIMARAES': '554', 'BOAVISTA': '810', 'FAMALICAO': '582',
+    'ESTORIL': '583', 'GIL VICENTE': '553', 'PACOS DE FERREIRA': '507', 'SANTA CLARA': '552',
+    'VIZELA': '811', 'AROUCA': '712', 'RIO AVE': '496', 'CHAVES': '559', 'CASA PIA': '5530',
+    'FARENSE': '560', 'MOREIRENSE': '581', 'AVS': '5530', 'ESTRELA AMADORA': '5531',
+
+    // ENGLAND
+    'ARSENAL': '57', 'ASTON VILLA': '58', 'CHELSEA': '61', 'EVERTON': '62', 'LIVERPOOL': '64',
+    'MAN CITY': '65', 'MANCHESTER CITY': '65', 'MAN UTD': '66', 'MANCHESTER UNITED': '66',
+    'NEWCASTLE': '67', 'TOTTENHAM': '73', 'SPURS': '73', 'WEST HAM': '76', 'WOLVES': '76',
+    'BRIGHTON': '397', 'BRENTFORD': '402', 'FULHAM': '63', 'CRYSTAL PALACE': '354',
+
+    // SPAIN
+    'REAL MADRID': '86', 'BARCELONA': '81', 'BARCA': '81', 'ATLETICO MADRID': '78',
+    'SEVILLA': '559', 'REAL SOCIEDAD': '92', 'VILLARREAL': '94', 'BETIS': '90',
+    'VALENCIA': '95', 'ATHLETIC CLUB': '77', 'BILBAO': '77', 'GIRONA': '298',
+
+    // ITALY
+    'JUVENTUS': '108', 'INTER': '108', 'MILAN': '98', 'AC MILAN': '98', 'NAPOLI': '113',
+    'ROMA': '100', 'LAZIO': '110', 'ATALANTA': '102', 'FIORENTINA': '99',
+
+    // GERMANY
+    'BAYERN': '5', 'DORTMUND': '4', 'BVB': '4', 'LEIPZIG': '721', 'LEVERKUSEN': '3',
+    'FRANKFURT': '19', 'WOLFSBURG': '11', 'GLADBACH': '18'
 };
 
 function getCrestUrl(teamName) {
     if (!teamName) return '';
-    const name = teamName.toUpperCase().replace(/ FC| AFC| SSC| CF| SL| SC/g, '').trim();
+    let name = teamName.toUpperCase()
+        .replace(/ FC| AFC| SSC| CF| SL| SC| CP| SAD/g, '')
+        .replace('MANCHESTER', 'MAN')
+        .trim();
 
     // Check direct or partial match
     let id = TEAM_CRESTS[name];
@@ -32,8 +52,8 @@ function getCrestUrl(teamName) {
 
     if (id) return `https://crests.football-data.org/${id}.png`;
 
-    // Return a themed avatar if no official logo found
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(teamName)}&background=0f172a&color=00ff88&bold=true`;
+    // Neural-styled fallback
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(teamName)}&background=0a101f&color=00ff88&bold=true&font-size=0.5`;
 }
 
 // Initialize Three.js Background

@@ -88,6 +88,53 @@ h3,
     text-shadow: var(--neon-glow);
 }
 
+.logo-icon.neural-football {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.neural-football i.fa-futbol {
+    font-size: 28px;
+    color: white;
+    animation: rotate-ball 10s linear infinite;
+}
+
+.neural-overlay {
+    position: absolute;
+    font-size: 14px;
+    color: var(--accent-green);
+    filter: drop-shadow(0 0 5px var(--accent-green));
+    animation: neural-pulse 2s ease-in-out infinite;
+}
+
+@keyframes rotate-ball {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes neural-pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
 .logo-text {
     font-size: 24px;
     font-weight: 900;
@@ -95,6 +142,7 @@ h3,
 
 .logo-text .accent {
     color: var(--accent-green);
+    text-shadow: 0 0 10px var(--accent-green);
 }
 
 .search-bar {
@@ -583,7 +631,11 @@ h3,
     width: 100px;
     height: 100px;
     margin-bottom: 15px;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+    filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.3));
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 50%;
+    object-fit: contain;
 }
 
 .vs-text {
