@@ -1,8 +1,9 @@
 // GOLODDS Main Logic - API Configuration
 const API_CONFIG = {
-    FOOTBALL_DATA_KEY: '',
+    FOOTBALL_DATA_KEY: '4a03e151af0446369dfac6c1088911b4',
     ODDS_API_KEY: 'b67e54e948f9f33d50930e9b19555271',
-    BASE_URL: 'https://api.the-odds-api.com/v4/sports/'
+    BASE_URL: 'https://api.the-odds-api.com/v4/sports/',
+    STATS_URL: 'https://api.football-data.org/v4/'
 };
 
 // Initialize Three.js Background
@@ -211,25 +212,46 @@ async function fetchLiveMatches() {
     }
 }
 
-function updateMatchUI(match) {
-    const homeTeam = document.querySelector('.team-home h2');
-    const awayTeam = document.querySelector('.team-away h2');
+async function updateMatchUI(match) {
     const vsContainer = document.querySelector('.vs-container');
 
-    // Restore the VS structure if it was overwritten by the loader
+    // Default crests (fallbacks)
+    let homeCrest = `https://ui-avatars.com/api/?name=${match.home_team}&background=random`;
+    let awayCrest = `https://ui-avatars.com/api/?name=${match.away_team}&background=random`;
+
     vsContainer.innerHTML = `
         <div class="team team-home">
-            <img src="https://ui-avatars.com/api/?name=${match.home_team}&background=random" class="team-crest" alt="${match.home_team}">
+            <div class="crest-container">
+                <img src="${homeCrest}" class="team-crest" alt="${match.home_team}">
+                <div class="scan-line"></div>
+            </div>
             <h2>${match.home_team.toUpperCase()}</h2>
-            <div class="form">ANALYSIS PENDING...</div>
+            <div class="form">NEURAL SCAN: ACTIVE</div>
         </div>
         <div class="vs-text">VS</div>
         <div class="team team-away">
-            <img src="https://ui-avatars.com/api/?name=${match.away_team}&background=random" class="team-crest" alt="${match.away_team}">
+            <div class="crest-container">
+                <img src="${awayCrest}" class="team-crest" alt="${match.away_team}">
+                <div class="scan-line"></div>
+            </div>
             <h2>${match.away_team.toUpperCase()}</h2>
-            <div class="form">ANALYSIS PENDING...</div>
+            <div class="form">NEURAL SCAN: ACTIVE</div>
         </div>
     `;
+
+    // Add CSS for the scan animation if not present
+    if (!document.getElementById('crest-anim-styles')) {
+        const s = document.createElement('style');
+        s.id = 'crest-anim-styles';
+        s.innerHTML = `
+            .crest-container { position: relative; overflow: hidden; border-radius: 50%; width: 100px; height: 100px; margin: 0 auto 15px; border: 2px solid var(--accent-green); transition: 0.3s; }
+            .crest-container:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--accent-green); }
+            .team-crest { width: 100%; height: 100%; object-fit: cover; }
+            .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); animation: scan-kv 2s linear infinite; }
+            @keyframes scan-kv { 0% { top: 0; } 100% { top: 100%; } }
+        `;
+        document.head.appendChild(s);
+    }
 }
 
 function updateOddsUI(match) {
