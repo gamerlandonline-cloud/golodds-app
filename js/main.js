@@ -364,7 +364,12 @@ async function fetchLiveMatches() {
             // Merge Scores into Odds Data
             const mergedData = oddsData.map(match => {
                 const liveScore = scoresData.find(s => s.id === match.id);
-                return { ...match, live_score: liveScore ? liveScore.scores : null, completed: liveScore ? liveScore.completed : false };
+                return {
+                    ...match,
+                    live_score: liveScore ? liveScore.scores : null,
+                    completed: liveScore ? liveScore.completed : false,
+                    league_name: league.name
+                };
             });
 
             if (mergedData && mergedData.length > 0) {
@@ -400,6 +405,7 @@ function loadMockData() {
         {
             id: 'mock-1',
             home_team: 'Real Madrid', away_team: 'Man City',
+            league_name: 'Champions League',
             commence_time: new Date().toISOString(),
             live_score: [{ name: 'Real Madrid', score: '2' }, { name: 'Man City', score: '1' }],
             bookmakers: [{ markets: [{ outcomes: [{ name: 'Real Madrid', price: 2.1 }, { name: 'Draw', price: 3.4 }, { name: 'Man City', price: 3.1 }] }] }]
@@ -407,6 +413,7 @@ function loadMockData() {
         {
             id: 'mock-2',
             home_team: 'Benfica', away_team: 'Porto',
+            league_name: 'Liga Portugal',
             commence_time: new Date().toISOString(),
             live_score: [{ name: 'Benfica', score: '0' }, { name: 'Porto', score: '0' }],
             bookmakers: [{ markets: [{ outcomes: [{ name: 'Benfica', price: 1.95 }, { name: 'Draw', price: 3.2 }, { name: 'Porto', price: 3.8 }] }] }]
@@ -653,24 +660,95 @@ function updateOddsUI(match) {
 
 let allMatchesData = [];
 
-function scrollToLeague(leagueName) {
-    switchTab('war-room');
-    const id = `league-${leagueName.toLowerCase().replace(/\s+/g, '-')}`;
+function openLeaguePortal(leagueName) {
+    switchTab('league-portal');
 
-    // Small delay to ensure tab is rendered and DOM is ready
-    setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) {
-            const headerOffset = 110; // Header + Ticker height
-            const elementPosition = el.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: "smooth"
-            });
+    // Update Active Sidebar (Custom logic for league items)
+    document.querySelectorAll('.league-nav-item').forEach(item => {
+        if (item.querySelector('span').innerText === leagueName) {
+            item.style.color = 'var(--accent-blue)';
+            item.style.background = 'rgba(0, 153, 255, 0.1)';
+        } else {
+            item.style.color = '';
+            item.style.background = '';
         }
-    }, 100);
+    });
+
+    const header = document.getElementById('league-portal-header');
+    const content = document.getElementById('league-portal-content');
+
+    const icons = {
+        'Liga Portugal': { icon: 'fa-certificate', color: '#00ff88' },
+        'Premier League': { icon: 'fa-crown', color: '#ffcc00' },
+        'La Liga': { icon: 'fa-shield-alt', color: '#ff3e3e' },
+        'Serie A': { icon: 'fa-star', color: '#0099ff' },
+        'Champions League': { icon: 'fa-trophy', color: '#ffffff' }
+    };
+
+    const style = icons[leagueName] || { icon: 'fa-futbol', color: '#fff' };
+
+    header.innerHTML = `
+        <div class="league-portal-banner" style="border-left: 5px solid ${style.color};">
+            <div class="league-icon-large" style="color: ${style.color};">
+                <i class="fas ${style.icon}"></i>
+            </div>
+            <div class="league-portal-info">
+                <h1>PORTAL ${leagueName.toUpperCase()}</h1>
+                <p>Análise Neuronal e Dados de Mercado em Tempo Real</p>
+            </div>
+        </div>
+    `;
+
+    const filtered = allMatchesData.filter(m => m.league_name === leagueName);
+    content.innerHTML = '';
+
+    if (filtered.length === 0) {
+        content.innerHTML = '<div class="live-indicator">SEM JOGOS DISPONÍVEIS NESTE MOMENTO</div>';
+        return;
+    }
+
+    // Reuse render logic but for portal container
+    filtered.forEach(match => {
+        const bookmaker = match.bookmakers[0];
+        if (!bookmaker) return;
+        const market = bookmaker.markets[0];
+        const outcomes = market ? market.outcomes : [];
+
+        const card = document.createElement('div');
+        card.className = 'mini-match-card';
+        card.onclick = () => {
+            switchTab('war-room');
+            updateMatchUI(match);
+            updateOddsUI(match);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        card.innerHTML = `
+            <div class="mini-match-header">
+                <span>PORTAL: ${leagueName}</span>
+                <span class="badge">ESTATÍSTICAS ATIVAS</span>
+            </div>
+            <div class="mini-vs">
+                <div class="mini-team">
+                    <img src="${getCrestUrl(match.home_team)}" class="mini-crest">
+                    <span>${match.home_team}</span>
+                </div>
+                <div class="vs-text">
+                    ${match.live_score ? `<div class="mini-score">${match.live_score[0].score} - ${match.live_score[1].score}</div>` : 'VS'}
+                </div>
+                <div class="mini-team">
+                    <img src="${getCrestUrl(match.away_team)}" class="mini-crest">
+                    <span>${match.away_team}</span>
+                </div>
+            </div>
+            <div class="mini-odds">
+                ${outcomes.map(o => `<div class="mini-odd"><label>${o.name === 'Draw' || o.name === 'X' ? 'EMPATE' : o.name}</label><span>${o.price.toFixed(2)}</span></div>`).join('')}
+            </div>
+        `;
+        content.appendChild(card);
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function switchTab(tabId) {
@@ -686,6 +764,14 @@ function switchTab(tabId) {
             else item.classList.remove('active');
         }
     });
+
+    // Clear league portal styles if not in league-portal
+    if (tabId !== 'league-portal') {
+        document.querySelectorAll('.league-nav-item').forEach(item => {
+            item.style.color = '';
+            item.style.background = '';
+        });
+    }
 
     // Panes UI
     document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));

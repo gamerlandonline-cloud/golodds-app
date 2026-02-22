@@ -67,23 +67,23 @@
                     Bola</span></div>
 
             <div class="nav-group-title">MERCADOS DE ELITE</div>
-            <div class="league-nav-item" onclick="scrollToLeague('Liga Portugal')">
+            <div class="league-nav-item" onclick="openLeaguePortal('Liga Portugal')">
                 <i class="fas fa-certificate" style="color: #00ff88;"></i>
                 <span>Liga Portugal</span>
             </div>
-            <div class="league-nav-item" onclick="scrollToLeague('Premier League')">
+            <div class="league-nav-item" onclick="openLeaguePortal('Premier League')">
                 <i class="fas fa-crown" style="color: #ffcc00;"></i>
                 <span>Premier League</span>
             </div>
-            <div class="league-nav-item" onclick="scrollToLeague('La Liga')">
+            <div class="league-nav-item" onclick="openLeaguePortal('La Liga')">
                 <i class="fas fa-shield-alt" style="color: #ff3e3e;"></i>
                 <span>La Liga</span>
             </div>
-            <div class="league-nav-item" onclick="scrollToLeague('Serie A')">
+            <div class="league-nav-item" onclick="openLeaguePortal('Serie A')">
                 <i class="fas fa-star" style="color: #0099ff;"></i>
                 <span>Serie A</span>
             </div>
-            <div class="league-nav-item" onclick="scrollToLeague('Champions League')">
+            <div class="league-nav-item" onclick="openLeaguePortal('Champions League')">
                 <i class="fas fa-trophy" style="color: #ffffff;"></i>
                 <span>Champions League</span>
             </div>
@@ -182,34 +182,47 @@
                         <div class="live-indicator"><span class="pulse"></span> A COMPILAR DADOS DAS CASAS...</div>
                     </div>
                 </div>
-            </div>
+                <!-- News Tab -->
+                <div id="tab-news" class="tab-pane">
+                    <div class="card-header">
+                        <h2><i class="fas fa-newspaper"></i> Central de Notícias da Bola</h2>
+                        <span class="badge" style="background: var(--accent-gold);">FEED GLOBAL</span>
+                    </div>
+                    <div class="news-categories">
+                        <button class="news-cat-btn active" onclick="filterNews('all')">Todas</button>
+                        <button class="news-cat-btn" onclick="filterNews('portugal')">Portugal</button>
+                        <button class="news-cat-btn" onclick="filterNews('england')">Inglaterra</button>
+                        <button class="news-cat-btn" onclick="filterNews('spain')">Espanha</button>
+                        <button class="news-cat-btn" onclick="filterNews('italy')">Itália</button>
+                        <button class="news-cat-btn" onclick="filterNews('germany')">Alemanha</button>
+                    </div>
+                    <div id="news-feed-grid" class="news-feed-grid">
+                        <!-- Dynamically filled by JS -->
+                        <div class="live-indicator"><span class="pulse"></span> A SINCRONIZAR COM AS REDAÇÕES...</div>
+                    </div>
+                </div>
 
-            <!-- News Tab -->
-            <div id="tab-news" class="tab-pane">
-                <div class="card-header">
-                    <h2><i class="fas fa-newspaper"></i> Central de Notícias da Bola</h2>
-                    <span class="badge" style="background: var(--accent-gold);">FEED GLOBAL</span>
+                <!-- League Portal Tab -->
+                <div id="tab-league-portal" class="tab-pane">
+                    <div id="league-portal-header">
+                        <!-- Dynamic League Banner -->
+                    </div>
+                    <div class="card-header">
+                        <h2><i class="fas fa-futbol"></i> Jogos e Análises Neurais</h2>
+                        <span class="badge" style="background: var(--accent-blue);">DADOS FILTRADOS</span>
+                    </div>
+                    <div id="league-portal-content" class="match-grid">
+                        <!-- Dynamically filled by JS -->
+                        <div class="live-indicator"><span class="pulse"></span> A CARREGAR MERCADO SELECIONADO...</div>
+                    </div>
                 </div>
-                <div class="news-categories">
-                    <button class="news-cat-btn active" onclick="filterNews('all')">Todas</button>
-                    <button class="news-cat-btn" onclick="filterNews('portugal')">Portugal</button>
-                    <button class="news-cat-btn" onclick="filterNews('england')">Inglaterra</button>
-                    <button class="news-cat-btn" onclick="filterNews('spain')">Espanha</button>
-                    <button class="news-cat-btn" onclick="filterNews('italy')">Itália</button>
-                    <button class="news-cat-btn" onclick="filterNews('germany')">Alemanha</button>
+                <!-- Multi-Sponsor Main Grid -->
+                <div class="card-header" style="margin-top: 60px; border:none; background:none;">
+                    <h2 style="font-size: 14px;"><i class="fas fa-handshake"></i> NOSSOS PARCEIROS</h2>
                 </div>
-                <div id="news-feed-grid" class="news-feed-grid">
-                    <!-- Dynamically filled by JS -->
-                    <div class="live-indicator"><span class="pulse"></span> A SINCRONIZAR COM AS REDAÇÕES...</div>
+                <div id="main-ads-grid" class="main-ads-grid">
+                    <!-- Dynamically filled -->
                 </div>
-            </div>
-            <!-- Multi-Sponsor Main Grid -->
-            <div class="card-header" style="margin-top: 60px; border:none; background:none;">
-                <h2 style="font-size: 14px;"><i class="fas fa-handshake"></i> NOSSOS PARCEIROS</h2>
-            </div>
-            <div id="main-ads-grid" class="main-ads-grid">
-                <!-- Dynamically filled -->
-            </div>
         </section>
     </main>
 
