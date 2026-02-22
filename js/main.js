@@ -8,22 +8,32 @@ const API_CONFIG = {
 
 // Official Crest Mapping for Top Clubs (Football-Data.org IDs)
 const TEAM_CRESTS = {
-    'Real Madrid': '86', 'FC Barcelona': '81', 'Barça': '81', 'Barcelona': '81',
-    'Manchester City': '65', 'Man City': '65', 'Liverpool FC': '64', 'Liverpool': '64',
-    'Arsenal FC': '57', 'Arsenal': '57', 'Manchester United': '66', 'Man Utd': '66',
-    'Chelsea FC': '61', 'Chelsea': '61', 'Tottenham Hotspur': '73', 'Spurs': '73',
-    'SL Benfica': '1903', 'Benfica': '1903', 'FC Porto': '503', 'Porto': '503',
-    'Sporting CP': '498', 'Sporting': '498', 'Vitória SC': '554', 'SC Braga': '561',
-    'Bayern München': '5', 'Bayern Munich': '5', 'Borussia Dortmund': '4', 'BVB': '4',
-    'Juventus FC': '108', 'Juventus': '108', 'Inter Milan': '108', 'Inter': '108',
-    'AC Milan': '98', 'SSC Napoli': '113', 'Napoli': '113', 'PSG': '524', 'Paris Saint-Germain': '524'
+    'REAL MADRID': '86', 'BARCELONA': '81', 'BARCA': '81',
+    'MANCHESTER CITY': '65', 'MAN CITY': '65', 'LIVERPOOL': '64',
+    'ARSENAL': '57', 'MANCHESTER UNITED': '66', 'MAN UTD': '66',
+    'CHELSEA': '61', 'TOTTENHAM': '73', 'SPURS': '73',
+    'BENFICA': '1903', 'PORTO': '503', 'SPORTING': '498',
+    'VITORIA': '554', 'BRAGA': '561', 'BOAVISTA': '810', 'FAMALICAO': '582',
+    'BAYERN': '5', 'DORTMUND': '4', 'BVB': '4', 'LEIPZIG': '721',
+    'JUVENTUS': '108', 'INTER': '108', 'MILAN': '98', 'NAPOLI': '113', 'ROMA': '100',
+    'PSG': '524', 'PARIS': '524', 'MONACO': '548', 'LYON': '521'
 };
 
 function getCrestUrl(teamName) {
-    const name = teamName.trim();
-    const id = TEAM_CRESTS[name] || Object.keys(TEAM_CRESTS).find(k => name.includes(k));
-    if (id) return `https://crests.football-data.org/${TEAM_CRESTS[id] || id}.png`;
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00ff88&color=000&bold=true`;
+    if (!teamName) return '';
+    const name = teamName.toUpperCase().replace(/ FC| AFC| SSC| CF| SL| SC/g, '').trim();
+
+    // Check direct or partial match
+    let id = TEAM_CRESTS[name];
+    if (!id) {
+        const key = Object.keys(TEAM_CRESTS).find(k => name.includes(k) || k.includes(name));
+        id = key ? TEAM_CRESTS[key] : null;
+    }
+
+    if (id) return `https://crests.football-data.org/${id}.png`;
+
+    // Return a themed avatar if no official logo found
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(teamName)}&background=0f172a&color=00ff88&bold=true`;
 }
 
 // Initialize Three.js Background
