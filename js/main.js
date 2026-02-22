@@ -594,6 +594,8 @@ function switchTab(tabId) {
         renderTopPicks();
     } else if (tabId === 'market-odds') {
         renderMarketOdds();
+    } else if (tabId === 'news') {
+        renderNews();
     }
 }
 
@@ -739,6 +741,59 @@ function renderTopPicks() {
     });
 }
 
+const NEWS_DATA = [
+    { league: 'portugal', source: 'A Bola', title: 'Benfica prepara ataque ao mercado de verão', excerpt: 'As águias estão atentas a novos talentos para reforçar o plantel na próxima época.', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
+    { league: 'portugal', source: 'Record', title: 'Sporting focado na renovação do título', excerpt: 'Rúben Amorim mantém o grupo unido e focado nos objetivos traçados.', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
+    { league: 'portugal', source: 'O Jogo', title: 'FC Porto estuda novas opções para o ataque', excerpt: 'Sérgio Conceição quer mais eficácia na finalização e procura soluções no mercado internacional.', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400', date: 'Ontem' },
+    { league: 'england', source: 'Sky Sports', title: 'Man City and Arsenal in thrilling title race', excerpt: 'The Premier League summit remains contested as both teams show incredible consistency.', image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
+    { league: 'england', source: 'BBC Sport', title: 'Liverpool legend weighs in on tactical shifts', excerpt: 'Analysis of how the midfield dynamic has changed the Reds strategy this season.', image: 'https://images.unsplash.com/photo-1518091043644-c1d445eb9519?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
+    { league: 'spain', source: 'MARCA', title: 'Mbappé brilla en los entrenamientos del Real Madrid', excerpt: 'El astro francés muestra una adaptación inmediata al esquema de Ancelotti.', image: 'https://images.unsplash.com/photo-1529900903110-d02f0acff528?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
+    { league: 'spain', source: 'AS', title: 'Barcelona busca blindar a sus jóvenes promesas', excerpt: 'El club catalán inicia conversaciones para renovar contratos clave en La Masía.', image: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=400', date: 'Ontem' },
+    { league: 'italy', source: 'Gazzetta dello Sport', title: 'Inter domina o mercado italiano', excerpt: 'A estratégia dos nerazzurri para manter a hegemonia na Série A.', image: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
+    { league: 'germany', source: 'BILD', title: 'Bayern busca reconstrução sob novo comando', excerpt: 'As mudanças táticas esperadas para a próxima temporada na Baviera.', image: 'https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&q=80&w=400', date: 'Ontem' }
+];
+
+function renderNews(category = 'all') {
+    const grid = document.getElementById('news-feed-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const filtered = category === 'all' ? NEWS_DATA : NEWS_DATA.filter(n => n.league === category);
+
+    filtered.forEach(news => {
+        const card = document.createElement('div');
+        card.className = 'news-card';
+        card.innerHTML = `
+            <img src="${news.image}" class="news-image" alt="${news.title}">
+            <div class="news-body">
+                <div class="news-meta">
+                    <span>${news.league}</span>
+                    <span>${news.date}</span>
+                </div>
+                <h3 class="news-title">${news.title}</h3>
+                <p class="news-excerpt">${news.excerpt}</p>
+            </div>
+            <div class="news-footer">
+                <span class="news-source">${news.source}</span>
+                <button class="news-read-more">Ler Mais <i class="fas fa-arrow-right"></i></button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function filterNews(category) {
+    document.querySelectorAll('.news-cat-btn').forEach(btn => {
+        const btnText = btn.innerText.toLowerCase();
+        if (btnText === category.toLowerCase() || (category === 'all' && btnText === 'todas')) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    renderNews(category);
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initThree();
@@ -747,4 +802,5 @@ document.addEventListener('DOMContentLoaded', () => {
     runAIScan();
     fetchLiveMatches();
     renderAds();
+    renderNews();
 });
