@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOLODDS | AI Football Prediction War Room</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-dark">
+    <!-- Background FX -->
+    <div class="glow-overlay"></div>
+    <div id="three-container"></div>
+
+    <header class="cyber-header">
+        <div class="logo">
+            <span class="logo-icon"><i class="fas fa-microchip"></i></span>
+            <span class="logo-text">GOL<span class="accent">ODDS</span></span>
+        </div>
+        <div class="search-container">
+            <div class="search-bar">
+                <i class="fas fa-whistle referee-whistle"></i>
+                <input type="text" placeholder="Search Match (e.g. UCL Final)..." id="match-search">
+                <i class="fas fa-microphone voice-btn"></i>
+            </div>
+        </div>
+        <nav class="user-nav">
+            <div class="trophy-count">
+                <i class="fas fa-trophy"></i> <span>12</span>
+            </div>
+            <div class="profile-pill">
+                <img src="https://ui-avatars.com/api/?name=User&background=00ff88&color=000" alt="Avatar">
+                <span>PRO USER</span>
+            </div>
+        </nav>
+    </header>
+
+    <main class="dashboard">
+        <aside class="sidebar">
+            <div class="nav-item active"><i class="fas fa-th-large"></i><span>War Room</span></div>
+            <div class="nav-item"><i class="fas fa-history"></i><span>Past Timelines</span></div>
+            <div class="nav-item"><i class="fas fa-chart-line"></i><span>Market Odds</span></div>
+            <div class="nav-item"><i class="fas fa-shield-alt"></i><span>Risk Shield</span></div>
+            <div class="nav-item logout"><i class="fas fa-sign-out-alt"></i><span>Exit Matrix</span></div>
+        </aside>
+
+        <section class="main-content">
+            <div class="match-summary-card">
+                <div class="live-indicator">
+                    <span class="pulse"></span> AI ANALYSING LIVE
+                </div>
+                <div class="vs-container">
+                    <div class="team team-home">
+                        <img src="https://crests.football-data.org/86.png" class="team-crest" alt="Real Madrid">
+                        <h2>REAL MADRID</h2>
+                        <div class="form">W W D W W</div>
+                    </div>
+                    <div class="vs-text">VS</div>
+                    <div class="team team-away">
+                        <img src="https://crests.football-data.org/65.png" class="team-crest" alt="Man City">
+                        <h2>MAN CITY</h2>
+                        <div class="form">W W W L W</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-grid">
+                <!-- 3D Pitch Visualization -->
+                <div class="card pitch-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-futbol"></i> Tactical Probability Heatmap</h3>
+                        <div class="card-controls">
+                            <span class="badge">3D ACTIVE</span>
+                        </div>
+                    </div>
+                    <div id="canvas-wrapper">
+                        <!-- Three.js will inject here -->
+                        <div class="overlay-stats">
+                            <div class="stat-box">
+                                <label>Attack Pressure</label>
+                                <div class="progress-bar"><div class="fill" style="width: 78%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prediction Odds -->
+                <div class="card prediction-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-brain"></i> Neural Link Output</h3>
+                    </div>
+                    <div class="odds-list">
+                        <div class="odd-item best-value">
+                            <div class="market">HOME WIN</div>
+                            <div class="prob">58.4%</div>
+                            <div class="ev">+12.5% EV</div>
+                            <div class="action-btn">LOCK IN</div>
+                        </div>
+                        <div class="odd-item">
+                            <div class="market">OVER 2.5</div>
+                            <div class="prob">72.1%</div>
+                            <div class="ev">+4.2% EV</div>
+                            <div class="action-btn">LOCK IN</div>
+                        </div>
+                        <div class="odd-item">
+                            <div class="market">BTTS: YES</div>
+                            <div class="prob">65.0%</div>
+                            <div class="ev">+2.1% EV</div>
+                            <div class="action-btn">LOCK IN</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation/Timeline -->
+                <div class="card timeline-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-random"></i> Monte Carlo Timelines</h3>
+                    </div>
+                    <div class="timeline-visual">
+                        <div class="timeline-branch">
+                            <div class="outcome">2-1 (34%)</div>
+                            <div class="branch-line"></div>
+                        </div>
+                        <div class="timeline-branch">
+                            <div class="outcome">1-1 (22%)</div>
+                            <div class="branch-line"></div>
+                        </div>
+                        <div class="timeline-branch">
+                            <div class="outcome">1-2 (15%)</div>
+                            <div class="branch-line"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
