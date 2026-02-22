@@ -147,39 +147,28 @@
                     </div>
                 </div>
 
-                <!-- Sub-Tabs Scoreboard (New Layout) -->
-                <div class="sub-tabs-container">
-                    <div class="sub-tabs" id="scoreboard-tabs">
-                        <button class="sub-tab-btn active" onclick="filterScoreboard('all', this)">Todos</button>
-                        <button class="sub-tab-btn" onclick="filterScoreboard('live', this)">Ao Vivo</button>
-                        <button class="sub-tab-btn" onclick="filterScoreboard('odds', this)">Odds</button>
-                        <button class="sub-tab-btn" onclick="filterScoreboard('finished', this)">Terminados</button>
-                        <button class="sub-tab-btn" onclick="filterScoreboard('scheduled', this)">Agendados</button>
-                    </div>
-                    <div class="date-nav">
-                        <div id="sync-status"
-                            style="font-size: 8px; color: var(--accent-blue); margin-right: 15px; opacity: 0.7;">
-                            <i class="fas fa-sync-alt fa-spin"></i> SINCRONIA ATIVA
-                        </div>
-                        <i class="fas fa-chevron-left" onclick="changeScoreboardDate(-1)"></i>
-                        <div class="date-display">
-                            <i class="far fa-calendar-alt"></i>
-                            <span id="current-date-header">22/02 DO</span>
-                        </div>
-                        <i class="fas fa-chevron-right" onclick="changeScoreboardDate(1)"></i>
-                    </div>
-                </div>
-
-                <!-- Global Competition Matrix -->
+                <!-- Professional Livescore Widget Hub -->
                 <div class="card-header">
-                    <h2><i class="fas fa-globe"></i> Radar de Mercado Global</h2>
-                    <span class="badge" style="background: var(--accent-gold);">SINCRONIA LIVE</span>
+                    <h2><i class="fas fa-satellite-dish"></i> Live Hub Profissional</h2>
+                    <span class="badge" style="background: var(--accent-gold);">REAL-TIME FLASH</span>
                 </div>
 
+                <div class="widget-container"
+                    style="background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 30px;">
+                    <!-- Professional Widget Integration -->
+                    <iframe id="livescore-iframe"
+                        src="https://www.scoreaxis.com/widget/live-fixtures?autoHeight=1&bodyBackground=%230d162b&textColor=%23ffffff&font=Inter&linkColor=%230099ff&headerBackground=%23162340&headerTextColor=%23ffffff&borderColor=%231d2d50&inst=golodds-app"
+                        style="width: 100%; border: none; min-height: 800px;" title="Live Hub Results">
+                    </iframe>
+                </div>
+
+                <!-- Neural Analysis Grid (Keeping the custom IA structure below) -->
+                <div class="card-header">
+                    <h2><i class="fas fa-brain"></i> Matriz de Análise Neuronal</h2>
+                    <span class="badge">PROJEÇÕES IA</span>
+                </div>
                 <div id="competition-matrix" class="competition-matrix scoreboard-view">
-                    <!-- Dynamically filled by JS -->
-                    <div class="live-indicator"><span class="pulse"></span> A LIGAR À REDE GLOBAL DE SATÉLITES...
-                    </div>
+                    <!-- Custom IA results still available for deep analysis -->
                 </div>
 
                 <div class="analysis-grid" style="margin-top: 40px;">
