@@ -431,6 +431,7 @@ function renderLeagueSection(name, matches) {
 
     const section = document.createElement('div');
     section.className = 'league-section';
+    section.id = `league-${name.toLowerCase().replace(/\s+/g, '-')}`;
     section.innerHTML = `<h3 class="league-title">${name}</h3>`;
 
     const grid = document.createElement('div');
@@ -652,10 +653,39 @@ function updateOddsUI(match) {
 
 let allMatchesData = [];
 
+function scrollToLeague(leagueName) {
+    switchTab('war-room');
+    const id = `league-${leagueName.toLowerCase().replace(/\s+/g, '-')}`;
+
+    // Small delay to ensure tab is rendered and DOM is ready
+    setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) {
+            const headerOffset = 110; // Header + Ticker height
+            const elementPosition = el.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth"
+            });
+        }
+    }, 100);
+}
+
 function switchTab(tabId) {
     // Nav UI
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(item => {
+        const span = item.querySelector('span');
+        if (span) {
+            const label = span.innerText.toLowerCase();
+            if (tabId === 'war-room' && label.includes('sala de guerra')) item.classList.add('active');
+            else if (tabId === 'top-picks' && label.includes('top 10')) item.classList.add('active');
+            else if (tabId === 'market-odds' && label.includes('odds de mercado')) item.classList.add('active');
+            else if (tabId === 'news' && label.includes('notícias')) item.classList.add('active');
+            else item.classList.remove('active');
+        }
+    });
 
     // Panes UI
     document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
