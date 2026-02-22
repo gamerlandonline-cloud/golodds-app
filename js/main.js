@@ -343,7 +343,8 @@ async function fetchLiveMatches(isInitial = true) {
         { key: 'soccer_italy_serie_a', name: 'Serie A' },
         { key: 'soccer_portugal_primeira_liga', name: 'Liga Portugal' },
         { key: 'soccer_germany_bundesliga', name: 'Bundesliga' },
-        { key: 'soccer_france_ligue_one', name: 'Liga 1' }
+        { key: 'soccer_france_ligue_one', name: 'Liga 1' },
+        { key: 'soccer_portugal_league_2', name: 'Liga Portugal 2' }
     ];
 
     if (isInitial) {
@@ -389,6 +390,18 @@ async function fetchLiveMatches(isInitial = true) {
     }
 
     if (dataFound) {
+        // Goal Detection Logic
+        tempMatches.forEach(newMatch => {
+            const oldMatch = allMatchesData.find(m => m.id === newMatch.id);
+            if (oldMatch && newMatch.live_score && oldMatch.live_score) {
+                const newScore = `${newMatch.live_score[0].score}-${newMatch.live_score[1].score}`;
+                const oldScore = `${oldMatch.live_score[0].score}-${oldMatch.live_score[1].score}`;
+                if (newScore !== oldScore) {
+                    notifyGoal(newMatch);
+                }
+            }
+        });
+
         allMatchesData = tempMatches;
         applyScoreboardFilters();
 
@@ -426,8 +439,24 @@ async function fetchLiveMatches(isInitial = true) {
 
     // Auto-schedule next sync
     if (isInitial && !syncInterval) {
-        syncInterval = setInterval(() => fetchLiveMatches(false), 60000); // Sync every 60 seconds
+        syncInterval = setInterval(() => fetchLiveMatches(false), 45000); // 45s sync
     }
+}
+
+function notifyGoal(match) {
+    const toast = document.createElement('div');
+    toast.className = 'goal-notification';
+    toast.innerHTML = `
+        <div class="goal-header"><i class="fas fa-futbol"></i> GOLO!</div>
+        <div class="goal-content">
+            <strong>${match.home_team} ${match.live_score[0].score} - ${match.live_score[1].score} ${match.away_team}</strong>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 8000);
+
+    // Play sound or vibrate? (Optional but premium)
+    if (window.navigator.vibrate) window.navigator.vibrate([100, 50, 100]);
 }
 
 // Fallback logic for demo purposes if API fails
@@ -562,8 +591,10 @@ function renderLeagueSection(name, matches, targetElement = null) {
                 <div class="score-val">${match.live_score ? match.live_score[1].score : '-'}</div>
             </div>
             <div class="match-icons-col">
+                <a href="https://www.flashscore.pt/procurar/?q=${match.home_team}+vs+${match.away_team}" target="_blank" class="flashscore-btn" title="Ver no Flashscore Real-Time">
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
                 <i class="fas fa-desktop"></i>
-                <i class="fas fa-tshirt"></i>
             </div>
         `;
         matrix.appendChild(row);

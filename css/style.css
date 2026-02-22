@@ -2137,3 +2137,50 @@ h3,
     background: rgba(255, 255, 255, 0.05);
     border-radius: 50%;
 }
+
+/* Goal Notifications */
+.goal-notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #FF0032 0%, #a30020 100%);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(255, 0, 50, 0.4);
+    z-index: 10000;
+    font-family: 'Orbitron', sans-serif;
+    animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    min-width: 250px;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.goal-header {
+    font-size: 10px;
+    font-weight: 900;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+}
+
+.goal-content {
+    font-size: 14px;
+}
+
+.flashscore-btn {
+    color: var(--text-dim);
+    transition: 0.3s;
+    text-decoration: none;
+}
+
+.flashscore-btn:hover {
+    color: #FF0032;
+    transform: scale(1.2);
+}
