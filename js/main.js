@@ -208,16 +208,76 @@ function toggleAdmin() {
 
 function loginAdmin() {
     const user = document.getElementById('admin-user').value;
+    const pass = document.getElementById('admin-pass').value;
     const error = document.getElementById('admin-error');
+    const controls = document.getElementById('admin-controls');
 
-    // Simple mock logic for preview
-    if (user === "admin") {
-        alert("BEM-VINDO À MATRIX, ADMIN. A carregar Gestão de Marketing...");
-        window.location.reload(); // Simple mock refresh
+    // Preview Logic (Universal Admin)
+    if (user === "admin" && pass === "1234") {
+        gsap.to(".admin-modal", { height: "auto", duration: 0.5 });
+        controls.style.display = 'block';
+        error.style.display = 'none';
+
+        // Load current values
+        document.getElementById('input-side-ad').value = localStorage.getItem('sideAdLink') || '';
+        document.getElementById('input-main-ad').value = localStorage.getItem('mainAdLink') || '';
     } else {
         error.style.display = 'block';
         gsap.to(".admin-modal", { x: [-10, 10, -10, 10, 0], duration: 0.4 });
     }
+}
+
+function saveAds() {
+    const sideLink = document.getElementById('input-side-ad').value;
+    const mainLink = document.getElementById('input-main-ad').value;
+
+    localStorage.setItem('sideAdLink', sideLink);
+    localStorage.setItem('mainAdLink', mainLink);
+
+    alert("CONFIGURAÇÕES DE PUBLICIDADE SALVAS!");
+    renderAds();
+    toggleAdmin();
+}
+
+function renderAds() {
+    const sideContainer = document.getElementById('dynamic-side-ad');
+    const mainContainer = document.getElementById('dynamic-main-ad');
+
+    const sideLink = localStorage.getItem('sideAdLink');
+    const mainLink = localStorage.getItem('mainAdLink');
+
+    if (sideLink) {
+        sideContainer.innerHTML = createAdMarkup(sideLink, "CANAL PARCEIRO");
+        sideContainer.onclick = () => window.open(sideLink, '_blank');
+    }
+
+    if (mainLink) {
+        mainContainer.innerHTML = createAdMarkup(mainLink, "DESTAQUE DA SEMANA");
+        mainContainer.onclick = () => window.open(mainLink, '_blank');
+    }
+}
+
+function createAdMarkup(link, label) {
+    const isYoutube = link.includes('youtube.com') || link.includes('youtu.be');
+
+    if (isYoutube) {
+        return `
+            <div class="youtube-card">
+                <div class="yt-icon-wrapper"><i class="fab fa-youtube"></i></div>
+                <div class="yt-info">
+                    <h4>${label}</h4>
+                    <p>VER NO YOUTUBE <i class="fas fa-external-link-alt"></i></p>
+                </div>
+            </div>
+        `;
+    }
+
+    return `
+        <div style="padding: 20px; text-align: center;">
+            <div style="color: var(--accent-blue); font-weight: 800;">LINK PATROCINADO</div>
+            <div style="font-size: 10px; color: var(--text-dim); margin-top: 5px;">CLIQUE PARA ACEDER</div>
+        </div>
+    `;
 }
 
 // AI "Deep Scan" Simulation
@@ -642,4 +702,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initInteractions();
     runAIScan();
     fetchLiveMatches();
+    renderAds();
 });

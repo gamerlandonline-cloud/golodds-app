@@ -61,11 +61,9 @@
                         ADMIN</span></div>
             </div>
 
-            <!-- Promo/Ads Box -->
-            <div class="promo-box">
-                <h4>Destaque Parceiro</h4>
-                <div class="promo-content">RECLAME 200% DE BÓNUS NA BET365</div>
-                <a href="#" class="promo-btn">RESGATAR AGORA</a>
+            <!-- Dynamic Sidebar Ad Slot -->
+            <div id="dynamic-side-ad" class="dynamic-ad-box side-ad">
+                <div class="ad-placeholder">ESPAÇO PUBLICITÁRIO</div>
             </div>
 
             <div class="nav-item logout"><i class="fas fa-sign-out-alt"></i><span>Sair da Matrix</span></div>
@@ -145,6 +143,10 @@
                     </div>
                 </div>
             </div>
+            <!-- Dynamic Main Footer Ad Slot -->
+            <div id="dynamic-main-ad" class="dynamic-ad-box main-ad">
+                <div class="ad-placeholder">PUBLICIDADE DINÂMICA (GERIDA PELO ADMIN)</div>
+            </div>
         </section>
     </main>
 
@@ -161,6 +163,21 @@
             <input type="text" placeholder="Utilizador Admin" id="admin-user">
             <input type="password" placeholder="Chave da Matrix" id="admin-pass">
             <button class="admin-btn-submit" onclick="loginAdmin()">DESCRIPTOGRAFAR ACESSO</button>
+
+            <!-- Ad Management Sections (Visible after login) -->
+            <div id="admin-controls"
+                style="display: none; margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <h3 style="font-size: 12px; color: var(--accent-blue); margin-bottom: 15px;">GESTÃO DE BANNERES</h3>
+                <div class="admin-field">
+                    <label>Link Publicidade Lateral (Sidebar)</label>
+                    <input type="text" id="input-side-ad" placeholder="Ex: youtube.com/@Canal">
+                </div>
+                <div class="admin-field">
+                    <label>Link Publicidade Principal (Fundo)</label>
+                    <input type="text" id="input-main-ad" placeholder="Ex: youtube.com/watch?v=...">
+                </div>
+                <button class="admin-btn-save" onclick="saveAds()">SALVAR CONFIGURAÇÕES</button>
+            </div>
             <div id="admin-error"
                 style="color: var(--accent-pink); font-size: 12px; margin-top: 15px; text-align: center; display: none;">
                 ACESSO NEGADO: CHAVE QUÂNTICA INVÁLIDA</div>
