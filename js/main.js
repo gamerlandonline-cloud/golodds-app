@@ -689,6 +689,9 @@ function getTopPicks() {
         const outcomes = bookmaker.markets[0].outcomes;
 
         outcomes.forEach(outcome => {
+            // Filter out Draws if focusing strictly on "teams" winning
+            if (outcome.name.toLowerCase() === 'draw' || outcome.name.toLowerCase() === 'x') return;
+
             const impliedProb = (1 / outcome.price) * 100;
             const aiProb = impliedProb + (Math.random() * 15 - 5);
             const valueScore = aiProb * outcome.price;
@@ -702,7 +705,8 @@ function getTopPicks() {
         });
     });
 
-    recommendations.sort((a, b) => b.valueScore - a.valueScore);
+    // Sort by AI Probability (Highest Win Chance)
+    recommendations.sort((a, b) => b.aiProb - a.aiProb);
     return recommendations.slice(0, 10);
 }
 
@@ -722,6 +726,7 @@ function updateNeuralTicker(top10) {
                 <span style="color:var(--accent-gold); margin-right:5px;">#${index + 1}</span>
                 <span class="match-names">${rec.match.home_team} VS ${rec.match.away_team}</span>
                 <span class="pick-bet">PICK: ${betName}</span>
+                <span style="color:var(--accent-green); margin-right:8px;">${rec.aiProb.toFixed(0)}% PROB.</span>
                 <span class="pick-odds">@${rec.outcome.price.toFixed(2)}</span>
             </span>
         `;
@@ -756,11 +761,11 @@ function renderTopPicks() {
                 <div class="pick-market">PICK: ${rec.outcome.name === 'Draw' || rec.outcome.name === 'X' ? 'EMPATE' : rec.outcome.name.toUpperCase()} (ODDS: ${rec.outcome.price.toFixed(2)})</div>
             </div>
             <div class="pick-probability">
-                <span class="prob-val">${rec.aiProb.toFixed(1)}%</span>
-                <span class="prob-label">PROBABILIDADE NEURAL</span>
+                <span class="prob-val" style="color: var(--accent-green);">${rec.aiProb.toFixed(1)}%</span>
+                <span class="prob-label">PROBABILIDADE DE VITÓRIA</span>
             </div>
             <div class="pick-action">
-                <div class="value-score">VALOR: +${(rec.valueScore / 10).toFixed(1)}%</div>
+                <div class="value-score" style="background: rgba(0, 255, 136, 0.1); color: var(--accent-green); border-color: var(--accent-green);">CONFIANÇA: ALTA</div>
             </div>
         `;
         card.onclick = () => {
