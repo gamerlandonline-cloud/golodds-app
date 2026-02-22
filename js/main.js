@@ -438,10 +438,39 @@ function loadMockData() {
             league_name: 'Serie A',
             commence_time: new Date().toISOString(),
             bookmakers: [{ markets: [{ outcomes: [{ name: 'Inter', price: 2.0 }, { name: 'Draw', price: 3.2 }, { name: 'Juventus', price: 3.6 }] }] }]
+        },
+        {
+            id: 'mock-6',
+            home_team: 'Bayern Munchen', away_team: 'Dortmund',
+            league_name: 'Bundesliga',
+            commence_time: new Date().toISOString(),
+            live_score: [{ name: 'Bayern', score: '3' }, { name: 'Dortmund', score: '1' }],
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Bayern', price: 1.5 }, { name: 'Draw', price: 4.2 }, { name: 'Dortmund', price: 5.8 }] }] }]
+        },
+        {
+            id: 'mock-7',
+            home_team: 'PSG', away_team: 'Marseille',
+            league_name: 'Liga 1',
+            commence_time: new Date().toISOString(),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'PSG', price: 1.4 }, { name: 'Draw', price: 4.5 }, { name: 'Marseille', price: 7.2 }] }] }]
         }
     ];
+
     allMatchesData = mockMatches;
-    renderLeagueSection('Projeções Simuladas', mockMatches);
+
+    // Clear and group by league for the new layout
+    const matrix = document.getElementById('competition-matrix');
+    matrix.innerHTML = '';
+
+    const grouped = mockMatches.reduce((acc, m) => {
+        acc[m.league_name] = acc[m.league_name] || [];
+        acc[m.league_name].push(m);
+        return acc;
+    }, {});
+
+    Object.keys(grouped).forEach(league => {
+        renderLeagueSection(league, grouped[league]);
+    });
     updateMatchUI(mockMatches[0]);
     updateOddsUI(mockMatches[0]);
     updateNeuralTicker(getTopPicks());
@@ -454,24 +483,73 @@ function formatMatchTime(isoString) {
     return `${date} às ${time}`;
 }
 
-function renderLeagueSection(name, matches) {
-    const matrix = document.getElementById('competition-matrix');
+function getLeagueFlag(leagueName) {
+    const flags = {
+        'Premier League': 'https://flagcdn.com/w40/gb.png',
+        'La Liga': 'https://flagcdn.com/w40/es.png',
+        'Bundesliga': 'https://flagcdn.com/w40/de.png',
+        'Serie A': 'https://flagcdn.com/w40/it.png',
+        'Liga 1': 'https://flagcdn.com/w40/fr.png',
+        'Liga Portugal': 'https://flagcdn.com/w40/pt.png',
+        'Champions League': 'https://flagcdn.com/w40/eu.png'
+    };
+    return flags[leagueName] || 'https://flagcdn.com/w40/un.png';
+}
 
-    const section = document.createElement('div');
-    section.className = 'league-section';
-    section.id = `league-${name.toLowerCase().replace(/\s+/g, '-')}`;
-    section.innerHTML = `<h3 class="league-title">${name}</h3>`;
+function renderLeagueSection(name, matches, targetElement = null) {
+    const matrix = targetElement || document.getElementById('competition-matrix');
 
-    const grid = document.createElement('div');
-    grid.className = 'match-grid';
+    const header = document.createElement('div');
+    header.className = 'league-scoreboard-header';
+    header.innerHTML = `
+        <div class="league-info-box">
+            <img src="${getLeagueFlag(name)}" class="league-flag">
+            <span class="league-name-text">${name}</span>
+            <i class="fas fa-thumbtack" style="font-size: 10px; color: var(--accent-blue); transform: rotate(45deg);"></i>
+        </div>
+        <div class="league-actions">
+            <span>Classificações</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    `;
+    matrix.appendChild(header);
 
     matches.forEach(match => {
-        const card = createMatchCard(match);
-        if (card) grid.appendChild(card);
-    });
+        const row = document.createElement('div');
+        row.className = 'match-row';
+        row.onclick = () => {
+            updateMatchUI(match);
+            updateOddsUI(match);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
 
-    section.appendChild(grid);
-    matrix.appendChild(section);
+        const isLive = match.live_score && !match.completed;
+        const statusText = match.completed ? 'Terminado' : (isLive ? 'Em Direto' : formatMatchTime(match.commence_time));
+
+        row.innerHTML = `
+            <div class="match-fav"><i class="far fa-star"></i></div>
+            <div class="match-status-col ${isLive ? 'live' : ''}">${statusText}</div>
+            <div class="match-teams-col">
+                <div class="team-entry">
+                    <img src="${getCrestUrl(match.home_team)}">
+                    <span>${match.home_team}</span>
+                </div>
+                <div class="team-entry">
+                    <img src="${getCrestUrl(match.away_team)}">
+                    <span>${match.away_team}</span>
+                </div>
+            </div>
+            <div class="match-scores-col">
+                <div class="score-val">${match.live_score ? match.live_score[0].score : '-'}</div>
+                <div class="score-val">${match.live_score ? match.live_score[1].score : '-'}</div>
+            </div>
+            <div class="match-icons-col">
+                <i class="fas fa-desktop"></i>
+                <i class="fas fa-tshirt"></i>
+            </div>
+        `;
+        matrix.appendChild(row);
+    });
 }
 
 async function updateMatchUI(match) {
@@ -674,7 +752,7 @@ function openLeaguePortal(leagueName) {
         </div>
     `;
 
-    const filtered = allMatchesData.filter(m => m.league_name === leagueName);
+    const filtered = allMatchesData.filter(m => m.league_name === leagueName || (leagueName === 'La Liga' && m.league_name === 'LaLiga'));
     content.innerHTML = '';
 
     if (filtered.length === 0) {
@@ -682,11 +760,7 @@ function openLeaguePortal(leagueName) {
         return;
     }
 
-    // Reuse render logic but for portal container
-    filtered.forEach(match => {
-        const card = createMatchCard(match, leagueName);
-        if (card) content.appendChild(card);
-    });
+    renderLeagueSection(leagueName, filtered, content);
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }

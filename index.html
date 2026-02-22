@@ -66,26 +66,30 @@
             <div class="nav-item" onclick="switchTab('news')"><i class="fas fa-newspaper"></i><span>Notícias da
                     Bola</span></div>
 
-            <div class="nav-group-title">MERCADOS DE ELITE</div>
-            <div class="league-nav-item" onclick="openLeaguePortal('Liga Portugal')">
-                <i class="fas fa-certificate" style="color: #00ff88;"></i>
-                <span>Liga Portugal</span>
+            <div class="nav-group-title">LIGAS FIXAS</div>
+            <div class="sidebar-league-item" onclick="openLeaguePortal('Bundesliga')">
+                <img src="https://flagcdn.com/w40/de.png" class="sidebar-flag">
+                <span>Bundesliga</span>
             </div>
-            <div class="league-nav-item" onclick="openLeaguePortal('Premier League')">
-                <i class="fas fa-crown" style="color: #ffcc00;"></i>
+            <div class="sidebar-league-item" onclick="openLeaguePortal('La Liga')">
+                <img src="https://flagcdn.com/w40/es.png" class="sidebar-flag">
+                <span>LaLiga</span>
+            </div>
+            <div class="sidebar-league-item" onclick="openLeaguePortal('Liga 1')">
+                <img src="https://flagcdn.com/w40/fr.png" class="sidebar-flag">
+                <span>Liga 1</span>
+            </div>
+            <div class="sidebar-league-item" onclick="openLeaguePortal('Premier League')">
+                <img src="https://flagcdn.com/w40/gb.png" class="sidebar-flag">
                 <span>Premier League</span>
             </div>
-            <div class="league-nav-item" onclick="openLeaguePortal('La Liga')">
-                <i class="fas fa-shield-alt" style="color: #ff3e3e;"></i>
-                <span>La Liga</span>
+            <div class="sidebar-league-item" onclick="openLeaguePortal('Serie A')">
+                <img src="https://flagcdn.com/w40/it.png" class="sidebar-flag">
+                <span>Série A</span>
             </div>
-            <div class="league-nav-item" onclick="openLeaguePortal('Serie A')">
-                <i class="fas fa-star" style="color: #0099ff;"></i>
-                <span>Serie A</span>
-            </div>
-            <div class="league-nav-item" onclick="openLeaguePortal('Champions League')">
-                <i class="fas fa-trophy" style="color: #ffffff;"></i>
-                <span>Champions League</span>
+            <div class="sidebar-league-item" onclick="openLeaguePortal('Liga Portugal')">
+                <img src="https://flagcdn.com/w40/pt.png" class="sidebar-flag">
+                <span>Liga Portugal</span>
             </div>
 
             <div class="nav-admin">
@@ -143,13 +147,32 @@
                     </div>
                 </div>
 
+                <!-- Sub-Tabs Scoreboard (New Layout) -->
+                <div class="sub-tabs-container">
+                    <div class="sub-tabs">
+                        <button class="sub-tab-btn active">Todos</button>
+                        <button class="sub-tab-btn">Ao Vivo</button>
+                        <button class="sub-tab-btn">Odds</button>
+                        <button class="sub-tab-btn">Terminados</button>
+                        <button class="sub-tab-btn">Agendados</button>
+                    </div>
+                    <div class="date-nav">
+                        <i class="fas fa-chevron-left"></i>
+                        <div class="date-display">
+                            <i class="far fa-calendar-alt"></i>
+                            <span id="current-date-header">22/02 DO</span>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+
                 <!-- Global Competition Matrix -->
                 <div class="card-header">
                     <h2><i class="fas fa-globe"></i> Radar de Mercado Global</h2>
                     <span class="badge" style="background: var(--accent-gold);">SINCRONIA LIVE</span>
                 </div>
 
-                <div id="competition-matrix" class="competition-matrix">
+                <div id="competition-matrix" class="competition-matrix scoreboard-view">
                     <!-- Dynamically filled by JS -->
                     <div class="live-indicator"><span class="pulse"></span> A LIGAR À REDE GLOBAL DE SATÉLITES...
                     </div>

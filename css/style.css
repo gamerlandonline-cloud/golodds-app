@@ -1836,3 +1836,282 @@ h3,
     letter-spacing: 1px;
     text-transform: uppercase;
 }
+
+/* Scoreboard Layout Styles */
+.sub-tabs-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10, 16, 31, 0.8);
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sub-tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.sub-tab-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-dim);
+    padding: 6px 15px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.sub-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.sub-tab-btn.active {
+    background: #e91e63; /* Dynamic red from image */
+    color: white;
+    border-color: #e91e63;
+    box-shadow: 0 0 15px rgba(233, 30, 99, 0.4);
+}
+
+.date-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-dim);
+    font-size: 12px;
+}
+
+.date-nav i {
+    cursor: pointer;
+    padding: 5px;
+}
+
+.date-display {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+}
+
+/* League Scoreboard Header */
+.league-scoreboard-header {
+    background: rgba(5, 8, 16, 0.6);
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 3px solid var(--accent-blue);
+    margin-top: 15px;
+}
+
+.league-info-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.league-flag {
+    width: 20px;
+    height: 14px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.league-name-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--text-main);
+    text-transform: uppercase;
+}
+
+.league-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 10px;
+    color: var(--accent-blue);
+}
+
+/* Match Row */
+.match-row {
+    background: rgba(10, 16, 31, 0.4);
+    display: grid;
+    grid-template-columns: 40px 100px 1fr 100px 100px;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.match-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.match-fav {
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 14px;
+}
+
+.match-status-col {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+}
+
+.match-status-col.live {
+    color: #ff3e3e;
+    animation: blink 1s infinite;
+}
+
+.match-teams-col {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.team-entry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.team-entry img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.match-scores-col {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: right;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    padding-right: 20px;
+}
+
+.score-val {
+    color: var(--text-main);
+}
+
+.match-icons-col {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    color: var(--text-dim);
+    font-size: 12px;
+}
+
+/* Sidebar Flags */
+.sidebar-league-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 25px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.sidebar-league-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.sidebar-flag {
+    width: 18px;
+    height: 12px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+/* Sidebar Polishing to match image */
+.sidebar {
+    background: #050810;
+    width: 260px;
+}
+
+.nav-group-title {
+    padding: 25px 25px 10px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 1.5px;
+}
+
+.sidebar-league-item {
+    padding: 10px 25px;
+    gap: 15px;
+}
+
+.sidebar-league-item span {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.sidebar-flag {
+    width: 22px;
+    height: 15px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+.scoreboard-view {
+    display: block; /* Switch from grid to block list */
+}
+
+/* Scoreboard Color Polish */
+.match-row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.team-entry span {
+    color: #e0e6ed;
+}
+
+.score-val {
+    font-size: 16px;
+    letter-spacing: 1px;
+}
+
+.league-scoreboard-header {
+    background: linear-gradient(90deg, #1a2333 0%, transparent 100%);
+    margin-bottom: 2px;
+}
+
+.sub-tab-btn.active {
+    background: #FF0032; /* Closer to the red in the image */
+    border-color: #FF0032;
+}
+
+/* Fix for mobile scoreboard */
+@media (max-width: 768px) {
+    .match-row {
+        grid-template-columns: 30px 60px 1fr 40px;
+    }
+    .match-icons-col {
+        display: none;
+    }
+    .match-status-col {
+        font-size: 8px;
+    }
+    .team-entry span {
+        font-size: 11px;
+    }
+}
