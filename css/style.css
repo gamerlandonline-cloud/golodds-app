@@ -2239,3 +2239,175 @@ h3,
     0%, 100% { box-shadow: 0 0 6px #FF003280; }
     50% { box-shadow: 0 0 14px #FF0032; }
 }
+
+/* ============================================
+   AI PREDICTION MATCH ROWS (match-predict-row)
+   ============================================ */
+.match-predict-row {
+    background: rgba(13, 22, 43, 0.7);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    overflow: hidden;
+}
+.match-predict-row:hover {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 16px rgba(0,153,255,0.15);
+    transform: translateY(-1px);
+}
+
+/* Header row: time | teams | verdict */
+.mpr-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    flex-wrap: wrap;
+}
+.mpr-status {
+    font-family: "Orbitron", sans-serif;
+    font-size: 9px;
+    color: var(--text-dim);
+    min-width: 52px;
+    text-align: center;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    padding: 4px 8px;
+    letter-spacing: 0.5px;
+}
+.mpr-status.live {
+    color: #ff3e3e;
+    background: rgba(255,62,62,0.12);
+    animation: pulse-red 1.2s infinite;
+}
+@keyframes pulse-red {
+    0%,100% { opacity: 1; } 50% { opacity: 0.6; }
+}
+
+.mpr-teams {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+.mpr-team {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    overflow: hidden;
+}
+.mpr-team span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mpr-team-away { flex-direction: row-reverse; text-align: right; }
+.mpr-crest {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: rgba(255,255,255,0.05);
+    flex-shrink: 0;
+}
+.mpr-vs {
+    font-family: "Orbitron", sans-serif;
+    font-size: 10px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+}
+
+/* Verdict pill */
+.mpr-verdict-pill {
+    font-family: "Orbitron", sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.verdict-home { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid #00ff88; }
+.verdict-away { background: rgba(255,62,62,0.15); color: #ff3e3e; border: 1px solid #ff3e3e; }
+.verdict-draw  { background: rgba(255,196,0,0.15); color: #ffc400; border: 1px solid #ffc400; }
+.verdict-unknown { background: rgba(255,255,255,0.05); color: var(--text-dim); border: 1px solid var(--border-color); }
+
+/* Analysis section: probability bars */
+.mpr-analysis {
+    border-top: 1px solid var(--border-color);
+    padding: 12px 16px;
+    background: rgba(0,0,0,0.2);
+}
+.mpr-prob-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.mpr-prob-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.mpr-prob-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+}
+.mpr-odds {
+    color: var(--accent-gold);
+    font-family: "Orbitron", sans-serif;
+    font-size: 9px;
+}
+.mpr-bar-bg {
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.mpr-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s ease;
+}
+.mpr-bar-home { background: linear-gradient(90deg, #00ff88, #00cc6a); }
+.mpr-bar-draw  { background: linear-gradient(90deg, #ffc400, #ff9900); }
+.mpr-bar-away  { background: linear-gradient(90deg, #ff3e3e, #cc0000); }
+
+.mpr-pct {
+    font-family: "Orbitron", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    text-align: right;
+}
+
+/* Deep Analysis button */
+.mpr-deep-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: "Orbitron", sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--accent-blue);
+    border: 1px solid rgba(0,153,255,0.3);
+    border-radius: 6px;
+    padding: 6px 14px;
+    background: rgba(0,153,255,0.05);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.mpr-deep-btn:hover {
+    background: rgba(0,153,255,0.15);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 10px rgba(0,153,255,0.2);
+}

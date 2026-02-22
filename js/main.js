@@ -542,6 +542,32 @@ function getLeagueFlag(leagueName) {
     return flags[leagueName] || 'https://flagcdn.com/w40/un.png';
 }
 
+function getAIPrediction(match) {
+    // Calculate AI probabilities from bookmaker odds
+    if (!match.bookmakers || !match.bookmakers[0]) return null;
+    const outcomes = match.bookmakers[0].markets[0].outcomes;
+    const homeOutcome = outcomes.find(o => o.name === match.home_team);
+    const awayOutcome = outcomes.find(o => o.name === match.away_team);
+    const drawOutcome = outcomes.find(o => o.name === 'Draw' || o.name === 'X');
+    if (!homeOutcome || !awayOutcome) return null;
+
+    const rH = (1 / homeOutcome.price) * 100;
+    const rA = (1 / awayOutcome.price) * 100;
+    const rD = drawOutcome ? (1 / drawOutcome.price) * 100 : 20;
+    const total = rH + rA + rD;
+
+    const pH = Math.round((rH / total) * 100);
+    const pA = Math.round((rA / total) * 100);
+    const pD = 100 - pH - pA;
+
+    let verdict, verdictClass;
+    if (pH > pA && pH > pD) { verdict = 'VITÓRIA CASA'; verdictClass = 'verdict-home'; }
+    else if (pA > pH && pA > pD) { verdict = 'VITÓRIA FORA'; verdictClass = 'verdict-away'; }
+    else { verdict = 'EMPATE'; verdictClass = 'verdict-draw'; }
+
+    return { pH, pD, pA, verdict, verdictClass, homeOdds: homeOutcome.price, drawOdds: drawOutcome ? drawOutcome.price : '-', awayOdds: awayOutcome.price };
+}
+
 function renderLeagueSection(name, matches, targetElement = null) {
     const matrix = targetElement || document.getElementById('competition-matrix');
 
@@ -551,50 +577,71 @@ function renderLeagueSection(name, matches, targetElement = null) {
         <div class="league-info-box">
             <img src="${getLeagueFlag(name)}" class="league-flag">
             <span class="league-name-text">${name}</span>
-            <i class="fas fa-thumbtack" style="font-size: 10px; color: var(--accent-blue); transform: rotate(45deg);"></i>
         </div>
         <div class="league-actions">
-            <span>Classificações</span>
-            <i class="fas fa-chevron-down"></i>
+            <span>${matches.length} jogo${matches.length !== 1 ? 's' : ''}</span>
         </div>
     `;
     matrix.appendChild(header);
 
     matches.forEach(match => {
+        const pred = getAIPrediction(match);
+        const isLive = match.live_score && !match.completed;
+        const statusText = match.completed ? 'FIM' : (isLive ? '🔴 LIVE' : formatMatchTime(match.commence_time));
+
         const row = document.createElement('div');
-        row.className = 'match-row';
+        row.className = 'match-predict-row';
         row.onclick = () => {
             updateMatchUI(match);
             updateOddsUI(match);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
-        const isLive = match.live_score && !match.completed;
-        const statusText = match.completed ? 'Terminado' : (isLive ? 'Em Direto' : formatMatchTime(match.commence_time));
-
         row.innerHTML = `
-            <div class="match-fav"><i class="far fa-star"></i></div>
-            <div class="match-status-col ${isLive ? 'live' : ''}">${statusText}</div>
-            <div class="match-teams-col">
-                <div class="team-entry">
-                    <img src="${getCrestUrl(match.home_team)}">
-                    <span>${match.home_team}</span>
+            <div class="mpr-header">
+                <div class="mpr-status ${isLive ? 'live' : ''}">${statusText}</div>
+                <div class="mpr-teams">
+                    <div class="mpr-team">
+                        <img src="${getCrestUrl(match.home_team)}" class="mpr-crest">
+                        <span>${match.home_team}</span>
+                    </div>
+                    <div class="mpr-vs">VS</div>
+                    <div class="mpr-team mpr-team-away">
+                        <span>${match.away_team}</span>
+                        <img src="${getCrestUrl(match.away_team)}" class="mpr-crest">
+                    </div>
                 </div>
-                <div class="team-entry">
-                    <img src="${getCrestUrl(match.away_team)}">
-                    <span>${match.away_team}</span>
+                ${pred ? `<div class="mpr-verdict-pill ${pred.verdictClass}"><i class="fas fa-microchip"></i> ${pred.verdict}</div>` : '<div class="mpr-verdict-pill verdict-unknown"><i class="fas fa-question-circle"></i> SEM ODDS</div>'}
+            </div>
+            ${pred ? `
+            <div class="mpr-analysis">
+                <div class="mpr-prob-row">
+                    <div class="mpr-prob-item">
+                        <div class="mpr-prob-label">Casa <span class="mpr-odds">@${pred.homeOdds}</span></div>
+                        <div class="mpr-bar-bg">
+                            <div class="mpr-bar mpr-bar-home" style="width:${pred.pH}%"></div>
+                        </div>
+                        <div class="mpr-pct">${pred.pH}%</div>
+                    </div>
+                    <div class="mpr-prob-item">
+                        <div class="mpr-prob-label">Empate <span class="mpr-odds">@${pred.drawOdds}</span></div>
+                        <div class="mpr-bar-bg">
+                            <div class="mpr-bar mpr-bar-draw" style="width:${pred.pD}%"></div>
+                        </div>
+                        <div class="mpr-pct">${pred.pD}%</div>
+                    </div>
+                    <div class="mpr-prob-item">
+                        <div class="mpr-prob-label">Fora <span class="mpr-odds">@${pred.awayOdds}</span></div>
+                        <div class="mpr-bar-bg">
+                            <div class="mpr-bar mpr-bar-away" style="width:${pred.pA}%"></div>
+                        </div>
+                        <div class="mpr-pct">${pred.pA}%</div>
+                    </div>
                 </div>
-            </div>
-            <div class="match-scores-col">
-                <div class="score-val">${match.live_score ? match.live_score[0].score : (match.completed ? '0' : '-')}</div>
-                <div class="score-val">${match.live_score ? match.live_score[1].score : (match.completed ? '0' : '-')}</div>
-            </div>
-            <div class="match-icons-col">
-                <a href="https://www.flashscore.pt/procurar/?q=${match.home_team}+vs+${match.away_team}" target="_blank" class="flashscore-btn" title="Ver no Flashscore Real-Time">
-                    <i class="fas fa-external-link-alt"></i>
-                </a>
-                <i class="fas fa-desktop"></i>
-            </div>
+                <div class="mpr-deep-btn" onclick="event.stopPropagation(); updateMatchUI(${JSON.stringify(match).replace(/"/g, '&quot;')}); updateOddsUI(${JSON.stringify(match).replace(/"/g, '&quot;')}); window.scrollTo({top:0,behavior:'smooth'});">
+                    <i class="fas fa-brain"></i> ANÁLISE PROFUNDA
+                </div>
+            </div>` : ''}
         `;
         matrix.appendChild(row);
     });
