@@ -737,69 +737,41 @@ function loadMockData() {
         return d.toISOString();
     }
 
-    const mockMatches = [
-        {
-            id: 'mock-1',
-            home_team: 'Manchester City', away_team: 'Chelsea',
-            league_name: 'Premier League',
-            commence_time: tod(13, 30),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Manchester City', price: 1.72 }, { name: 'Draw', price: 3.80 }, { name: 'Chelsea', price: 4.50 }] }] }]
-        },
-        {
-            id: 'mock-2',
-            home_team: 'Arsenal', away_team: 'Nottingham Forest',
-            league_name: 'Premier League',
-            commence_time: tod(16, 0),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Arsenal', price: 1.55 }, { name: 'Draw', price: 4.20 }, { name: 'Nottingham Forest', price: 6.00 }] }] }]
-        },
-        {
-            id: 'mock-3',
-            home_team: 'Barcelona', away_team: 'Rayo Vallecano',
-            league_name: 'La Liga',
-            commence_time: tod(14, 0),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Barcelona', price: 1.35 }, { name: 'Draw', price: 4.80 }, { name: 'Rayo Vallecano', price: 8.50 }] }] }]
-        },
-        {
-            id: 'mock-4',
-            home_team: 'Sevilla', away_team: 'Real Madrid',
-            league_name: 'La Liga',
-            commence_time: tod(16, 15),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Sevilla', price: 5.20 }, { name: 'Draw', price: 3.90 }, { name: 'Real Madrid', price: 1.65 }] }] }]
-        },
-        {
-            id: 'mock-5',
-            home_team: 'Benfica', away_team: 'Sporting CP',
-            league_name: 'Liga Portugal',
-            commence_time: tod(17, 30),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Benfica', price: 2.10 }, { name: 'Draw', price: 3.30 }, { name: 'Sporting CP', price: 3.40 }] }] }]
-        },
-        {
-            id: 'mock-6',
-            home_team: 'Bayern Munich', away_team: 'Frankfurt',
-            league_name: 'Bundesliga',
-            commence_time: tod(15, 30),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Bayern Munich', price: 1.40 }, { name: 'Draw', price: 4.60 }, { name: 'Frankfurt', price: 7.50 }] }] }]
-        },
-        {
-            id: 'mock-7',
-            home_team: 'Juventus', away_team: 'Napoli',
-            league_name: 'Serie A',
-            commence_time: tod(18, 0),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Juventus', price: 2.50 }, { name: 'Draw', price: 3.20 }, { name: 'Napoli', price: 2.80 }] }] }]
-        },
-        {
-            id: 'mock-8',
-            home_team: 'PSG', away_team: 'Lyon',
-            league_name: 'Liga 1',
-            commence_time: tod(20, 45),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'PSG', price: 1.30 }, { name: 'Draw', price: 5.20 }, { name: 'Lyon', price: 9.00 }] }] }]
-        }
-    ];
+    const day = d.getDate();
+    const month = d.getMonth() + 1; // FEB = 2
 
-    allMatchesData = mockMatches;
+    let matches = [];
+
+    if (day === 23) {
+        matches = [
+            { id: 'm-23-1', home_team: 'Benfica', away_team: 'FC Porto', league_name: 'Liga Portugal', commence_time: tod(20, 15), bookmakers: [{ markets: [{ outcomes: [{ name: 'Benfica', price: 2.15 }, { name: 'Draw', price: 3.40 }, { name: 'FC Porto', price: 3.20 }] }] }] },
+            { id: 'm-23-2', home_team: 'Crystal Palace', away_team: 'Man United', league_name: 'Premier League', commence_time: tod(20, 0), bookmakers: [{ markets: [{ outcomes: [{ name: 'Crystal Palace', price: 3.80 }, { name: 'Draw', price: 3.60 }, { name: 'Man United', price: 1.95 }] }] }] },
+            { id: 'm-23-3', home_team: 'Girona', away_team: 'Real Sociedad', league_name: 'La Liga', commence_time: tod(21, 0), bookmakers: [{ markets: [{ outcomes: [{ name: 'Girona', price: 2.45 }, { name: 'Draw', price: 3.25 }, { name: 'Real Sociedad', price: 2.90 }] }] }] }
+        ];
+    } else if (day === 24) {
+        matches = [
+            { id: 'm-24-1', home_team: 'Real Madrid', away_team: 'AC Milan', league_name: 'Champions League', commence_time: tod(20, 0), bookmakers: [{ markets: [{ outcomes: [{ name: 'Real Madrid', price: 1.55 }, { name: 'Draw', price: 4.50 }, { name: 'AC Milan', price: 5.50 }] }] }] },
+            { id: 'm-24-2', home_team: 'Bayern', away_team: 'Arsenal', league_name: 'Champions League', commence_time: tod(20, 0), bookmakers: [{ markets: [{ outcomes: [{ name: 'Bayern', price: 2.10 }, { name: 'Draw', price: 3.60 }, { name: 'Arsenal', price: 3.20 }] }] }] },
+            { id: 'm-24-3', home_team: 'Sporting CP', away_team: 'Braga', league_name: 'Liga Portugal', commence_time: tod(20, 45), bookmakers: [{ markets: [{ outcomes: [{ name: 'Sporting CP', price: 1.65 }, { name: 'Draw', price: 3.90 }, { name: 'Braga', price: 5.00 }] }] }] }
+        ];
+    } else if (day === 25) {
+        matches = [
+            { id: 'm-25-1', home_team: 'Inter', away_team: 'Man City', league_name: 'Champions League', commence_time: tod(20, 0), bookmakers: [{ markets: [{ outcomes: [{ name: 'Inter', price: 3.10 }, { name: 'Draw', price: 3.50 }, { name: 'Man City', price: 2.20 }] }] }] },
+            { id: 'm-25-2', home_team: 'Barcelona', away_team: 'Liverpool', league_name: 'Champions League', commence_time: tod(20, 0), bookmakers: [{ markets: [{ outcomes: [{ name: 'Barcelona', price: 2.60 }, { name: 'Draw', price: 3.60 }, { name: 'Liverpool', price: 2.50 }] }] }] }
+        ];
+    } else {
+        // generic fallback for other days
+        matches = [
+            { id: 'mock-gen-1', home_team: 'Team Alpha', away_team: 'Team Beta', league_name: 'Exhibition', commence_time: tod(15, 0), bookmakers: [{ markets: [{ outcomes: [{ name: 'Team Alpha', price: 2.00 }, { name: 'Draw', price: 3.00 }, { name: 'Team Beta', price: 2.00 }] }] }] }
+        ];
+    }
+
+    allMatchesData = matches;
     applyScoreboardFilters();
-    updateMatchUI(mockMatches[0]);
-    updateOddsUI(mockMatches[0]);
+    if (matches[0]) {
+        updateMatchUI(matches[0]);
+        updateOddsUI(matches[0]);
+    }
     updateNeuralTicker(getTopPicks());
 }
 
@@ -1528,15 +1500,15 @@ function renderTopPicks() {
 }
 
 const NEWS_DATA = [
-    { league: 'portugal', source: 'A Bola', title: 'Benfica prepara ataque ao mercado de verão', excerpt: 'As águias estão atentas a novos talentos para reforçar o plantel na próxima época.', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://www.abola.pt' },
-    { league: 'portugal', source: 'Record', title: 'Sporting focado na renovação do título', excerpt: 'Rúben Amorim mantém o grupo unido e focado nos objetivos traçados.', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://www.record.pt' },
-    { league: 'portugal', source: 'O Jogo', title: 'FC Porto estuda novas opções para o ataque', excerpt: 'Sérgio Conceição quer mais eficácia na finalização e procura soluções no mercado internacional.', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400', date: '21 FEV 2026', url: 'https://www.ojogo.pt' },
-    { league: 'england', source: 'Sky Sports', title: 'Man City and Arsenal in thrilling title race', excerpt: 'The Premier League summit remains contested as both teams show incredible consistency.', image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://www.skysports.com/football' },
-    { league: 'england', source: 'The Guardian', title: 'Klopp projeta futuro promissor para o Liverpool', excerpt: 'O treinador discute os planos a longo prazo e a integração de jovens talentos.', image: 'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://www.theguardian.com/football' },
-    { league: 'spain', source: 'MARCA', title: 'Real Madrid foca na renovação do meio-campo', excerpt: 'A estratégia merengue para garantir a sucessão de seus veteranos consagrados.', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400', date: '21 FEV 2026', url: 'https://www.marca.com' },
-    { league: 'spain', source: 'AS', title: 'Barcelona busca blindar a sus jóvenes promesas', excerpt: 'El club catalán inicia conversa para renovar contratos clave en La Masía.', image: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=400', date: '21 FEV 2026', url: 'https://as.com' },
-    { league: 'italy', source: 'Gazzetta dello Sport', title: 'Inter domina o mercado italiano', excerpt: 'A estratégia dos nerazzurri para manter a hegemonia na Série A.', image: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://www.gazzetta.it' },
-    { league: 'germany', source: 'BILD', title: 'Bayern busca reconstrução sob novo comando', excerpt: 'As mudanças táticas esperadas para a próxima temporada na Baviera.', image: 'https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&q=80&w=400', date: '20 FEV 2026', url: 'https://www.bild.de' }
+    { league: 'portugal', source: 'A Bola', title: 'Benfica prepara ataque ao mercado de verão', excerpt: 'As águias estão atentas a novos talentos para reforçar o plantel na próxima época.', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=400', date: '23 FEV 2026', url: 'https://www.abola.pt' },
+    { league: 'portugal', source: 'Record', title: 'Sporting focado na renovação do título', excerpt: 'Rúben Amorim mantém o grupo unido e focado nos objetivos traçados.', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=400', date: '23 FEV 2026', url: 'https://www.record.pt' },
+    { league: 'portugal', source: 'O Jogo', title: 'FC Porto estuda novas opções para o ataque', excerpt: 'Sérgio Conceição quer mais eficácia na finalização e procura soluções no mercado internacional.', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://www.ojogo.pt' },
+    { league: 'england', source: 'Sky Sports', title: 'Man City and Arsenal in thrilling title race', excerpt: 'The Premier League summit remains contested as both teams show incredible consistency.', image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&q=80&w=400', date: '23 FEV 2026', url: 'https://www.skysports.com/football' },
+    { league: 'england', source: 'The Guardian', title: 'Klopp projeta futuro promissor para o Liverpool', excerpt: 'O treinador discute os planos a longo prazo e a integração de jovens talentos.', image: 'https://images.unsplash.com/photo-1543351611-58f69d7c1781?auto=format&fit=crop&q=80&w=400', date: '23 FEV 2026', url: 'https://www.theguardian.com/football' },
+    { league: 'spain', source: 'MARCA', title: 'Real Madrid foca na renovação do meio-campo', excerpt: 'A estratégia merengue para garantir a sucessão de seus veteranos consagrados.', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400', date: '23 FEV 2026', url: 'https://www.marca.com' },
+    { league: 'spain', source: 'AS', title: 'Barcelona busca blindar a sus jóvenes promesas', excerpt: 'El club catalán inicia conversa para renovar contratos clave en La Masía.', image: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=400', date: '22 FEV 2026', url: 'https://as.com' },
+    { league: 'italy', source: 'Gazzetta dello Sport', title: 'Inter domina o mercado italiano', excerpt: 'A estratégia dos nerazzurri para manter a hegemonia na Série A.', image: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&q=80&w=400', date: '23 FEV 2026', url: 'https://www.gazzetta.it' },
+    { league: 'germany', source: 'BILD', title: 'Bayern busca reconstrução sob novo comando', excerpt: 'As mudanças táticas esperadas para a próxima temporada na Baviera.', image: 'https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&q=80&w=400', date: '23 FEV 2026', url: 'https://www.bild.de' }
 ];
 
 function renderNews(category = 'all') {
@@ -1583,7 +1555,7 @@ function filterNews(category) {
 
 // Scoreboard Navigation Logic
 let currentScoreboardFilter = 'all';
-let currentScoreboardDate = new Date();
+let currentScoreboardDate = new Date('2026-02-23T00:00:00');
 
 function updateDateHeader() {
     const days = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
@@ -1593,7 +1565,7 @@ function updateDateHeader() {
 }
 
 async function resetToToday() {
-    currentScoreboardDate = new Date();
+    currentScoreboardDate = new Date('2026-02-23T00:00:00');
     updateDateHeader();
     const matrix = document.getElementById('competition-matrix');
     matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A RETORNAR A HOJE...</div>';
