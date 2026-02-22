@@ -703,8 +703,9 @@ function openLeaguePortal(leagueName) {
     switchTab('league-portal');
 
     // Update Active Sidebar (Custom logic for league items)
-    document.querySelectorAll('.league-nav-item').forEach(item => {
-        if (item.querySelector('span').innerText === leagueName) {
+    document.querySelectorAll('.sidebar-league-item').forEach(item => {
+        const text = item.querySelector('span').innerText;
+        if (text === leagueName || (leagueName === 'La Liga' && text === 'LaLiga') || (leagueName === 'Serie A' && text === 'Série A')) {
             item.style.color = 'var(--accent-blue)';
             item.style.background = 'rgba(0, 153, 255, 0.1)';
         } else {
@@ -720,7 +721,11 @@ function openLeaguePortal(leagueName) {
         'Liga Portugal': { icon: 'fa-certificate', color: '#00ff88' },
         'Premier League': { icon: 'fa-crown', color: '#ffcc00' },
         'La Liga': { icon: 'fa-shield-alt', color: '#ff3e3e' },
+        'LaLiga': { icon: 'fa-shield-alt', color: '#ff3e3e' },
         'Serie A': { icon: 'fa-star', color: '#0099ff' },
+        'Série A': { icon: 'fa-star', color: '#0099ff' },
+        'Bundesliga': { icon: 'fa-futbol', color: '#ffcc00' },
+        'Liga 1': { icon: 'fa-bolt', color: '#0099ff' },
         'Champions League': { icon: 'fa-trophy', color: '#ffffff' }
     };
 
@@ -738,7 +743,8 @@ function openLeaguePortal(leagueName) {
         </div>
     `;
 
-    const filtered = allMatchesData.filter(m => m.league_name === leagueName || (leagueName === 'La Liga' && m.league_name === 'LaLiga'));
+    const normalizedName = leagueName === 'LaLiga' ? 'La Liga' : (leagueName === 'Série A' ? 'Serie A' : leagueName);
+    const filtered = allMatchesData.filter(m => m.league_name === normalizedName);
     content.innerHTML = '';
 
     if (filtered.length === 0) {
@@ -814,7 +820,7 @@ function switchTab(tabId) {
 
     // Clear league portal styles if not in league-portal
     if (tabId !== 'league-portal') {
-        document.querySelectorAll('.league-nav-item').forEach(item => {
+        document.querySelectorAll('.sidebar-league-item').forEach(item => {
             item.style.color = '';
             item.style.background = '';
         });
