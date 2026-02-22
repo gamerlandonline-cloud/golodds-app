@@ -6,6 +6,26 @@ const API_CONFIG = {
     STATS_URL: 'https://api.football-data.org/v4/'
 };
 
+// Official Crest Mapping for Top Clubs (Football-Data.org IDs)
+const TEAM_CRESTS = {
+    'Real Madrid': '86', 'FC Barcelona': '81', 'Barça': '81', 'Barcelona': '81',
+    'Manchester City': '65', 'Man City': '65', 'Liverpool FC': '64', 'Liverpool': '64',
+    'Arsenal FC': '57', 'Arsenal': '57', 'Manchester United': '66', 'Man Utd': '66',
+    'Chelsea FC': '61', 'Chelsea': '61', 'Tottenham Hotspur': '73', 'Spurs': '73',
+    'SL Benfica': '1903', 'Benfica': '1903', 'FC Porto': '503', 'Porto': '503',
+    'Sporting CP': '498', 'Sporting': '498', 'Vitória SC': '554', 'SC Braga': '561',
+    'Bayern München': '5', 'Bayern Munich': '5', 'Borussia Dortmund': '4', 'BVB': '4',
+    'Juventus FC': '108', 'Juventus': '108', 'Inter Milan': '108', 'Inter': '108',
+    'AC Milan': '98', 'SSC Napoli': '113', 'Napoli': '113', 'PSG': '524', 'Paris Saint-Germain': '524'
+};
+
+function getCrestUrl(teamName) {
+    const name = teamName.trim();
+    const id = TEAM_CRESTS[name] || Object.keys(TEAM_CRESTS).find(k => name.includes(k));
+    if (id) return `https://crests.football-data.org/${TEAM_CRESTS[id] || id}.png`;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00ff88&color=000&bold=true`;
+}
+
 // Initialize Three.js Background
 function initThree() {
     const container = document.getElementById('three-container');
@@ -282,12 +302,12 @@ function renderLeagueSection(name, matches) {
             </div>
             <div class="mini-vs">
                 <div class="mini-team">
-                    <img src="https://ui-avatars.com/api/?name=${match.home_team}&background=random" class="mini-crest">
+                    <img src="${getCrestUrl(match.home_team)}" class="mini-crest">
                     <span>${match.home_team}</span>
                 </div>
                 <div class="vs-text" style="font-size: 14px;">VS</div>
                 <div class="mini-team">
-                    <img src="https://ui-avatars.com/api/?name=${match.away_team}&background=random" class="mini-crest">
+                    <img src="${getCrestUrl(match.away_team)}" class="mini-crest">
                     <span>${match.away_team}</span>
                 </div>
             </div>
@@ -313,7 +333,7 @@ async function updateMatchUI(match) {
     vsContainer.innerHTML = `
         <div class="team team-home">
             <div class="crest-container">
-                <img src="https://ui-avatars.com/api/?name=${match.home_team}&background=random" class="team-crest">
+                <img src="${getCrestUrl(match.home_team)}" class="team-crest">
                 <div class="scan-line"></div>
             </div>
             <h2>${match.home_team.toUpperCase()}</h2>
@@ -322,7 +342,7 @@ async function updateMatchUI(match) {
         <div class="vs-text">VS</div>
         <div class="team team-away">
             <div class="crest-container">
-                <img src="https://ui-avatars.com/api/?name=${match.away_team}&background=random" class="team-crest">
+                <img src="${getCrestUrl(match.away_team)}" class="team-crest">
                 <div class="scan-line"></div>
             </div>
             <h2>${match.away_team.toUpperCase()}</h2>
