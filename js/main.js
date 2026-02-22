@@ -212,17 +212,21 @@ function loginAdmin() {
     const error = document.getElementById('admin-error');
     const controls = document.getElementById('admin-controls');
 
-    // Preview Logic (Universal Admin)
+    // Multi-Slot Admin Login
     if (user === "admin" && pass === "1234") {
         gsap.to(".admin-modal", { height: "auto", duration: 0.5 });
         controls.style.display = 'block';
         error.style.display = 'none';
 
-        // Load current values
-        document.getElementById('input-side-ad').value = localStorage.getItem('sideAdLink') || '';
-        document.getElementById('input-side-text').value = localStorage.getItem('sideAdText') || '';
-        document.getElementById('input-main-ad').value = localStorage.getItem('mainAdLink') || '';
-        document.getElementById('input-main-text').value = localStorage.getItem('mainAdText') || '';
+        // Load current multi-slot values
+        [1, 2].forEach(i => {
+            document.getElementById(`input-side-ad-${i}`).value = localStorage.getItem(`sideAdLink_${i}`) || '';
+            document.getElementById(`input-side-text-${i}`).value = localStorage.getItem(`sideAdText_${i}`) || '';
+        });
+        [1, 2, 3].forEach(i => {
+            document.getElementById(`input-main-ad-${i}`).value = localStorage.getItem(`mainAdLink_${i}`) || '';
+            document.getElementById(`input-main-text-${i}`).value = localStorage.getItem(`mainAdText_${i}`) || '';
+        });
     } else {
         error.style.display = 'block';
         gsap.to(".admin-modal", { x: [-10, 10, -10, 10, 0], duration: 0.4 });
@@ -230,45 +234,56 @@ function loginAdmin() {
 }
 
 function saveAds() {
-    const sideLink = document.getElementById('input-side-ad').value;
-    const sideText = document.getElementById('input-side-text').value;
-    const mainLink = document.getElementById('input-main-ad').value;
-    const mainText = document.getElementById('input-main-text').value;
+    [1, 2].forEach(i => {
+        localStorage.setItem(`sideAdLink_${i}`, document.getElementById(`input-side-ad-${i}`).value);
+        localStorage.setItem(`sideAdText_${i}`, document.getElementById(`input-side-text-${i}`).value);
+    });
+    [1, 2, 3].forEach(i => {
+        localStorage.setItem(`mainAdLink_${i}`, document.getElementById(`input-main-ad-${i}`).value);
+        localStorage.setItem(`mainAdText_${i}`, document.getElementById(`input-main-text-${i}`).value);
+    });
 
-    localStorage.setItem('sideAdLink', sideLink);
-    localStorage.setItem('sideAdText', sideText);
-    localStorage.setItem('mainAdLink', mainLink);
-    localStorage.setItem('mainAdText', mainText);
-
-    alert("CONFIGURAÇÕES DE PUBLICIDADE SALVAS!");
+    alert("CONFIGURAÇÕES DE TODOS OS PARCEIROS SALVAS!");
     renderAds();
     toggleAdmin();
 }
 
 function renderAds() {
-    const sideContainer = document.getElementById('dynamic-side-ad');
-    const mainContainer = document.getElementById('dynamic-main-ad');
+    const sideList = document.getElementById('side-ads-container');
+    const mainGrid = document.getElementById('main-ads-grid');
 
-    const sideLink = localStorage.getItem('sideAdLink');
-    const sideText = localStorage.getItem('sideAdText') || "CANAL PARCEIRO";
-    const mainLink = localStorage.getItem('mainAdLink');
-    const mainText = localStorage.getItem('mainAdText') || "DESTAQUE DA SEMANA";
+    if (!sideList || !mainGrid) return;
 
-    if (sideLink) {
-        sideContainer.innerHTML = createAdMarkup(sideLink, sideText);
-        sideContainer.onclick = () => window.open(sideLink, '_blank');
-        sideContainer.style.display = 'block';
-    } else {
-        sideContainer.style.display = 'none';
-    }
+    sideList.innerHTML = '';
+    mainGrid.innerHTML = '';
 
-    if (mainLink) {
-        mainContainer.innerHTML = createAdMarkup(mainLink, mainText);
-        mainContainer.onclick = () => window.open(mainLink, '_blank');
-        mainContainer.style.display = 'block';
-    } else {
-        mainContainer.style.display = 'none';
-    }
+    // Render Side Ads
+    [1, 2].forEach(i => {
+        const link = localStorage.getItem(`sideAdLink_${i}`);
+        const text = localStorage.getItem(`sideAdText_${i}`) || "PARCEIRO";
+        if (link) {
+            const adBox = createAdBox(link, text);
+            sideList.appendChild(adBox);
+        }
+    });
+
+    // Render Main Ads
+    [1, 2, 3].forEach(i => {
+        const link = localStorage.getItem(`mainAdLink_${i}`);
+        const text = localStorage.getItem(`mainAdText_${i}`) || "PATROCINADOR";
+        if (link) {
+            const adBox = createAdBox(link, text);
+            mainGrid.appendChild(adBox);
+        }
+    });
+}
+
+function createAdBox(link, text) {
+    const box = document.createElement('div');
+    box.className = 'dynamic-ad-box';
+    box.innerHTML = createAdMarkup(link, text);
+    box.onclick = () => window.open(link, '_blank');
+    return box;
 }
 
 function createAdMarkup(link, label) {
