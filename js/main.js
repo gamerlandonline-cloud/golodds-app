@@ -1,4 +1,9 @@
-// GOLODDS Main Logic
+// GOLODDS Main Logic - API Configuration
+const API_CONFIG = {
+    FOOTBALL_DATA_KEY: '',
+    ODDS_API_KEY: 'b67e54e948f9f33d50930e9b19555271',
+    BASE_URL: 'https://api.the-odds-api.com/v4/sports/'
+};
 
 // Initialize Three.js Background
 function initThree() {
@@ -179,10 +184,92 @@ function runAIScan() {
     });
 }
 
+// Real-time Data Fetching from The Odds API
+async function fetchLiveMatches() {
+    const matchContainer = document.querySelector('.vs-container');
+
+    // UI Feedback: Connecting
+    console.log("MATRIX: Analysing live feeds...");
+
+    try {
+        // Fetching soccer matches (upcoming) for major leagues
+        // We use 'soccer_uefa_champions_league' as a target, or just 'soccer' for general
+        const response = await fetch(`${API_CONFIG.BASE_URL}soccer/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h&bookmakers=bet365`);
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            // Pick a match that has odds
+            const match = data.find(m => m.bookmakers && m.bookmakers.length > 0) || data[0];
+            updateMatchUI(match);
+            updateOddsUI(match);
+        } else {
+            console.warn("No active matches found in the stream.");
+        }
+
+    } catch (error) {
+        console.error("Link Terminado: Erro na Matrix de dados", error);
+    }
+}
+
+function updateMatchUI(match) {
+    const homeTeam = document.querySelector('.team-home h2');
+    const awayTeam = document.querySelector('.team-away h2');
+    const vsContainer = document.querySelector('.vs-container');
+
+    // Restore the VS structure if it was overwritten by the loader
+    vsContainer.innerHTML = `
+        <div class="team team-home">
+            <img src="https://ui-avatars.com/api/?name=${match.home_team}&background=random" class="team-crest" alt="${match.home_team}">
+            <h2>${match.home_team.toUpperCase()}</h2>
+            <div class="form">ANALYSIS PENDING...</div>
+        </div>
+        <div class="vs-text">VS</div>
+        <div class="team team-away">
+            <img src="https://ui-avatars.com/api/?name=${match.away_team}&background=random" class="team-crest" alt="${match.away_team}">
+            <h2>${match.away_team.toUpperCase()}</h2>
+            <div class="form">ANALYSIS PENDING...</div>
+        </div>
+    `;
+}
+
+function updateOddsUI(match) {
+    const oddsList = document.querySelector('.odds-list');
+    const bookmaker = match.bookmakers[0];
+    if (!bookmaker) return;
+
+    const market = bookmaker.markets[0];
+    if (!market) return;
+
+    const outcomes = market.outcomes;
+
+    oddsList.innerHTML = '';
+
+    outcomes.forEach(outcome => {
+        // Simple AI logic: high price (low probability) is marked as a potential "Value" play by the simulated engine
+        const isValue = outcome.price > 3.0;
+
+        const item = document.createElement('div');
+        item.className = `odd-item ${isValue ? 'ai-recommendation' : ''}`;
+        item.innerHTML = `
+            ${isValue ? '<span class="ai-badge"><i class="fas fa-microchip"></i> HIGH VALUE DETECTED</span>' : ''}
+            <div class="market">${outcome.name.toUpperCase()}</div>
+            <div class="prob">${outcome.price.toFixed(2)}</div>
+            <div class="ev">${isValue ? '+18.4% EV' : '+2.1% EV'}</div>
+            <div class="action-btn">LOCK IN</div>
+        `;
+        oddsList.appendChild(item);
+    });
+
+    // Re-trigger interactions and AI pulse effect
+    initInteractions();
+    runAIScan();
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initThree();
     initAnimations();
     initInteractions();
     runAIScan();
+    fetchLiveMatches(); // Inicia a conexão com os dados
 });
