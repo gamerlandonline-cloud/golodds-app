@@ -1095,7 +1095,59 @@ function calculateNeuralProbability(match, extraData = null) {
             </div>
         </div>
     `;
+
+        renderMultiAI(match, { h, a, d }, extraData);
     }, 1500);
+}
+
+function renderMultiAI(match, probs, extraData) {
+    const grid = document.getElementById('ai-opinions-grid');
+    if (!grid) return;
+
+    const personas = [
+        {
+            name: "O MATEMÁTICO",
+            icon: "fa-calculator",
+            logic: "Cálculo de Poisson focado em volume de golos e desvio padrão defensivo.",
+            getPred: () => {
+                const score = predictProbableScore(probs.h, probs.a);
+                return `PROJEÇÃO: ${score}`;
+            }
+        },
+        {
+            name: "O EXPLORADOR",
+            icon: "fa-search",
+            logic: "Análise de Momentum. Pesa a forma recente (últimos 5 jogos) e fadiga algorítmica.",
+            getPred: () => {
+                const homeForm = extraData?.hStats?.form ? extraData.hStats.form.split('').filter(f => f === 'W').length : 2;
+                const awayForm = extraData?.aStats?.form ? extraData.aStats.form.split('').filter(f => f === 'W').length : 2;
+                return homeForm >= awayForm ? `VANTAGEM: ${match.home_team}` : `VANTAGEM: ${match.away_team}`;
+            }
+        },
+        {
+            name: "O ORÁCULO",
+            icon: "fa-eye",
+            logic: "Análise Cross-Market. Identifica para onde o dinheiro inteligente se está a mover.",
+            getPred: () => {
+                const implied = Math.max(probs.h, probs.a, probs.d);
+                if (implied === probs.h) return `TENDÊNCIA: CASA`;
+                if (implied === probs.a) return `TENDÊNCIA: FORA`;
+                return `TENDÊNCIA: EMPATE`;
+            }
+        }
+    ];
+
+    grid.innerHTML = '';
+    personas.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'opinion-card';
+        card.innerHTML = `
+            <div class="opinion-persona"><i class="fas ${p.icon}"></i> ${p.name}</div>
+            <div class="opinion-prediction">${p.getPred()}</div>
+            <div class="opinion-logic">${p.logic}</div>
+        `;
+        grid.appendChild(card);
+    });
 }
 
 function updateOddsUI(match, extraData = null) {

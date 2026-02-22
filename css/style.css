@@ -629,9 +629,67 @@ h3,
     margin-bottom: 2px;
 }
 
-.verdict-text p {
-    font-size: 11px;
+.neural-consensus {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    border: 1px solid rgba(0, 242, 255, 0.1);
+}
+
+.consensus-title {
+    font-size: 10px;
     color: var(--text-dim);
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.opinions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.opinion-card {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: 0.3s;
+}
+
+.opinion-card:hover {
+    background: rgba(0, 242, 255, 0.05);
+    border-color: var(--accent-cyan);
+    transform: translateY(-5px);
+}
+
+.opinion-persona {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--accent-cyan);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.opinion-prediction {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.opinion-logic {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.4;
 }
 
 .match-summary-card {
@@ -2190,6 +2248,35 @@ h3,
     background: rgba(0, 242, 255, 0.05);
     color: var(--accent-cyan);
     padding-left: 30px;
+}
+
+/* Intelligence Sources List */
+.intel-sources {
+    padding: 0 25px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.intel-item {
+    font-size: 8px;
+    font-weight: 800;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 1px;
+}
+
+.intel-item i {
+    color: var(--accent-cyan);
+    font-size: 10px;
+    margin-right: 5px;
+}
+
+.status-ok {
+    color: var(--accent-cyan);
+    font-weight: 900;
 }
 
 .sidebar-league-item span {
