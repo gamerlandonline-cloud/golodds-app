@@ -147,13 +147,13 @@ function initInteractions() {
     // Mock "Action" buttons
     document.querySelectorAll('.action-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            btn.innerHTML = '<i class="fas fa-check"></i> SYNCED';
+            btn.innerHTML = '<i class="fas fa-check"></i> SINCRONIZADO';
             btn.style.background = '#00e5ff';
 
             // Notification effect
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.innerHTML = 'SYNCING TO BETTING MATRIX...';
+            toast.innerHTML = 'A SINCRONIZAR COM A MATRIX...';
             document.body.appendChild(toast);
 
             gsap.to(toast, {
@@ -212,7 +212,7 @@ function loginAdmin() {
 
     // Simple mock logic for preview
     if (user === "admin") {
-        alert("WELCOME TO THE MATRIX, ADMIN. Loading Marketing Management...");
+        alert("BEM-VINDO À MATRIX, ADMIN. A carregar Gestão de Marketing...");
         window.location.reload(); // Simple mock refresh
     } else {
         error.style.display = 'block';
@@ -246,7 +246,7 @@ async function fetchLiveMatches() {
         { key: 'soccer_portugal_primeira_liga', name: 'Liga Portugal' }
     ];
 
-    matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> INITIALIZING SECURE LINK...</div>';
+    matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A INICIALIZAR LINK SEGURO...</div>';
 
     let dataFound = false;
     allMatchesData = [];
@@ -277,9 +277,9 @@ async function fetchLiveMatches() {
     }
 
     if (!dataFound) {
-        console.warn("MATRIX: Entering SHADOW MODE (Fallback).");
+        console.warn("MATRIX: A entrar em MODO SOMBRA (Fallback).");
         matrix.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--accent-gold); border: 1px dashed var(--accent-gold); border-radius: 10px; margin: 20px;">' +
-            '<i class="fas fa-exclamation-triangle"></i> SATELLITE LINK WEAK. LOADING SIMULATED NEURAL DATA...</div>';
+            '<i class="fas fa-exclamation-triangle"></i> ELABORAÇÃO DE LINK FRACA. A CARREGAR DADOS NEURAIS SIMULADOS...</div>';
         loadMockData();
     }
 }
@@ -298,7 +298,7 @@ function loadMockData() {
             bookmakers: [{ markets: [{ outcomes: [{ name: 'Benfica', price: 1.95 }, { name: 'Draw', price: 3.2 }, { name: 'Porto', price: 3.8 }] }] }]
         }
     ];
-    renderLeagueSection('Simulated Projections', mockMatches);
+    renderLeagueSection('Projeções Simuladas', mockMatches);
     updateMatchUI(mockMatches[0]);
     updateOddsUI(mockMatches[0]);
 }
@@ -329,8 +329,8 @@ function renderLeagueSection(name, matches) {
 
         card.innerHTML = `
             <div class="mini-match-header">
-                <span>COMMENCING: ${new Date(match.commence_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                <span class="badge">LIVE DATA</span>
+                <span>INÍCIO: ${new Date(match.commence_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <span class="badge">DADOS EM DIRETO</span>
             </div>
             <div class="mini-vs">
                 <div class="mini-team">
@@ -344,12 +344,16 @@ function renderLeagueSection(name, matches) {
                 </div>
             </div>
             <div class="mini-odds">
-                ${outcomes.map(o => `
-                    <div class="mini-odd">
-                        <label>${o.name}</label>
-                        <span class="val">${o.price.toFixed(2)}</span>
-                    </div>
-                `).join('')}
+                ${outcomes.map(o => {
+            let displayName = o.name;
+            if (displayName === 'Draw' || displayName === 'X') displayName = 'EMPATE';
+            return `
+                        <div class="mini-odd">
+                            <label>${displayName}</label>
+                            <span class="val">${o.price.toFixed(2)}</span>
+                        </div>
+                    `;
+        }).join('')}
             </div>
         `;
         grid.appendChild(card);
@@ -370,7 +374,7 @@ async function updateMatchUI(match) {
                 <div class="scan-line"></div>
             </div>
             <h2>${match.home_team.toUpperCase()}</h2>
-            <div class="form">NEURAL SCAN: ACTIVE</div>
+            <div class="form">SCAN NEURAL: ATIVO</div>
         </div>
         <div class="vs-text">VS</div>
         <div class="team team-away">
@@ -379,7 +383,7 @@ async function updateMatchUI(match) {
                 <div class="scan-line"></div>
             </div>
             <h2>${match.away_team.toUpperCase()}</h2>
-            <div class="form">NEURAL SCAN: ACTIVE</div>
+            <div class="form">SCAN NEURAL: ATIVO</div>
         </div>
     `;
 
@@ -427,9 +431,9 @@ function calculateNeuralProbability(match) {
     gsap.to('#prob-away', { width: `${a}%`, duration: 2, ease: "power4.out", delay: 0.4 });
 
     // Update Text
-    document.getElementById('label-home').innerText = `HOME: ${h.toFixed(1)}%`;
-    document.getElementById('label-draw').innerText = `DRAW: ${d.toFixed(1)}%`;
-    document.getElementById('label-away').innerText = `AWAY: ${a.toFixed(1)}%`;
+    document.getElementById('label-home').innerText = `CASA: ${h.toFixed(1)}%`;
+    document.getElementById('label-draw').innerText = `EMPATE: ${d.toFixed(1)}%`;
+    document.getElementById('label-away').innerText = `FORA: ${a.toFixed(1)}%`;
 
     // Generate AI Verdict
     const verdictBox = document.getElementById('ai-verdict');
@@ -439,8 +443,8 @@ function calculateNeuralProbability(match) {
     verdictBox.innerHTML = `
         <div class="verdict-icon"><i class="fas fa-robot"></i></div>
         <div class="verdict-text">
-            <h4>AI VERDICT: ${bestChoice.toUpperCase()}</h4>
-            <p>Based on neural analysis of the last 20 matches, market volatility, and squad depth index. Confidence Level: ${confidence}%</p>
+            <h4>VEREDITO IA: ${bestChoice === 'DRAW' ? 'EMPATE' : bestChoice.toUpperCase()}</h4>
+            <p>Baseado numa análise neural dos últimos 20 jogos, volatilidade de mercado e índice de profundidade do plantel. Nível de Confiança: ${confidence}%</p>
         </div>
     `;
 }
@@ -459,11 +463,11 @@ function updateOddsUI(match) {
         const item = document.createElement('div');
         item.className = `odd-item ${isValue ? 'ai-recommendation' : ''}`;
         item.innerHTML = `
-            ${isValue ? '<span class="ai-badge"><i class="fas fa-microchip"></i> HIGH VALUE DETECTED</span>' : ''}
-            <div class="market">${outcome.name.toUpperCase()}</div>
+            ${isValue ? '<span class="ai-badge"><i class="fas fa-microchip"></i> VALOR ALTO DETETADO</span>' : ''}
+            <div class="market">${outcome.name === 'Draw' || outcome.name === 'X' ? 'EMPATE' : outcome.name.toUpperCase()}</div>
             <div class="prob">${outcome.price.toFixed(2)}</div>
             <div class="ev">${isValue ? '+18.4% EV' : '+2.1% EV'}</div>
-            <div class="action-btn">LOCK IN</div>
+            <div class="action-btn">FIXAR APOSTA</div>
         `;
         oddsList.appendChild(item);
     });
@@ -495,7 +499,7 @@ function renderMarketOdds() {
     grid.innerHTML = '';
 
     if (allMatchesData.length === 0) {
-        grid.innerHTML = '<div class="live-indicator">MARKET DATA OFFLINE. RECONNECTING...</div>';
+        grid.innerHTML = '<div class="live-indicator">MERCADO OFFLINE. A RECONTROLAR...</div>';
         return;
     }
 
@@ -514,13 +518,13 @@ function renderMarketOdds() {
         card.innerHTML = `
             <div class="market-match-header">
                 <h3>${match.home_team} vs ${match.away_team}</h3>
-                <span class="badge">MATCH ID: ${Math.random().toString(36).substring(7).toUpperCase()}</span>
+                <span class="badge">ID JOGO: ${Math.random().toString(36).substring(7).toUpperCase()}</span>
             </div>
             <div class="odds-table-header">
-                <div>Bookmaker</div>
-                <div>Home (1)</div>
-                <div>Draw (X)</div>
-                <div>Away (2)</div>
+                <div>Casa de Apostas</div>
+                <div>Casa (1)</div>
+                <div>Empate (X)</div>
+                <div>Fora (2)</div>
             </div>
             <div class="odds-table-body">
                 ${requestedNames.map(name => {
@@ -570,7 +574,7 @@ function renderTopPicks() {
     grid.innerHTML = '';
 
     if (allMatchesData.length === 0) {
-        grid.innerHTML = '<div class="live-indicator">QUANTUM DATA UNAVAILABLE. SYNCING...</div>';
+        grid.innerHTML = '<div class="live-indicator">DADOS QUÂNTICOS INDISPONÍVEIS. A SINCRONIZAR...</div>';
         return;
     }
 
@@ -608,20 +612,20 @@ function renderTopPicks() {
             <div class="rank-number">#${index + 1}</div>
             <div class="pick-info">
                 <h4>${rec.match.home_team} vs ${rec.match.away_team}</h4>
-                <div class="pick-market">PICK: ${rec.outcome.name.toUpperCase()} (ODDS: ${rec.outcome.price.toFixed(2)})</div>
+                <div class="pick-market">PICK: ${rec.outcome.name === 'Draw' || rec.outcome.name === 'X' ? 'EMPATE' : rec.outcome.name.toUpperCase()} (ODDS: ${rec.outcome.price.toFixed(2)})</div>
             </div>
             <div class="pick-probability">
                 <span class="prob-val">${rec.aiProb.toFixed(1)}%</span>
-                <span class="prob-label">NEURAL PROBABILITY</span>
+                <span class="prob-label">PROBABILIDADE NEURAL</span>
             </div>
             <div class="pick-action">
-                <div class="value-score">VALUE: +${(rec.valueScore / 10).toFixed(1)}%</div>
+                <div class="value-score">VALOR: +${(rec.valueScore / 10).toFixed(1)}%</div>
             </div>
         `;
         card.onclick = () => {
             switchTab('war-room');
             document.querySelectorAll('.nav-item').forEach(i => {
-                if (i.innerText.includes('War Room')) i.classList.add('active');
+                if (i.innerText.includes('Sala de Guerra')) i.classList.add('active');
                 else i.classList.remove('active');
             });
             updateMatchUI(rec.match);
