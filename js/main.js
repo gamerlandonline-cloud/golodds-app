@@ -742,15 +742,15 @@ function renderTopPicks() {
 }
 
 const NEWS_DATA = [
-    { league: 'portugal', source: 'A Bola', title: 'Benfica prepara ataque ao mercado de verão', excerpt: 'As águias estão atentas a novos talentos para reforçar o plantel na próxima época.', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
-    { league: 'portugal', source: 'Record', title: 'Sporting focado na renovação do título', excerpt: 'Rúben Amorim mantém o grupo unido e focado nos objetivos traçados.', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
-    { league: 'portugal', source: 'O Jogo', title: 'FC Porto estuda novas opções para o ataque', excerpt: 'Sérgio Conceição quer mais eficácia na finalização e procura soluções no mercado internacional.', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400', date: 'Ontem' },
-    { league: 'england', source: 'Sky Sports', title: 'Man City and Arsenal in thrilling title race', excerpt: 'The Premier League summit remains contested as both teams show incredible consistency.', image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
-    { league: 'england', source: 'BBC Sport', title: 'Liverpool legend weighs in on tactical shifts', excerpt: 'Analysis of how the midfield dynamic has changed the Reds strategy this season.', image: 'https://images.unsplash.com/photo-1518091043644-c1d445eb9519?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
-    { league: 'spain', source: 'MARCA', title: 'Mbappé brilla en los entrenamientos del Real Madrid', excerpt: 'El astro francés muestra una adaptación inmediata al esquema de Ancelotti.', image: 'https://images.unsplash.com/photo-1529900903110-d02f0acff528?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
-    { league: 'spain', source: 'AS', title: 'Barcelona busca blindar a sus jóvenes promesas', excerpt: 'El club catalán inicia conversaciones para renovar contratos clave en La Masía.', image: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=400', date: 'Ontem' },
-    { league: 'italy', source: 'Gazzetta dello Sport', title: 'Inter domina o mercado italiano', excerpt: 'A estratégia dos nerazzurri para manter a hegemonia na Série A.', image: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&q=80&w=400', date: 'Hoje' },
-    { league: 'germany', source: 'BILD', title: 'Bayern busca reconstrução sob novo comando', excerpt: 'As mudanças táticas esperadas para a próxima temporada na Baviera.', image: 'https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&q=80&w=400', date: 'Ontem' }
+    { league: 'portugal', source: 'A Bola', title: 'Benfica prepara ataque ao mercado de verão', excerpt: 'As águias estão atentas a novos talentos para reforçar o plantel na próxima época.', image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.abola.pt' },
+    { league: 'portugal', source: 'Record', title: 'Sporting focado na renovação do título', excerpt: 'Rúben Amorim mantém o grupo unido e focado nos objetivos traçados.', image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.record.pt' },
+    { league: 'portugal', source: 'O Jogo', title: 'FC Porto estuda novas opções para o ataque', excerpt: 'Sérgio Conceição quer mais eficácia na finalização e procura soluções no mercado internacional.', image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400', date: 'Ontem', url: 'https://www.ojogo.pt' },
+    { league: 'england', source: 'Sky Sports', title: 'Man City and Arsenal in thrilling title race', excerpt: 'The Premier League summit remains contested as both teams show incredible consistency.', image: 'https://images.unsplash.com/photo-1551958219-acbc608c6377?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.skysports.com/football' },
+    { league: 'england', source: 'BBC Sport', title: 'Liverpool legend weighs in on tactical shifts', excerpt: 'Analysis of how the midfield dynamic has changed the Reds strategy this season.', image: 'https://images.unsplash.com/photo-1518091043644-c1d445eb9519?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.bbc.com/sport/football' },
+    { league: 'spain', source: 'MARCA', title: 'Mbappé brilla en los entrenamientos del Real Madrid', excerpt: 'El astro francés muestra una adaptación inmediata al esquema de Ancelotti.', image: 'https://images.unsplash.com/photo-1529900903110-d02f0acff528?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.marca.com' },
+    { league: 'spain', source: 'AS', title: 'Barcelona busca blindar a sus jóvenes promesas', excerpt: 'El club catalán inicia conversa para renovar contratos clave en La Masía.', image: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?auto=format&fit=crop&q=80&w=400', date: 'Ontem', url: 'https://as.com' },
+    { league: 'italy', source: 'Gazzetta dello Sport', title: 'Inter domina o mercado italiano', excerpt: 'A estratégia dos nerazzurri para manter a hegemonia na Série A.', image: 'https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&q=80&w=400', date: 'Hoje', url: 'https://www.gazzetta.it' },
+    { league: 'germany', source: 'BILD', title: 'Bayern busca reconstrução sob novo comando', excerpt: 'As mudanças táticas esperadas para a próxima temporada na Baviera.', image: 'https://images.unsplash.com/photo-1519315901367-f34ff9154487?auto=format&fit=crop&q=80&w=400', date: 'Ontem', url: 'https://www.bild.de' }
 ];
 
 function renderNews(category = 'all') {
@@ -763,6 +763,7 @@ function renderNews(category = 'all') {
     filtered.forEach(news => {
         const card = document.createElement('div');
         card.className = 'news-card';
+        card.onclick = () => window.open(news.url, '_blank');
         card.innerHTML = `
             <img src="${news.image}" class="news-image" alt="${news.title}">
             <div class="news-body">
