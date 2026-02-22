@@ -655,6 +655,102 @@ h3,
     letter-spacing: 3px;
 }
 
+/* Tabs logic */
+.tab-pane {
+    display: none;
+    animation: fadeInTab 0.5s ease;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+@keyframes fadeInTab {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Top Picks Grid */
+.picks-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.pick-card {
+    background: linear-gradient(90deg, rgba(0, 255, 136, 0.05), transparent);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 50px 1.5fr 1fr 150px;
+    align-items: center;
+    gap: 20px;
+    transition: 0.3s;
+}
+
+.pick-card:hover {
+    border-color: var(--accent-green);
+    background: rgba(0, 255, 136, 0.1);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
+}
+
+.rank-number {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--accent-green);
+    text-shadow: 0 0 10px var(--accent-green);
+}
+
+.pick-info h4 {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.pick-market {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+}
+
+.pick-probability {
+    text-align: right;
+}
+
+.prob-val {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--accent-blue);
+    display: block;
+}
+
+.prob-label {
+    font-size: 9px;
+    color: var(--text-dim);
+}
+
+.pick-action {
+    text-align: center;
+}
+
+.value-score {
+    background: var(--accent-green);
+    color: black;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: 900;
+    font-size: 12px;
+}
+
 /* Analysis Grid */
 .analysis-grid {
     display: grid;

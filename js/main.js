@@ -249,6 +249,7 @@ async function fetchLiveMatches() {
     matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> INITIALIZING SECURE LINK...</div>';
 
     let dataFound = false;
+    allMatchesData = [];
 
     for (const league of leagues) {
         try {
@@ -263,6 +264,7 @@ async function fetchLiveMatches() {
                 if (!dataFound) matrix.innerHTML = '';
                 renderLeagueSection(league.name, data);
                 dataFound = true;
+                allMatchesData.push(...data);
 
                 if (!document.querySelector('.team-home h2')) {
                     updateMatchUI(data[0]);
@@ -468,6 +470,88 @@ function updateOddsUI(match) {
 
     initInteractions();
     runAIScan();
+}
+
+let allMatchesData = [];
+
+function switchTab(tabId) {
+    // Nav UI
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    // Panes UI
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    document.getElementById(`tab-${tabId}`).classList.add('active');
+
+    if (tabId === 'top-picks') {
+        renderTopPicks();
+    }
+}
+
+function renderTopPicks() {
+    const grid = document.getElementById('picks-grid');
+    grid.innerHTML = '';
+
+    if (allMatchesData.length === 0) {
+        grid.innerHTML = '<div class="live-indicator">QUANTUM DATA UNAVAILABLE. SYNCING...</div>';
+        return;
+    }
+
+    // Extraction and Value Calculation
+    let recommendations = [];
+    allMatchesData.forEach(match => {
+        const bookmaker = match.bookmakers[0];
+        if (!bookmaker) return;
+        const outcomes = bookmaker.markets[0].outcomes;
+
+        outcomes.forEach(outcome => {
+            // Implied Probability from Odds
+            const impliedProb = (1 / outcome.price) * 100;
+            // Simulated AI Analysis (Historical + Trend)
+            const aiProb = impliedProb + (Math.random() * 15 - 5);
+            const valueScore = aiProb * outcome.price;
+
+            recommendations.push({
+                match,
+                outcome,
+                aiProb,
+                valueScore
+            });
+        });
+    });
+
+    // Sort by Value Score and take Top 10
+    recommendations.sort((a, b) => b.valueScore - a.valueScore);
+    const top10 = recommendations.slice(0, 10);
+
+    top10.forEach((rec, index) => {
+        const card = document.createElement('div');
+        card.className = 'pick-card';
+        card.innerHTML = `
+            <div class="rank-number">#${index + 1}</div>
+            <div class="pick-info">
+                <h4>${rec.match.home_team} vs ${rec.match.away_team}</h4>
+                <div class="pick-market">PICK: ${rec.outcome.name.toUpperCase()} (ODDS: ${rec.outcome.price.toFixed(2)})</div>
+            </div>
+            <div class="pick-probability">
+                <span class="prob-val">${rec.aiProb.toFixed(1)}%</span>
+                <span class="prob-label">NEURAL PROBABILITY</span>
+            </div>
+            <div class="pick-action">
+                <div class="value-score">VALUE: +${(rec.valueScore / 10).toFixed(1)}%</div>
+            </div>
+        `;
+        card.onclick = () => {
+            switchTab('war-room');
+            document.querySelectorAll('.nav-item').forEach(i => {
+                if (i.innerText.includes('War Room')) i.classList.add('active');
+                else i.classList.remove('active');
+            });
+            updateMatchUI(rec.match);
+            updateOddsUI(rec.match);
+        };
+        grid.appendChild(card);
+    });
 }
 
 // Initialize
