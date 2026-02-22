@@ -1203,6 +1203,24 @@ function applyScoreboardFilters() {
     });
 }
 
+// Widget Source Switcher
+function switchWidgetSource(source, btn) {
+    // Toggle button active state
+    document.querySelectorAll('.wsrc-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    // Show selected widget pane
+    document.querySelectorAll('.widget-pane').forEach(p => {
+        p.style.display = 'none';
+        p.classList.remove('active');
+    });
+    const target = document.getElementById(`widget-${source}`);
+    if (target) {
+        target.style.display = 'block';
+        target.classList.add('active');
+    }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initThree();

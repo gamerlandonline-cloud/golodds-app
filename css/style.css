@@ -2184,3 +2184,58 @@ h3,
     color: #FF0032;
     transform: scale(1.2);
 }
+
+/* Widget Source Switcher */
+.widget-source-tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(13, 22, 43, 0.95);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    padding: 8px 8px 0;
+    margin-top: 10px;
+}
+
+.wsrc-btn {
+    padding: 8px 20px;
+    font-family: "Orbitron", sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wsrc-btn:hover {
+    background: rgba(0,153,255,0.1);
+    color: var(--accent-blue);
+}
+
+.wsrc-btn.active {
+    background: #0a0f1e;
+    color: #fff;
+    border-color: var(--border-color);
+    border-bottom-color: #0a0f1e;
+}
+
+.widget-pane {
+    display: none;
+}
+
+.widget-pane.active {
+    display: block;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 6px #FF003280; }
+    50% { box-shadow: 0 0 14px #FF0032; }
+}

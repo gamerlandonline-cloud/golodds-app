@@ -150,16 +150,58 @@
                 <!-- Professional Livescore Widget Hub -->
                 <div class="card-header">
                     <h2><i class="fas fa-satellite-dish"></i> Live Hub Profissional</h2>
-                    <span class="badge" style="background: var(--accent-gold);">REAL-TIME FLASH</span>
+                    <span class="badge" style="background: #FF0032; animation: pulse-glow 1.5s infinite;">● AO
+                        VIVO</span>
+                </div>
+
+                <!-- Widget source switcher tabs -->
+                <div class="widget-source-tabs">
+                    <button class="wsrc-btn active" onclick="switchWidgetSource('azscore', this)"><i
+                            class="fas fa-bolt"></i> AzScore</button>
+                    <button class="wsrc-btn" onclick="switchWidgetSource('livescore24', this)"><i
+                            class="fas fa-futbol"></i> LiveScore24</button>
+                    <button class="wsrc-btn" onclick="switchWidgetSource('scorebat', this)"><i class="fas fa-video"></i>
+                        ScoreBat</button>
                 </div>
 
                 <div class="widget-container"
-                    style="background: var(--card-bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 30px;">
-                    <!-- Professional Widget Integration -->
-                    <iframe id="livescore-iframe"
-                        src="https://www.scoreaxis.com/widget/live-fixtures?autoHeight=1&bodyBackground=%230d162b&textColor=%23ffffff&font=Inter&linkColor=%230099ff&headerBackground=%23162340&headerTextColor=%23ffffff&borderColor=%231d2d50&inst=golodds-app"
-                        style="width: 100%; border: none; min-height: 800px;" title="Live Hub Results">
-                    </iframe>
+                    style="background: #0a0f1e; border-radius: 0 0 12px 12px; overflow: hidden; border: 1px solid var(--border-color); border-top: none; margin-bottom: 30px; min-height: 700px;">
+                    <!-- AzScore Widget (Default - Free, Real-time, No registration) -->
+                    <div id="widget-azscore" class="widget-pane active">
+                        <iframe src="https://www.azscore.com/football/livescore?widget=1&theme=dark"
+                            style="width: 100%; border: none; min-height: 700px;" title="AzScore Live Results"
+                            scrolling="no">
+                        </iframe>
+                    </div>
+
+                    <!-- LiveScore24 Widget -->
+                    <div id="widget-livescore24" class="widget-pane" style="display:none;">
+                        <iframe
+                            src="https://ls.softpedia.com/soccer-livescore-widget/?bg=0d162b&text=ffffff&live=ff3e3e&ln=pt"
+                            style="width: 100%; border: none; min-height: 700px;" title="LiveScore24 Results"
+                            scrolling="no">
+                        </iframe>
+                    </div>
+
+                    <!-- ScoreBat Videos + Scores Widget -->
+                    <div id="widget-scorebat" class="widget-pane" style="display:none; padding: 20px;">
+                        <div class="scorebat-placeholder">
+                            <div style="text-align:center; padding: 40px; color: var(--text-dim);">
+                                <i class="fas fa-video"
+                                    style="font-size: 48px; color: var(--accent-blue); margin-bottom: 15px; display: block;"></i>
+                                <p style="margin-bottom: 20px;">ScoreBat fornece highlights e clips de jogos ao vivo.
+                                </p>
+                                <a href="https://www.scorebat.com" target="_blank" class="cta-btn"
+                                    style="padding: 12px 30px; background: var(--accent-blue); color: white; text-decoration: none; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: 12px;">
+                                    <i class="fas fa-external-link-alt"></i> ABRIR SCOREBAT
+                                </a>
+                                <a href="https://www.flashscore.pt" target="_blank" class="cta-btn"
+                                    style="padding: 12px 30px; background: #FF0032; color: white; text-decoration: none; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: 12px; margin-left: 10px;">
+                                    <i class="fas fa-bolt"></i> ABRIR FLASHSCORE
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Neural Analysis Grid (Keeping the custom IA structure below) -->
