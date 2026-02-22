@@ -335,66 +335,63 @@ let syncInterval = null;
 
 async function fetchLiveMatches(isInitial = true) {
     const matrix = document.getElementById('competition-matrix');
+    const leagues = [
+        { key: 'soccer_epl', name: 'Premier League' },
+        { key: 'soccer_uefa_champs_league', name: 'Champions League' },
+        { key: 'soccer_spain_la_liga', name: 'La Liga' },
+        { key: 'soccer_italy_serie_a', name: 'Serie A' },
+        { key: 'soccer_portugal_primeira_liga', name: 'Liga Portugal' },
+        { key: 'soccer_germany_bundesliga', name: 'Bundesliga' },
+        { key: 'soccer_france_ligue_one', name: 'Liga 1' }
+    ];
 
     if (isInitial) {
-        matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A ESTABELECER LIGAÇÃO PRIORITÁRIA...</div>';
+        matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A CARREGAR PREVISÕES NEURAIS...</div>';
     }
 
     let dataFound = false;
     let tempMatches = [];
 
-    try {
-        console.log("MATRIX: Global Sync initiated...");
+    // Build the target date string from the global scoreboard date
+    const targetDate = new Date(currentScoreboardDate);
+    const targetDateStr = `${targetDate.getFullYear()}-${(targetDate.getMonth() + 1).toString().padStart(2, '0')}-${targetDate.getDate().toString().padStart(2, '0')}`;
 
-        // Optimized Global Sync (Uses 1-2 credits for ALL soccer instead of per league)
-        // Using 'upcoming' sport key to get the main games across all soccer leagues
-        const [oddsRes, scoresRes] = await Promise.all([
-            fetch(`${API_CONFIG.BASE_URL}upcoming/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h`),
-            fetch(`${API_CONFIG.BASE_URL}upcoming/scores/?apiKey=${API_CONFIG.ODDS_API_KEY}&daysFrom=1`)
-        ]);
+    for (const league of leagues) {
+        try {
+            const [oddsRes, scoresRes] = await Promise.all([
+                fetch(`${API_CONFIG.BASE_URL}${league.key}/odds/?apiKey=${API_CONFIG.ODDS_API_KEY}&regions=eu&markets=h2h`),
+                fetch(`${API_CONFIG.BASE_URL}${league.key}/scores/?apiKey=${API_CONFIG.ODDS_API_KEY}&daysFrom=1`)
+            ]);
+            if (!oddsRes.ok) continue;
 
-        if (!oddsRes.ok || !scoresRes.ok) throw new Error("API Limit reached or Invalid Key");
+            const oddsData = await oddsRes.json();
+            const scoresData = scoresRes.ok ? await scoresRes.json() : [];
 
-        const oddsData = await oddsRes.json();
-        const scoresData = await scoresRes.json();
+            const merged = oddsData
+                .filter(match => match.commence_time.split('T')[0] === targetDateStr)
+                .map(match => {
+                    const liveScore = scoresData.find(s => s.id === match.id);
+                    let scoresObj = null;
+                    if (liveScore && liveScore.scores) {
+                        const hScore = liveScore.scores.find(s => s.name === match.home_team);
+                        const aScore = liveScore.scores.find(s => s.name === match.away_team);
+                        scoresObj = [
+                            { name: match.home_team, score: hScore ? hScore.score : '0' },
+                            { name: match.away_team, score: aScore ? aScore.score : '0' }
+                        ];
+                    } else if (liveScore && !liveScore.completed) {
+                        scoresObj = [{ name: match.home_team, score: '0' }, { name: match.away_team, score: '0' }];
+                    }
+                    return {
+                        ...match,
+                        live_score: scoresObj,
+                        completed: liveScore ? liveScore.completed : false,
+                        league_name: league.name
+                    };
+                });
 
-        // Filter only Soccer (just in case 'upcoming' returns other sports)
-        const soccerOdds = oddsData.filter(o => o.sport_key.includes('soccer'));
-
-        const now = new Date();
-        const todayStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
-
-        tempMatches = soccerOdds.map(match => {
-            const liveScore = scoresData.find(s => s.id === match.id);
-            let scoresObj = null;
-
-            if (liveScore && liveScore.scores) {
-                const hScore = liveScore.scores.find(s => s.name === match.home_team);
-                const aScore = liveScore.scores.find(s => s.name === match.away_team);
-                scoresObj = [
-                    { name: match.home_team, score: hScore ? hScore.score : '0' },
-                    { name: match.away_team, score: aScore ? aScore.score : '0' }
-                ];
-            } else if (liveScore && !liveScore.completed) {
-                scoresObj = [{ name: match.home_team, score: '0' }, { name: match.away_team, score: '0' }];
-            }
-
-            return {
-                ...match,
-                live_score: scoresObj,
-                completed: liveScore ? liveScore.completed : false,
-                league_name: match.sport_title.replace('Soccer', '').trim()
-            };
-        }).filter(match => {
-            // Only show matches from today or currently Live
-            const matchDate = match.commence_time.split('T')[0];
-            return matchDate === todayStr || (match.live_score && !match.completed);
-        });
-
-        if (tempMatches.length > 0) dataFound = true;
-
-    } catch (error) {
-        console.error("Sync Error:", error);
+            if (merged.length > 0) { dataFound = true; tempMatches.push(...merged); }
+        } catch (e) { console.error(`Error on ${league.name}:`, e); }
     }
 
     if (dataFound) {
@@ -403,42 +400,34 @@ async function fetchLiveMatches(isInitial = true) {
             const oldMatch = allMatchesData.find(m => m.id === newMatch.id);
             if (oldMatch && newMatch.live_score && oldMatch.live_score) {
                 if (newMatch.live_score[0].score !== oldMatch.live_score[0].score ||
-                    newMatch.live_score[1].score !== oldMatch.live_score[1].score) {
-                    notifyGoal(newMatch);
-                }
+                    newMatch.live_score[1].score !== oldMatch.live_score[1].score) notifyGoal(newMatch);
             }
         });
-
         allMatchesData = tempMatches;
         applyScoreboardFilters();
-
-        // Update selection
         const currentHome = document.querySelector('.team-home h2');
         if (currentHome) {
-            const currentMatch = allMatchesData.find(m => m.home_team === currentHome.innerText);
-            if (currentMatch) updateMatchUI(currentMatch);
-        } else if (isInitial) {
+            const m = allMatchesData.find(m => m.home_team === currentHome.innerText);
+            if (m) updateMatchUI(m);
+        } else if (isInitial && allMatchesData[0]) {
             updateMatchUI(allMatchesData[0]);
             updateOddsUI(allMatchesData[0]);
         }
     } else if (isInitial) {
-        console.warn("MATRIX: No live API data. Fallback to Neural Projections.");
+        console.warn('API: sem dados para hoje. A carregar previsões neurais do dia.');
         loadMockData();
     }
 
     updateNeuralTicker(getTopPicks());
-
-    // Status Update
     const syncEl = document.getElementById('sync-status');
     if (syncEl) {
-        const now = new Date();
-        syncEl.innerHTML = `<i class="fas fa-check-circle"></i> LINK SEGURO ATIVO | ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        const n = new Date();
+        syncEl.innerHTML = `<i class="fas fa-check-circle"></i> ATUALIZADO ${n.getHours().toString().padStart(2, '0')}:${n.getMinutes().toString().padStart(2, '0')}`;
         syncEl.style.color = '#00ff88';
-        setTimeout(() => { if (syncEl) syncEl.innerHTML = `<i class="fas fa-satellite"></i> MONITORIZAÇÃO GLOBAL`; }, 5000);
+        setTimeout(() => { if (syncEl) { syncEl.innerHTML = '<i class="fas fa-satellite"></i> MONITORIZAÇÃO GLOBAL'; syncEl.style.color = ''; } }, 6000);
     }
-
     if (isInitial && !syncInterval) {
-        syncInterval = setInterval(() => fetchLiveMatches(false), 300000); // 5 minute sync to save credits
+        syncInterval = setInterval(() => fetchLiveMatches(false), 300000);
     }
 }
 
@@ -458,60 +447,71 @@ function notifyGoal(match) {
     if (window.navigator.vibrate) window.navigator.vibrate([100, 50, 100]);
 }
 
-// Fallback logic for demo purposes if API fails
+// Fallback Neural Projections — dynamically based on today's date
 function loadMockData() {
+    // Build today's ISO timestamps for realistic times
+    function tod(h, m) {
+        const d = new Date(currentScoreboardDate);
+        d.setHours(h, m, 0, 0);
+        return d.toISOString();
+    }
+
     const mockMatches = [
         {
             id: 'mock-1',
-            home_team: 'Real Madrid', away_team: 'Man City',
-            league_name: 'Champions League',
-            commence_time: new Date().toISOString(),
-            live_score: [{ name: 'Real Madrid', score: '2' }, { name: 'Man City', score: '1' }],
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Real Madrid', price: 2.1 }, { name: 'Draw', price: 3.4 }, { name: 'Man City', price: 3.1 }] }] }]
+            home_team: 'Manchester City', away_team: 'Chelsea',
+            league_name: 'Premier League',
+            commence_time: tod(13, 30),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Manchester City', price: 1.72 }, { name: 'Draw', price: 3.80 }, { name: 'Chelsea', price: 4.50 }] }] }]
         },
         {
             id: 'mock-2',
-            home_team: 'Benfica', away_team: 'Porto',
-            league_name: 'Liga Portugal',
-            commence_time: new Date().toISOString(),
-            live_score: [{ name: 'Benfica', score: '0' }, { name: 'Porto', score: '0' }],
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Benfica', price: 1.95 }, { name: 'Draw', price: 3.2 }, { name: 'Porto', price: 3.8 }] }] }]
+            home_team: 'Arsenal', away_team: 'Nottingham Forest',
+            league_name: 'Premier League',
+            commence_time: tod(16, 0),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Arsenal', price: 1.55 }, { name: 'Draw', price: 4.20 }, { name: 'Nottingham Forest', price: 6.00 }] }] }]
         },
         {
             id: 'mock-3',
-            home_team: 'Arsenal', away_team: 'Liverpool',
-            league_name: 'Premier League',
-            commence_time: new Date().toISOString(),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Arsenal', price: 2.4 }, { name: 'Draw', price: 3.5 }, { name: 'Liverpool', price: 2.8 }] }] }]
+            home_team: 'Barcelona', away_team: 'Rayo Vallecano',
+            league_name: 'La Liga',
+            commence_time: tod(14, 0),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Barcelona', price: 1.35 }, { name: 'Draw', price: 4.80 }, { name: 'Rayo Vallecano', price: 8.50 }] }] }]
         },
         {
             id: 'mock-4',
-            home_team: 'Barcelona', away_team: 'Atletico Madrid',
+            home_team: 'Sevilla', away_team: 'Real Madrid',
             league_name: 'La Liga',
-            commence_time: new Date().toISOString(),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Barcelona', price: 1.8 }, { name: 'Draw', price: 3.6 }, { name: 'Atletico Madrid', price: 4.2 }] }] }]
+            commence_time: tod(16, 15),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Sevilla', price: 5.20 }, { name: 'Draw', price: 3.90 }, { name: 'Real Madrid', price: 1.65 }] }] }]
         },
         {
             id: 'mock-5',
-            home_team: 'Inter', away_team: 'Juventus',
-            league_name: 'Serie A',
-            commence_time: new Date().toISOString(),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Inter', price: 2.0 }, { name: 'Draw', price: 3.2 }, { name: 'Juventus', price: 3.6 }] }] }]
+            home_team: 'Benfica', away_team: 'Sporting CP',
+            league_name: 'Liga Portugal',
+            commence_time: tod(17, 30),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Benfica', price: 2.10 }, { name: 'Draw', price: 3.30 }, { name: 'Sporting CP', price: 3.40 }] }] }]
         },
         {
             id: 'mock-6',
-            home_team: 'Bayern Munchen', away_team: 'Dortmund',
+            home_team: 'Bayern Munich', away_team: 'Frankfurt',
             league_name: 'Bundesliga',
-            commence_time: new Date().toISOString(),
-            live_score: [{ name: 'Bayern', score: '3' }, { name: 'Dortmund', score: '1' }],
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'Bayern', price: 1.5 }, { name: 'Draw', price: 4.2 }, { name: 'Dortmund', price: 5.8 }] }] }]
+            commence_time: tod(15, 30),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Bayern Munich', price: 1.40 }, { name: 'Draw', price: 4.60 }, { name: 'Frankfurt', price: 7.50 }] }] }]
         },
         {
             id: 'mock-7',
-            home_team: 'PSG', away_team: 'Marseille',
+            home_team: 'Juventus', away_team: 'Napoli',
+            league_name: 'Serie A',
+            commence_time: tod(18, 0),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'Juventus', price: 2.50 }, { name: 'Draw', price: 3.20 }, { name: 'Napoli', price: 2.80 }] }] }]
+        },
+        {
+            id: 'mock-8',
+            home_team: 'PSG', away_team: 'Lyon',
             league_name: 'Liga 1',
-            commence_time: new Date().toISOString(),
-            bookmakers: [{ markets: [{ outcomes: [{ name: 'PSG', price: 1.4 }, { name: 'Draw', price: 4.5 }, { name: 'Marseille', price: 7.2 }] }] }]
+            commence_time: tod(20, 45),
+            bookmakers: [{ markets: [{ outcomes: [{ name: 'PSG', price: 1.30 }, { name: 'Draw', price: 5.20 }, { name: 'Lyon', price: 9.00 }] }] }]
         }
     ];
 
