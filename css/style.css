@@ -2115,3 +2115,25 @@ h3,
         font-size: 11px;
     }
 }
+
+/* Tab Logic Finishing Touches */
+.sub-tab-btn {
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+    padding: 8px 18px;
+    font-size: 10px;
+    background: rgba(13, 22, 43, 0.6);
+}
+
+.sub-tab-btn.active {
+    background: #FF0032;
+    color: white;
+    font-weight: 800;
+}
+
+.date-nav i:hover {
+    color: var(--accent-blue);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+}

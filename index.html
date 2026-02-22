@@ -149,20 +149,20 @@
 
                 <!-- Sub-Tabs Scoreboard (New Layout) -->
                 <div class="sub-tabs-container">
-                    <div class="sub-tabs">
-                        <button class="sub-tab-btn active">Todos</button>
-                        <button class="sub-tab-btn">Ao Vivo</button>
-                        <button class="sub-tab-btn">Odds</button>
-                        <button class="sub-tab-btn">Terminados</button>
-                        <button class="sub-tab-btn">Agendados</button>
+                    <div class="sub-tabs" id="scoreboard-tabs">
+                        <button class="sub-tab-btn active" onclick="filterScoreboard('all', this)">Todos</button>
+                        <button class="sub-tab-btn" onclick="filterScoreboard('live', this)">Ao Vivo</button>
+                        <button class="sub-tab-btn" onclick="filterScoreboard('odds', this)">Odds</button>
+                        <button class="sub-tab-btn" onclick="filterScoreboard('finished', this)">Terminados</button>
+                        <button class="sub-tab-btn" onclick="filterScoreboard('scheduled', this)">Agendados</button>
                     </div>
                     <div class="date-nav">
-                        <i class="fas fa-chevron-left"></i>
+                        <i class="fas fa-chevron-left" onclick="changeScoreboardDate(-1)"></i>
                         <div class="date-display">
                             <i class="far fa-calendar-alt"></i>
                             <span id="current-date-header">22/02 DO</span>
                         </div>
-                        <i class="fas fa-chevron-right"></i>
+                        <i class="fas fa-chevron-right" onclick="changeScoreboardDate(1)"></i>
                     </div>
                 </div>
 

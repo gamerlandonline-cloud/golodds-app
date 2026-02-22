@@ -373,22 +373,21 @@ async function fetchLiveMatches() {
             });
 
             if (mergedData && mergedData.length > 0) {
-                if (!dataFound) matrix.innerHTML = '';
-                renderLeagueSection(league.name, mergedData);
                 dataFound = true;
                 allMatchesData.push(...mergedData);
-
-                if (!document.querySelector('.team-home h2')) {
-                    updateMatchUI(mergedData[0]);
-                    updateOddsUI(mergedData[0]);
-                }
             }
         } catch (error) {
             console.error(`Error on ${league.name}:`, error);
         }
     }
 
-    if (!dataFound) {
+    if (dataFound) {
+        applyScoreboardFilters();
+        if (!document.querySelector('.team-home h2')) {
+            updateMatchUI(allMatchesData[0]);
+            updateOddsUI(allMatchesData[0]);
+        }
+    } else {
         console.warn("MATRIX: A entrar em MODO SOMBRA (Fallback).");
         matrix.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--accent-gold); border: 1px dashed var(--accent-gold); border-radius: 10px; margin: 20px;">' +
             '<i class="fas fa-exclamation-triangle"></i> ELABORAÇÃO DE LINK FRACA. A CARREGAR DADOS NEURAIS SIMULADOS...</div>';
@@ -457,20 +456,7 @@ function loadMockData() {
     ];
 
     allMatchesData = mockMatches;
-
-    // Clear and group by league for the new layout
-    const matrix = document.getElementById('competition-matrix');
-    matrix.innerHTML = '';
-
-    const grouped = mockMatches.reduce((acc, m) => {
-        acc[m.league_name] = acc[m.league_name] || [];
-        acc[m.league_name].push(m);
-        return acc;
-    }, {});
-
-    Object.keys(grouped).forEach(league => {
-        renderLeagueSection(league, grouped[league]);
-    });
+    applyScoreboardFilters();
     updateMatchUI(mockMatches[0]);
     updateOddsUI(mockMatches[0]);
     updateNeuralTicker(getTopPicks());
@@ -1084,6 +1070,71 @@ function filterNews(category) {
     renderNews(category);
 }
 
+// Scoreboard Navigation Logic
+let currentScoreboardFilter = 'all';
+let currentScoreboardDate = new Date();
+
+function updateDateHeader() {
+    const days = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+    const dateStr = `${currentScoreboardDate.getDate().toString().padStart(2, '0')}/${(currentScoreboardDate.getMonth() + 1).toString().padStart(2, '0')} ${days[currentScoreboardDate.getDay()].toUpperCase()}`;
+    const el = document.getElementById('current-date-header');
+    if (el) el.innerText = dateStr;
+}
+
+function changeScoreboardDate(offset) {
+    currentScoreboardDate.setDate(currentScoreboardDate.getDate() + offset);
+    updateDateHeader();
+
+    const matrix = document.getElementById('competition-matrix');
+    matrix.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A RECALIBRAR DATAS...</div>';
+
+    setTimeout(() => {
+        applyScoreboardFilters();
+    }, 600);
+}
+
+function filterScoreboard(type, btn) {
+    currentScoreboardFilter = type;
+
+    document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    applyScoreboardFilters();
+}
+
+function applyScoreboardFilters() {
+    const matrix = document.getElementById('competition-matrix');
+    matrix.innerHTML = '';
+
+    let filtered = [...allMatchesData];
+
+    if (currentScoreboardFilter === 'live') {
+        filtered = filtered.filter(m => m.live_score && !m.completed);
+    } else if (currentScoreboardFilter === 'finished') {
+        filtered = filtered.filter(m => m.completed);
+    } else if (currentScoreboardFilter === 'scheduled') {
+        filtered = filtered.filter(m => !m.live_score && !m.completed);
+    } else if (currentScoreboardFilter === 'odds') {
+        filtered = filtered.filter(m => m.bookmakers && m.bookmakers.length > 0);
+    }
+
+    if (filtered.length === 0) {
+        matrix.innerHTML = '<div class="live-indicator">SEM JOGOS NESTA CATEGORIA / DATA</div>';
+        return;
+    }
+
+    const grouped = filtered.reduce((acc, m) => {
+        const key = m.league_name || 'Diversos';
+        acc[key] = acc[key] || [];
+        acc[key].push(m);
+        return acc;
+    }, {});
+
+    Object.keys(grouped).forEach(league => {
+        renderLeagueSection(league, grouped[league]);
+    });
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initThree();
@@ -1093,4 +1144,5 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchLiveMatches();
     renderAds();
     renderNews();
+    updateDateHeader();
 });
