@@ -1685,6 +1685,60 @@ function renderTimeline() {
     });
 }
 
+const FUTURE_MATCHES_DATA = [
+    { date: '26 FEV 2026', home_team: 'Benfica', away_team: 'Arsenal', league: 'Europa League', odds: { h: 2.10, d: 3.40, a: 3.20 }, icon: 'fa-trophy' },
+    { date: '26 FEV 2026', home_team: 'Braga', away_team: 'Roma', league: 'Europa League', odds: { h: 3.10, d: 3.30, a: 2.20 }, icon: 'fa-shield-alt' },
+    { date: '01 MAR 2026', home_team: 'Real Madrid', away_team: 'Barcelona', league: 'La Liga (EL CLÁSICO)', odds: { h: 1.95, d: 3.80, a: 3.40 }, icon: 'fa-fire' },
+    { date: '01 MAR 2026', home_team: 'Liverpool', away_team: 'Man City', league: 'Premier League', odds: { h: 2.40, d: 3.50, a: 2.60 }, icon: 'fa-bolt' },
+    { date: '03 MAR 2026', home_team: 'Inter', away_team: 'Juventus', league: 'Serie A', odds: { h: 1.85, d: 3.40, a: 4.20 }, icon: 'fa-crown' },
+    { date: '10 MAR 2026', home_team: 'PSG', away_team: 'Bayern', league: 'Champions League', odds: { h: 2.25, d: 3.60, a: 2.90 }, icon: 'fa-star' }
+];
+
+function renderFutureRadar() {
+    const container = document.getElementById('future-matches-scroll');
+    if (!container) return;
+    container.innerHTML = '';
+
+    FUTURE_MATCHES_DATA.forEach(match => {
+        const card = document.createElement('div');
+        card.className = 'future-mini-card';
+        card.innerHTML = `
+            <div class="fmc-date">${match.date}</div>
+            <div class="fmc-teams">${match.home_team} vs ${match.away_team}</div>
+            <div class="fmc-meta">
+                <span><i class="fas ${match.icon}"></i> ${match.league}</span>
+                <span class="fmc-ai-tag">SCAN ATIVO</span>
+            </div>
+        `;
+
+        card.onclick = () => {
+            // Convert simple match format to the rich format used by updateMatchUI
+            const richMatch = {
+                id: `future-${match.home_team}-${match.away_team}`,
+                home_team: match.home_team,
+                away_team: match.away_team,
+                league_name: match.league,
+                commence_time: new Date(2026, 1, match.date.split(' ')[0]).toISOString(),
+                bookmakers: [{
+                    markets: [{
+                        outcomes: [
+                            { name: match.home_team, price: match.odds.h },
+                            { name: 'Draw', price: match.odds.d },
+                            { name: match.away_team, price: match.odds.a }
+                        ]
+                    }]
+                }]
+            };
+
+            updateMatchUI(richMatch);
+            updateOddsUI(richMatch);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        container.appendChild(card);
+    });
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initThree();
@@ -1696,5 +1750,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAds();
     renderNews();
     renderTimeline();
+    renderFutureRadar();
     updateDateHeader();
 });

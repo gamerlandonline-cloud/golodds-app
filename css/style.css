@@ -2904,3 +2904,77 @@ h3,
     margin-top: 10px;
     text-transform: uppercase;
 }
+
+/* Future Intelligence Radar Styles */
+.future-intelligence {
+    margin: 25px 0 35px;
+    padding: 20px;
+    background: rgba(0, 242, 255, 0.03);
+    border-radius: 20px;
+    border: 1px solid rgba(0, 242, 255, 0.1);
+}
+
+.future-scroll-container {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-cyan) transparent;
+}
+
+.future-scroll-container::-webkit-scrollbar {
+    height: 4px;
+}
+
+.future-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--accent-cyan);
+    border-radius: 10px;
+}
+
+.future-mini-card {
+    min-width: 220px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.future-mini-card:hover {
+    background: rgba(0, 242, 255, 0.08);
+    border-color: var(--accent-cyan);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.fmc-date {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--accent-cyan);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.fmc-teams {
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.fmc-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    color: var(--text-dim);
+}
+
+.fmc-ai-tag {
+    color: var(--accent-blue);
+    font-weight: 900;
+}
