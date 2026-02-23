@@ -3164,7 +3164,174 @@ h3,
     font-size: 13px;
 }
 
-.fi-score {
+/* ============================================================
+   ELITE SCOREBOARD DASHBOARD (IMAGE INSPIRED)
+   ============================================================ */
+
+.featured-leagues-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.elite-scoreboard {
+    background: #020b14;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+}
+
+.elite-scoreboard:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0, 242, 255, 0.2);
+}
+
+.elite-header {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.elite-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dim);
+}
+
+.elite-breadcrumb i.fa-futbol {
+    color: #fff;
+}
+
+.elite-breadcrumb .separator {
+    opacity: 0.3;
+}
+
+.elite-breadcrumb .league-name {
+    color: #fff;
+    font-weight: 700;
+}
+
+.elite-external {
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.elite-external:hover {
     color: var(--accent-cyan);
+}
+
+.elite-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 30px;
+    position: relative;
+}
+
+.elite-team-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 120px;
+}
+
+.elite-crest-bg {
+    width: 80px;
+    height: 80px;
+    background: #fff;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.elite-crest-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.elite-team-name {
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    text-align: center;
+}
+
+.elite-side-icon {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
+
+.elite-center-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.elite-time {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-weight: 600;
+}
+
+.elite-score {
     font-family: 'Orbitron', sans-serif;
+    font-size: 38px;
+    font-weight: 900;
+    background: linear-gradient(180deg, #fff 0%, #aaa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+}
+
+.elite-score.vs {
+    font-size: 24px;
+    opacity: 0.5;
+}
+
+.elite-status {
+    font-size: 10px;
+    font-weight: 900;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.elite-status.live {
+    color: #ff4d4d;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+@media (max-width: 600px) {
+    .featured-leagues-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .elite-content {
+        padding: 20px 10px;
+    }
+
+    .elite-score {
+        font-size: 28px;
+    }
 }
