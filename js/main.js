@@ -1206,6 +1206,8 @@ function openLeaguePortal(leagueName) {
     const league = LEAGUE_DIRECTORY.find(l => l.name === leagueName);
     const header = document.getElementById('league-portal-header');
     const content = document.getElementById('league-portal-content');
+    const fixturesContainer = document.getElementById('league-fixtures-container');
+    const roundBadge = document.getElementById('current-round-badge');
 
     const icon = league ? league.icon : 'fa-futbol';
     const color = league ? league.color : '#0099ff';
@@ -1222,16 +1224,87 @@ function openLeaguePortal(leagueName) {
         </div>
     `;
 
+    // 1. Render Current/Future Fixtures
+    renderLeagueFixtures(league, fixturesContainer, roundBadge);
+
+    // 2. Render Highlights (Existing logic)
     const filtered = allMatchesData.filter(m => m.league_name === leagueName);
     content.innerHTML = '';
 
     if (filtered.length === 0) {
-        content.innerHTML = '<div class="live-indicator">SEM JOGOS DISPONÍVEIS NESTE MOMENTO</div>';
-        return;
+        content.innerHTML = '<div class="live-indicator">SEM JOGOS EM DESTAQUE PARA HOJE</div>';
+    } else {
+        renderLeagueSection(leagueName, filtered, content);
     }
 
-    renderLeagueSection(leagueName, filtered, content);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function renderLeagueFixtures(league, container, badge) {
+    if (!container || !league) return;
+    container.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A RECUPERAR CALENDÁRIO...</div>';
+
+    // FALLBACK: Generate Realistic Mock Fixtures for the specific league
+    // In a real scenario, we would use fetch(`${API_CONFIG.STATS_URL}competitions/${league.fd_id}/matches?status=SCHEDULED`)
+    const mockFixtures = [
+        { date: '2026-02-24', home: 'Team A', away: 'Team B', round: 26 },
+        { date: '2026-02-25', home: 'Team C', away: 'Team D', round: 26 },
+        { date: '2026-02-25', home: 'Team E', away: 'Team F', round: 26 },
+        { date: '2026-03-01', home: 'Team G', away: 'Team H', round: 27 },
+        { date: '2026-03-02', home: 'Team I', away: 'Team J', round: 27 }
+    ];
+
+    // Simulate different teams per league
+    const teamPool = league.name.includes('Premier') ? ['Arsenal', 'Chelsea', 'Liverpool', 'Man City', 'Man Utd', 'Tottenham'] :
+        league.name.includes('Liga Portugal') ? ['Benfica', 'Porto', 'Sporting', 'Braga', 'Vitória', 'Boavista'] :
+            ['Real Madrid', 'Barcelona', 'Atlético', 'Sevilla', 'Betis', 'Valencia'];
+
+    const fixtures = mockFixtures.map((f, i) => ({
+        ...f,
+        home: teamPool[i % teamPool.length],
+        away: teamPool[(i + 1) % teamPool.length]
+    }));
+
+    badge.innerText = `JORNADA ${fixtures[0].round}`;
+    container.innerHTML = '';
+
+    fixtures.forEach(fix => {
+        const item = document.createElement('div');
+        item.className = 'fixture-item';
+        item.onclick = () => {
+            const mockMatch = {
+                id: `fix-${fix.home}-${fix.away}`,
+                home_team: fix.home,
+                away_team: fix.away,
+                league_name: league.name,
+                commence_time: new Date(fix.date).toISOString(),
+                bookmakers: [{
+                    markets: [{
+                        outcomes: [
+                            { name: fix.home, price: 1.80 + Math.random() },
+                            { name: 'Draw', price: 3.20 + Math.random() },
+                            { name: fix.away, price: 2.10 + Math.random() }
+                        ]
+                    }]
+                }]
+            };
+            switchTab('war-room');
+            updateMatchUI(mockMatch);
+            updateOddsUI(mockMatch);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        item.innerHTML = `
+            <div class="fi-date">${new Date(fix.date).toLocaleDateString('pt-PT')}</div>
+            <div class="fi-teams">
+                <span>${fix.home}</span>
+                <span style="color:var(--text-dim); font-size:9px;">vs</span>
+                <span>${fix.away}</span>
+            </div>
+            <div class="fi-round">Jornada ${fix.round}</div>
+        `;
+        container.appendChild(item);
+    });
 }
 
 function createMatchCard(match, contextName = null) {

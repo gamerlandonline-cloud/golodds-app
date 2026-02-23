@@ -2978,3 +2978,61 @@ h3,
     color: var(--accent-blue);
     font-weight: 900;
 }
+
+/* League Fixtures Grid */
+.fixtures-grid {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 15px 5px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-blue) transparent;
+}
+
+.fixture-item {
+    min-width: 180px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 15px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.fixture-item:hover {
+    background: rgba(0, 153, 255, 0.05);
+    border-color: var(--accent-blue);
+    transform: translateY(-3px);
+}
+
+.fi-date {
+    font-size: 8px;
+    color: var(--accent-blue);
+    font-weight: 900;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.fi-teams {
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.fi-teams span {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fi-round {
+    font-size: 8px;
+    color: var(--text-dim);
+    margin-top: 5px;
+    font-weight: 700;
+}
