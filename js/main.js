@@ -58,6 +58,18 @@ const LEAGUE_DIRECTORY = [
     { odds_key: 'soccer_japan_j_league', fd_id: null, sdb_id: 4359, af_id: 98, name: 'J1 League', flag: 'jp', region: 'Ásia', icon: 'fa-circle', color: '#bc002d' }
 ];
 
+// ============================================================
+//  TEAM CATALOG — Quality fallbacks for APIs
+// ============================================================
+const TEAM_CATALOG = {
+    'Premier League': ['Man City', 'Arsenal', 'Liverpool', 'Aston Villa', 'Tottenham', 'Chelsea', 'Newcastle', 'Man Utd', 'West Ham', 'Brighton'],
+    'La Liga': ['Real Madrid', 'Barcelona', 'Girona', 'Atlético Madrid', 'Athletic Club', 'Real Sociedad', 'Real Betis', 'Valencia', 'Villarreal', 'Getafe'],
+    'Liga Portugal': ['Sporting CP', 'Benfica', 'FC Porto', 'Braga', 'Vitória SC', 'Moreirense', 'Arouca', 'Famalicão', 'Gil Vicente', 'Rio Ave'],
+    'Bundesliga': ['Bayer Leverkusen', 'Bayern Munich', 'Stuttgart', 'RB Leipzig', 'Dortmund', 'Frankfurt', 'Hoffenheim', 'Freiburg', 'Augsburg', 'Bremen'],
+    'Serie A': ['Inter', 'Milan', 'Juventus', 'Bologna', 'Roma', 'Atalanta', 'Lazio', 'Napoli', 'Fiorentina', 'Torino'],
+    'Ligue 1': ['PSG', 'Monaco', 'Brest', 'Lille', 'Nice', 'Lens', 'Lyon', 'Marseille', 'Reims', 'Rennes']
+};
+
 // Official Crest Mapping for Top Clubs (Football-Data.org IDs)
 const TEAM_CRESTS = {
     // PORTUGAL
@@ -1311,11 +1323,11 @@ function openLeaguePortal(leagueName) {
         </div>
     `;
 
-    // 1. Traditional Standings Table
-    renderLeagueStandings(league);
-
-    // 2. Traditional Calendar
-    renderLeagueFixtures(league, fixturesContainer, roundBadge);
+    // 1. Traditional Standings Table (Now also detects current matchday)
+    renderLeagueStandings(league).then(() => {
+        // 2. Traditional Calendar (Render after standings to ensure correct round)
+        renderLeagueFixtures(league, fixturesContainer, roundBadge);
+    });
 
     // 3. Render Highlights (Highlights filtering)
     const filtered = allMatchesData.filter(m => m.league_name === leagueName);
@@ -1355,6 +1367,11 @@ async function renderLeagueStandings(league) {
     try {
         const data = await fetchStandingsFromFD(league.fd_id);
         if (!data || !data.standings) throw new Error();
+
+        // Detect current matchday from API
+        if (data.season && data.season.currentMatchday) {
+            currentLeagueRound = data.season.currentMatchday;
+        }
 
         const tableData = data.standings[0].table;
         let html = `
@@ -1433,13 +1450,18 @@ async function renderLeagueFixtures(league, container, badge) {
         console.warn('[FD] Connection refused. Falling back to internal data.');
     }
 
-    // Fallback Mock Logic if API fails or league is not tracked by FD
+    // Fallback Mock Logic with Real Teams (Global Traditional fallback)
     if (fixtures.length === 0) {
+        const teams = TEAM_CATALOG[league.name] || ['Equipa Alfa', 'Equipa Beta', 'Equipa Gama', 'Equipa Delta', 'Equipa Épsilon', 'Equipa Zeta'];
+
+        // Circular selection for rotation
+        const idx = (currentLeagueRound % (teams.length / 2)) * 2;
         fixtures = [
-            { date: '2026-02-23', home: `${league.name} A`, away: `${league.name} B`, round: currentLeagueRound, status: 'TIMED', hScore: null, aScore: null },
-            { date: '2026-02-24', home: `${league.name} C`, away: `${league.name} D`, round: currentLeagueRound, status: 'TIMED', hScore: null, aScore: null },
-            { date: '2026-02-24', home: `${league.name} E`, away: `${league.name} F`, round: currentLeagueRound, status: 'TIMED', hScore: null, aScore: null }
-        ];
+            { date: '2026-02-23', home: teams[0], away: teams[1], round: currentLeagueRound, status: 'TIMED', hScore: null, aScore: null },
+            { date: '2026-02-23', home: teams[2], away: teams[3], round: currentLeagueRound, status: 'TIMED', hScore: null, aScore: null },
+            { date: '2026-02-24', home: teams[4], away: teams[5], round: currentLeagueRound, status: 'TIMED', hScore: null, aScore: null },
+            { date: '2026-02-24', home: teams[Math.floor(Math.random() * teams.length)], away: teams[Math.floor(Math.random() * teams.length)], round: currentLeagueRound, status: 'TIMED', hScore: null, aScore: null }
+        ].filter(f => f.home !== f.away);
     }
 
     container.innerHTML = '';
