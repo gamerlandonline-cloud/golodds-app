@@ -26,35 +26,36 @@ const API_CONFIG = {
 //  odds_key    → The Odds API sport key (for odds + scores)
 //  fd_id       → Football-Data.org competition code (for fixtures & standings)
 //  sdb_id      → TheSportsDB league ID (for team data & events)
+//  af_id       → API-Football (api-sports.io) league ID (for deep stats & H2H)
 // ============================================================
 const LEAGUE_DIRECTORY = [
     // ── TOP EUROPE ───────────────────────────────────────────
-    { odds_key: 'soccer_epl', fd_id: 'PL', sdb_id: 4328, name: 'Premier League', flag: 'gb', region: 'Europa', icon: 'fa-crown', color: '#ffcc00' },
-    { odds_key: 'soccer_spain_la_liga', fd_id: 'PD', sdb_id: 4335, name: 'La Liga', flag: 'es', region: 'Europa', icon: 'fa-shield-alt', color: '#ff3e3e' },
-    { odds_key: 'soccer_germany_bundesliga', fd_id: 'BL1', sdb_id: 4331, name: 'Bundesliga', flag: 'de', region: 'Europa', icon: 'fa-futbol', color: '#ffcc00' },
-    { odds_key: 'soccer_italy_serie_a', fd_id: 'SA', sdb_id: 4332, name: 'Serie A', flag: 'it', region: 'Europa', icon: 'fa-star', color: '#0099ff' },
-    { odds_key: 'soccer_france_ligue_one', fd_id: 'FL1', sdb_id: 4334, name: 'Ligue 1', flag: 'fr', region: 'Europa', icon: 'fa-bolt', color: '#0099ff' },
-    { odds_key: 'soccer_portugal_primeira_liga', fd_id: 'PPL', sdb_id: 4344, name: 'Liga Portugal', flag: 'pt', region: 'Europa', icon: 'fa-certificate', color: '#00ff88' },
-    { odds_key: 'soccer_netherlands_eredivisie', fd_id: 'DED', sdb_id: 4337, name: 'Eredivisie', flag: 'nl', region: 'Europa', icon: 'fa-wind', color: '#ff6600' },
-    { odds_key: 'soccer_efl_champ', fd_id: 'ELC', sdb_id: 4329, name: 'Championship', flag: 'gb', region: 'Europa', icon: 'fa-trophy', color: '#ffcc00' },
-    { odds_key: 'soccer_spain_segunda_division', fd_id: 'SD', sdb_id: 4336, name: 'La Liga 2', flag: 'es', region: 'Europa', icon: 'fa-shield-alt', color: '#ff3e3e' },
+    { odds_key: 'soccer_epl', fd_id: 'PL', sdb_id: 4328, af_id: 39, name: 'Premier League', flag: 'gb', region: 'Europa', icon: 'fa-crown', color: '#ffcc00' },
+    { odds_key: 'soccer_spain_la_liga', fd_id: 'PD', sdb_id: 4335, af_id: 140, name: 'La Liga', flag: 'es', region: 'Europa', icon: 'fa-shield-alt', color: '#ff3e3e' },
+    { odds_key: 'soccer_germany_bundesliga', fd_id: 'BL1', sdb_id: 4331, af_id: 78, name: 'Bundesliga', flag: 'de', region: 'Europa', icon: 'fa-futbol', color: '#ffcc00' },
+    { odds_key: 'soccer_italy_serie_a', fd_id: 'SA', sdb_id: 4332, af_id: 135, name: 'Serie A', flag: 'it', region: 'Europa', icon: 'fa-star', color: '#0099ff' },
+    { odds_key: 'soccer_france_ligue_one', fd_id: 'FL1', sdb_id: 4334, af_id: 61, name: 'Ligue 1', flag: 'fr', region: 'Europa', icon: 'fa-bolt', color: '#0099ff' },
+    { odds_key: 'soccer_portugal_primeira_liga', fd_id: 'PPL', sdb_id: 4344, af_id: 94, name: 'Liga Portugal', flag: 'pt', region: 'Europa', icon: 'fa-certificate', color: '#00ff88' },
+    { odds_key: 'soccer_netherlands_eredivisie', fd_id: 'DED', sdb_id: 4337, af_id: 88, name: 'Eredivisie', flag: 'nl', region: 'Europa', icon: 'fa-wind', color: '#ff6600' },
+    { odds_key: 'soccer_efl_champ', fd_id: 'ELC', sdb_id: 4329, af_id: 40, name: 'Championship', flag: 'gb', region: 'Europa', icon: 'fa-trophy', color: '#ffcc00' },
+    { odds_key: 'soccer_spain_segunda_division', fd_id: 'SD', sdb_id: 4336, af_id: 141, name: 'La Liga 2', flag: 'es', region: 'Europa', icon: 'fa-shield-alt', color: '#ff3e3e' },
 
     // ── UEFA CUPS ─────────────────────────────────────────────
-    { odds_key: 'soccer_uefa_champs_league', fd_id: 'CL', sdb_id: 4480, name: 'Champions League', flag: 'eu', region: 'UEFA', icon: 'fa-trophy', color: '#ffffff' },
-    { odds_key: 'soccer_uefa_europa_league', fd_id: 'EL', sdb_id: 4481, name: 'Europa League', flag: 'eu', region: 'UEFA', icon: 'fa-trophy', color: '#ff9900' },
-    { odds_key: 'soccer_uefa_europa_conference_league', fd_id: 'UECL', sdb_id: 4966, name: 'Conference League', flag: 'eu', region: 'UEFA', icon: 'fa-trophy', color: '#00ffcc' },
+    { odds_key: 'soccer_uefa_champs_league', fd_id: 'CL', sdb_id: 4480, af_id: 2, name: 'Champions League', flag: 'eu', region: 'UEFA', icon: 'fa-trophy', color: '#ffffff' },
+    { odds_key: 'soccer_uefa_europa_league', fd_id: 'EL', sdb_id: 4481, af_id: 3, name: 'Europa League', flag: 'eu', region: 'UEFA', icon: 'fa-trophy', color: '#ff9900' },
+    { odds_key: 'soccer_uefa_europa_conference_league', fd_id: 'UECL', sdb_id: 4966, af_id: 848, name: 'Conference League', flag: 'eu', region: 'UEFA', icon: 'fa-trophy', color: '#00ffcc' },
 
     // ── MAIS EUROPA ───────────────────────────────────────────
-    { odds_key: 'soccer_turkey_super_lig', fd_id: null, sdb_id: 4347, name: 'Süper Lig', flag: 'tr', region: 'Europa', icon: 'fa-moon', color: '#e30a17' },
-    { odds_key: 'soccer_belgium_first_div', fd_id: null, sdb_id: 4397, name: 'Pro League', flag: 'be', region: 'Europa', icon: 'fa-star', color: '#000000' },
-    { odds_key: 'soccer_spl', fd_id: null, sdb_id: 4330, name: 'Scottish Premiership', flag: 'gb', region: 'Europa', icon: 'fa-crown', color: '#005eb8' },
-    { odds_key: 'soccer_greece_super_league', fd_id: null, sdb_id: 4424, name: 'Super League Grécia', flag: 'gr', region: 'Europa', icon: 'fa-columns', color: '#005ba6' },
+    { odds_key: 'soccer_turkey_super_lig', fd_id: null, sdb_id: 4347, af_id: 203, name: 'Süper Lig', flag: 'tr', region: 'Europa', icon: 'fa-moon', color: '#e30a17' },
+    { odds_key: 'soccer_belgium_first_div', fd_id: null, sdb_id: 4397, af_id: 144, name: 'Pro League', flag: 'be', region: 'Europa', icon: 'fa-star', color: '#000000' },
+    { odds_key: 'soccer_spl', fd_id: null, sdb_id: 4330, af_id: 179, name: 'Scottish Premiership', flag: 'gb', region: 'Europa', icon: 'fa-crown', color: '#005eb8' },
+    { odds_key: 'soccer_greece_super_league', fd_id: null, sdb_id: 4424, af_id: 197, name: 'Super League Grécia', flag: 'gr', region: 'Europa', icon: 'fa-columns', color: '#005ba6' },
 
     // ── MUNDIAL ───────────────────────────────────────────────
-    { odds_key: 'soccer_brazil_campeonato', fd_id: 'BSA', sdb_id: 4351, name: 'Brasileirão', flag: 'br', region: 'América', icon: 'fa-futbol', color: '#ffdf00' },
-    { odds_key: 'soccer_usa_mls', fd_id: null, sdb_id: 4346, name: 'MLS', flag: 'us', region: 'América', icon: 'fa-flag-usa', color: '#001f5b' },
-    { odds_key: 'soccer_argentina_primera_division', fd_id: null, sdb_id: 4406, name: 'Primera División', flag: 'ar', region: 'América', icon: 'fa-sun', color: '#75aadb' },
-    { odds_key: 'soccer_japan_j_league', fd_id: null, sdb_id: 4359, name: 'J1 League', flag: 'jp', region: 'Ásia', icon: 'fa-circle', color: '#bc002d' }
+    { odds_key: 'soccer_brazil_campeonato', fd_id: 'BSA', sdb_id: 4351, af_id: 71, name: 'Brasileirão', flag: 'br', region: 'América', icon: 'fa-futbol', color: '#ffdf00' },
+    { odds_key: 'soccer_usa_mls', fd_id: null, sdb_id: 4346, af_id: 253, name: 'MLS', flag: 'us', region: 'América', icon: 'fa-flag-usa', color: '#001f5b' },
+    { odds_key: 'soccer_argentina_primera_division', fd_id: null, sdb_id: 4406, af_id: 128, name: 'Primera División', flag: 'ar', region: 'América', icon: 'fa-sun', color: '#75aadb' },
+    { odds_key: 'soccer_japan_j_league', fd_id: null, sdb_id: 4359, af_id: 98, name: 'J1 League', flag: 'jp', region: 'Ásia', icon: 'fa-circle', color: '#bc002d' }
 ];
 
 // Official Crest Mapping for Top Clubs (Football-Data.org IDs)
@@ -602,15 +603,34 @@ async function fetchDeepAnalyticsFromAF(homeTeam, awayTeam) {
     if (API_CACHE[cacheKey] && (now - API_CACHE[cacheKey].ts < CACHE_TTL_MS * 10)) return API_CACHE[cacheKey].data;
 
     try {
-        const res = await fetch(`${API_CONFIG.API_FOOTBALL_URL}fixtures/headtohead?h2h=all`, {
-            headers: { 'x-apisports-key': API_CONFIG.API_FOOTBALL_KEY }
-        });
+        // Step 1: Resolve Team IDs using targeted search
+        const [hRes, aRes] = await Promise.all([
+            fetch(`${API_CONFIG.API_FOOTBALL_URL}teams?name=${encodeURIComponent(homeTeam)}`, { headers: { 'x-apisports-key': API_CONFIG.API_FOOTBALL_KEY } }).then(r => r.json()),
+            fetch(`${API_CONFIG.API_FOOTBALL_URL}teams?name=${encodeURIComponent(awayTeam)}`, { headers: { 'x-apisports-key': API_CONFIG.API_FOOTBALL_KEY } }).then(r => r.json())
+        ]);
 
-        if (!res.ok) return null;
-        const data = await res.json();
-        API_CACHE[cacheKey] = { ts: now, data: data.response || [] };
-        return data.response || [];
+        const hId = hRes.response && hRes.response[0] ? hRes.response[0].team.id : null;
+        const aId = aRes.response && aRes.response[0] ? aRes.response[0].team.id : null;
+
+        if (!hId || !aId) {
+            console.warn(`[AF] Could not resolve IDs for ${homeTeam} (${hId}) or ${awayTeam} (${aId})`);
+            return null;
+        }
+
+        // Step 2: Fetch actual H2H results (last 10 meetings)
+        const h2hRes = await fetch(`${API_CONFIG.API_FOOTBALL_URL}fixtures/headtohead?h2h=${hId}-${aId}&last=10`, {
+            headers: { 'x-apisports-key': API_CONFIG.API_FOOTBALL_KEY }
+        }).then(r => r.json());
+
+        const data = {
+            h2h: h2hRes.response || [],
+            teams: { home: hRes.response[0].team, away: aRes.response[0].team }
+        };
+
+        API_CACHE[cacheKey] = { ts: now, data };
+        return data;
     } catch (e) {
+        console.error('[AF] Deep Analytics Error:', e);
         return null;
     }
 }
@@ -919,12 +939,26 @@ function renderLeagueSection(name, matches, targetElement = null) {
 async function updateMatchUI(match) {
     const vsContainer = document.querySelector('.vs-container');
     const probContainer = document.getElementById('neural-probability');
+    const overlay = document.querySelector('.ai-processing-overlay');
+
+    if (overlay) {
+        overlay.style.display = 'flex';
+        overlay.querySelector('.processing-text').innerText = 'A REALIZAR SCAN NEURAL PROFUNDO (API-FOOTBALL v3)...';
+    }
 
     // Find league meta
     const leagueMeta = LEAGUE_DIRECTORY.find(l => l.name === match.league_name);
     let standings = null;
-    if (leagueMeta && leagueMeta.fd_id) {
-        standings = await fetchStandingsFromFD(leagueMeta.fd_id);
+    let deepStats = null;
+
+    if (leagueMeta) {
+        // Parallel fetch for speed
+        const [standingsRes, deepRes] = await Promise.all([
+            leagueMeta.fd_id ? fetchStandingsFromFD(leagueMeta.fd_id) : Promise.resolve(null),
+            fetchDeepAnalyticsFromAF(match.home_team, match.away_team).catch(() => null)
+        ]);
+        standings = standingsRes;
+        deepStats = deepRes;
     }
 
     const findTeamStats = (teamName) => {
@@ -976,8 +1010,12 @@ async function updateMatchUI(match) {
     // Show and trigger Neural Analysis
     if (probContainer) {
         probContainer.style.display = 'block';
-        calculateNeuralProbability(match, { hStats, aStats });
-        updateOddsUI(match, { hStats, aStats });
+        calculateNeuralProbability(match, { hStats, aStats, deepStats });
+        updateOddsUI(match, { hStats, aStats, deepStats });
+    }
+
+    if (overlay) {
+        setTimeout(() => overlay.style.display = 'none', 1000);
     }
 
     if (!document.getElementById('crest-anim-styles')) {
@@ -1024,16 +1062,32 @@ function getNeuralProbabilities(match, extraData = null) {
     let h = (probHomeRaw / total) * 100;
     let a = (probAwayRaw / total) * 100;
 
-    // Apply Standings Bias if available
+    // 1. Apply Standings Bias (Football-Data.org)
     if (extraData && extraData.hStats && extraData.aStats) {
         const posDiff = extraData.aStats.position - extraData.hStats.position;
-        h += (posDiff * 0.5);
-        a -= (posDiff * 0.5);
+        h += (posDiff * 0.4);
+        a -= (posDiff * 0.4);
+    }
+
+    // 2. Apply H2H Dominance (API-Football)
+    if (extraData && extraData.deepStats && extraData.deepStats.h2h) {
+        const h2h = extraData.deepStats.h2h;
+        let hWins = 0, aWins = 0;
+        h2h.forEach(game => {
+            if (game.teams.home.winner) hWins++;
+            if (game.teams.away.winner) aWins++;
+        });
+
+        if (h2h.length > 0) {
+            const h2hBias = (hWins - aWins) * 1.5; // Each win difference weights 1.5%
+            h += h2hBias;
+            a -= h2hBias;
+        }
     }
 
     // Clip
-    h = Math.max(5, Math.min(90, h));
-    a = Math.max(5, Math.min(90, a));
+    h = Math.max(5, Math.min(92, h));
+    a = Math.max(5, Math.min(92, a));
     let d = 100 - h - a;
 
     return { h, a, d };
@@ -1067,8 +1121,16 @@ function calculateNeuralProbability(match, extraData = null) {
         // Dynamic reasoning based on data
         let reasoning = `Análise Matrix concluída. `;
         if (extraData && extraData.hStats && extraData.aStats) {
-            reasoning += `Integração de dados reais: ${match.home_team} está em ${extraData.hStats.position}º contra ${match.away_team} em ${extraData.aStats.position}º. `;
-            reasoning += `A forma recente (${extraData.hStats.form || '???'}) indica tendência algorítmica. `;
+            reasoning += `Integração de dados reais: ${match.home_team} (${extraData.hStats.position}º) vs ${match.away_team} (${extraData.aStats.position}º). `;
+        }
+
+        if (extraData && extraData.deepStats && extraData.deepStats.h2h) {
+            const h2h = extraData.deepStats.h2h;
+            let hWins = 0, aWins = 0;
+            h2h.forEach(g => { if (g.teams.home.winner) hWins++; if (g.teams.away.winner) aWins++; });
+            reasoning += `Score H2H (últimos 10): ${hWins} Vitórias de Casa, ${aWins} Fora. `;
+            if (hWins > aWins) reasoning += `Dominância histórica clara para ${match.home_team}. `;
+            else if (aWins > hWins) reasoning += `Fator 'Equipa Fantasma' detetado para ${match.away_team}. `;
         } else {
             reasoning += `Processados 2.400 pontos de dados históricos. Tendência de golos e posse de bola neural integrados. `;
         }
