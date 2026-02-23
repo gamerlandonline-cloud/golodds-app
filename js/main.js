@@ -13,6 +13,10 @@ const API_CONFIG = {
     FOOTBALL_DATA_KEY: '4a03e151af0446369dfac6c1088911b4',
     STATS_URL: 'https://api.football-data.org/v4/',
 
+    // NEW: API-Football (deep stats, H2H, lineups)
+    API_FOOTBALL_KEY: '7130df0f22674e6b851981c23cffe8d0',
+    API_FOOTBALL_URL: 'https://v3.football.api-sports.io/',
+
     // TheSportsDB (events, teams, logos) — completely free, no key needed
     SPORTSDB_URL: 'https://www.thesportsdb.com/api/v1/json/3/'
 };
@@ -590,6 +594,25 @@ async function fetchEventsFromSportsDB(leagueId) {
         API_CACHE[cacheKey] = { ts: now, data: json.events || [] };
         return json.events || [];
     } catch (e) { return null; }
+}
+
+async function fetchDeepAnalyticsFromAF(homeTeam, awayTeam) {
+    const cacheKey = `af_h2h_${homeTeam}_${awayTeam}`;
+    const now = Date.now();
+    if (API_CACHE[cacheKey] && (now - API_CACHE[cacheKey].ts < CACHE_TTL_MS * 10)) return API_CACHE[cacheKey].data;
+
+    try {
+        const res = await fetch(`${API_CONFIG.API_FOOTBALL_URL}fixtures/headtohead?h2h=all`, {
+            headers: { 'x-apisports-key': API_CONFIG.API_FOOTBALL_KEY }
+        });
+
+        if (!res.ok) return null;
+        const data = await res.json();
+        API_CACHE[cacheKey] = { ts: now, data: data.response || [] };
+        return data.response || [];
+    } catch (e) {
+        return null;
+    }
 }
 
 async function fetchLiveMatches(isInitial = true) {
