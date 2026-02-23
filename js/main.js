@@ -1650,6 +1650,41 @@ function switchWidgetSource(source, btn) {
     }
 }
 
+const SEASON_TIMELINE = [
+    { date: '17–18 FEV 2026', title: 'Champions League: Play-offs (Ida)', desc: 'Início da fase eliminatória. Foco total em equipas que terminaram em 9º-24º na fase de liga.', type: 'uefa', icon: 'fa-trophy' },
+    { date: '24–25 FEV 2026', title: 'Champions League: Play-offs (Volta)', desc: 'Decisão das 8 equipas que avançam para os Oitavos de Final.', type: 'uefa', icon: 'fa-trophy' },
+    { date: '10–11 MAR 2026', title: 'Champions League: Oitavos (Ida)', desc: 'Entrada dos gigantes que ficaram no Top 8.', type: 'uefa', icon: 'fa-star' },
+    { date: 'MAR 2026', title: 'Janela FIFA: Qualificação Mundial', desc: 'Jogos decisivos para o apuramento para o Mundial 2026.', type: 'fifa', icon: 'fa-globe' },
+    { date: '07–08 ABR 2026', title: 'Champions League: Quartos (Ida)', desc: 'A elite europeia reduzida a 8 equipas.', type: 'uefa', icon: 'fa-bolt' },
+    { date: '16 ABR 2026', title: 'Europa & Conference: Quartos (Volta)', desc: 'Noite decisiva para as competições secundárias da UEFA.', type: 'uefa', icon: 'fa-shield-alt' },
+    { date: '16 MAI 2026', title: 'Final da Bundesliga', desc: '34ª Jornada. Decisão do título na Alemanha.', type: 'domestic', icon: 'fa-crown' },
+    { date: '17 MAI 2026', title: 'Final da Liga Portugal', desc: 'Última jornada do campeonato nacional.', type: 'domestic', icon: 'fa-certificate' },
+    { date: '20 MAI 2026', title: 'Final Europa League', desc: 'Estádio Beşiktaş Park, Istambul.', type: 'uefa', icon: 'fa-trophy' },
+    { date: '24 MAI 2026', title: 'Super Sunday: EPL, La Liga, Serie A', desc: 'O maior dia do futebol europeu. Decisão de múltiplos títulos.', type: 'domestic', icon: 'fa-fire' },
+    { date: '30 MAI 2026', title: 'Final Champions League', desc: 'Puskás Aréna, Budapeste. O coroar do Campeão Europeu.', type: 'uefa', icon: 'fa-crown' }
+];
+
+function renderTimeline() {
+    const container = document.querySelector('.timeline-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    SEASON_TIMELINE.forEach(event => {
+        const ev = document.createElement('div');
+        ev.className = 'timeline-event';
+        ev.innerHTML = `
+            <div class="event-dot"><i class="fas ${event.icon}"></i></div>
+            <div class="event-content">
+                <div class="event-date">${event.date}</div>
+                <div class="event-title">${event.title}</div>
+                <div class="event-desc">${event.desc}</div>
+                <div class="event-type-badge">${event.type}</div>
+            </div>
+        `;
+        container.appendChild(ev);
+    });
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initThree();
@@ -1660,5 +1695,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderSidebarLeagues();
     renderAds();
     renderNews();
+    renderTimeline();
     updateDateHeader();
 });

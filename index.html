@@ -60,7 +60,8 @@
                     Guerra</span></div>
             <div class="nav-item" onclick="switchTab('top-picks')"><i class="fas fa-crown"></i><span>Top 10
                     Neural</span></div>
-            <div class="nav-item"><i class="fas fa-history"></i><span>Linhas do Tempo</span></div>
+            <div class="nav-item" onclick="switchTab('timeline')"><i class="fas fa-history"></i><span>Linhas do
+                    Tempo</span></div>
             <div class="nav-item" onclick="switchTab('market-odds')"><i class="fas fa-chart-line"></i><span>Odds de
                     Mercado</span></div>
             <div class="nav-item" onclick="switchTab('news')"><i class="fas fa-newspaper"></i><span>Notícias da
@@ -213,6 +214,18 @@
                     <div id="market-odds-grid" class="market-grid-compare">
                         <div class="live-indicator"><span class="pulse"></span> A COMPILAR DADOS DAS CASAS...</div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Season Timeline Tab -->
+            <div id="tab-timeline" class="tab-pane">
+                <div class="card-header">
+                    <h2><i class="fas fa-history"></i> Mapa Estratégico da Época 25/26</h2>
+                    <span class="badge" style="background: var(--accent-blue);">Sincronizado FIFA/UEFA</span>
+                </div>
+
+                <div class="timeline-container">
+                    <!-- Timeline will be populated by JS -->
                 </div>
             </div>
 
