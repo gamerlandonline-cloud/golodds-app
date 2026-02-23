@@ -1257,7 +1257,6 @@ function updateOddsUI(match, extraData = null) {
 }
 
 let allMatchesData = [];
-let plFixturesCache = null; // High-fidelity cache for Premier League
 
 function renderSidebarLeagues() {
     const sidebar = document.getElementById('dynamic-leagues-sidebar');
@@ -1325,20 +1324,8 @@ function openLeaguePortal(leagueName) {
     `;
 
     // 1. Traditional Standings Table (Now also detects current matchday)
-    renderLeagueStandings(league).then(async () => {
-        // High-fidelity load for Premier League if not cached
-        if (leagueName === 'Premier League' && !plFixturesCache) {
-            try {
-                const res = await fetch('assets/pl_fixtures_2025.json');
-                if (res.ok) {
-                    const data = await res.json();
-                    plFixturesCache = data.matches;
-                }
-            } catch (e) {
-                console.warn('[HIFI] Local PL fixtures unavailable.');
-            }
-        }
-        // 2. Traditional Calendar
+    renderLeagueStandings(league).then(() => {
+        // 2. Traditional Calendar (Render after standings to ensure correct round)
         renderLeagueFixtures(league, fixturesContainer, roundBadge);
     });
 
@@ -1437,42 +1424,39 @@ async function renderLeagueFixtures(league, container, badge) {
     let fixtures = [];
     badge.innerText = `JORNADA ${currentLeagueRound}`;
 
-    try {
-        // SPECIAL CASE: Premier League High-Fidelity Local Data
-        if (league.name === 'Premier League' && plFixturesCache) {
-            fixtures = plFixturesCache
-                .filter(m => m.matchday === currentLeagueRound)
-                .map(m => ({
-                    date: m.utcDate,
-                    home: m.homeTeam.shortName || m.homeTeam.name,
-                    away: m.awayTeam.shortName || m.awayTeam.name,
-                    round: m.matchday,
-                    hScore: m.score.fullTime.home,
-                    aScore: m.score.fullTime.away,
-                    status: m.status
-                }));
+    // Priority 1: Use Static Data if available (e.g., Liga Portugal)
+    if (league.name === 'Liga Portugal' && typeof PPL_FIXTURES !== 'undefined') {
+        fixtures = PPL_FIXTURES.filter(m => m.round === currentLeagueRound);
+        if (fixtures.length > 0) {
+            console.log(`[Static] Loaded ${fixtures.length} matches from PPL_FIXTURES for round ${currentLeagueRound}`);
         }
-        else if (league.fd_id) {
-            // Fetch matches for specific matchday (matchday=X in FD API)
-            const res = await fetch(`${API_CONFIG.STATS_URL}competitions/${league.fd_id}/matches?matchday=${currentLeagueRound}`, {
-                headers: { 'X-Auth-Token': API_CONFIG.FOOTBALL_DATA_KEY }
-            });
+    }
 
-            if (res.ok) {
-                const data = await res.json();
-                fixtures = data.matches.map(m => ({
-                    date: m.utcDate,
-                    home: m.homeTeam.shortName || m.homeTeam.name,
-                    away: m.awayTeam.shortName || m.awayTeam.name,
-                    round: m.matchday,
-                    hScore: m.score.fullTime.home,
-                    aScore: m.score.fullTime.away,
-                    status: m.status
-                }));
+    // Priority 2: Use API if no static data found
+    if (fixtures.length === 0) {
+        try {
+            if (league.fd_id) {
+                // Fetch matches for specific matchday (matchday=X in FD API)
+                const res = await fetch(`${API_CONFIG.STATS_URL}competitions/${league.fd_id}/matches?matchday=${currentLeagueRound}`, {
+                    headers: { 'X-Auth-Token': API_CONFIG.FOOTBALL_DATA_KEY }
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    fixtures = data.matches.map(m => ({
+                        date: m.utcDate,
+                        home: m.homeTeam.shortName || m.homeTeam.name,
+                        away: m.awayTeam.shortName || m.awayTeam.name,
+                        round: m.matchday,
+                        hScore: m.score.fullTime.home,
+                        aScore: m.score.fullTime.away,
+                        status: m.status
+                    }));
+                }
             }
+        } catch (e) {
+            console.warn('[FD] Connection refused. Falling back to internal catalog.');
         }
-    } catch (e) {
-        console.warn('[FD] Sync failed. Falling back to internal data.');
     }
 
     // Fallback Mock Logic with Real Teams (Global Traditional fallback)
