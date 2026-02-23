@@ -3037,3 +3037,134 @@ h3,
     margin-top: 5px;
     font-weight: 700;
 }
+
+/* ============================================================
+   TRADITIONAL PORTAL EXTENSIONS
+   ============================================================ */
+
+.round-selector {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.round-selector i {
+    cursor: pointer;
+    color: var(--accent-gold);
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+.round-selector i:hover {
+    transform: scale(1.2);
+    text-shadow: 0 0 10px var(--accent-gold);
+}
+
+.standings-table-wrapper {
+    background: rgba(0, 2, 9, 0.4);
+    border-radius: 15px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow-x: auto;
+    backdrop-filter: blur(10px);
+}
+
+.standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.standings-table th {
+    text-align: left;
+    padding: 12px 15px;
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-dim);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.standings-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.standings-table tr:hover {
+    background: rgba(0, 153, 255, 0.05);
+}
+
+.st-pos {
+    font-weight: 900;
+    color: var(--accent-gold);
+    width: 40px;
+    text-align: center;
+}
+
+.st-team {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.st-crest {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.st-pts {
+    font-weight: 900;
+    color: var(--accent-cyan);
+    text-align: center;
+    background: rgba(0, 242, 255, 0.05);
+}
+
+.st-num {
+    text-align: center;
+    color: var(--text-dim);
+}
+
+/* Fixture Items Refinement */
+.fixture-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.fixture-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent-gold);
+    transform: translateY(-2px);
+}
+
+.fi-date {
+    font-size: 9px;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+}
+
+.fi-teams {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.fi-score {
+    color: var(--accent-cyan);
+    font-family: 'Orbitron', sans-serif;
+}

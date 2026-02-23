@@ -266,16 +266,30 @@
                     <!-- Dynamic League Banner -->
                 </div>
 
-
+                <!-- Traditional Classification Table -->
                 <div class="calendar-section" style="margin-top: 30px;">
                     <div class="card-header">
-                        <h2><i class="fas fa-calendar-alt"></i> Próximas Jornadas e Calendário</h2>
-                        <span id="current-round-badge" class="badge" style="background: var(--accent-gold);">JORNADA
-                            --</span>
+                        <h2><i class="fas fa-list-ol"></i> Classificação Tradicional (Standings)</h2>
+                        <span class="badge" style="background: var(--accent-blue);">DADOS AO VIVO</span>
+                    </div>
+                    <div id="league-standings-container" class="standings-table-wrapper">
+                        <div class="live-indicator"><span class="pulse"></span> A RECUPERAR POSIÇÕES NA TABELA...</div>
+                    </div>
+                </div>
+
+                <!-- Traditional Round Selector & Fixtures -->
+                <div class="calendar-section" style="margin-top: 40px;">
+                    <div class="card-header">
+                        <h2><i class="fas fa-calendar-alt"></i> Calendário Geral e Resultados</h2>
+                        <div class="round-selector">
+                            <i class="fas fa-chevron-left" onclick="changeLeagueRound(-1)"></i>
+                            <span id="current-round-badge" class="badge"
+                                style="background: var(--accent-gold); min-width: 100px;">JORNADA --</span>
+                            <i class="fas fa-chevron-right" onclick="changeLeagueRound(1)"></i>
+                        </div>
                     </div>
                     <div id="league-fixtures-container" class="fixtures-grid">
-                        <!-- Fixtures filled by JS -->
-                        <div class="live-indicator"><span class="pulse"></span> A RECUPERAR CALENDÁRIO...</div>
+                        <div class="live-indicator"><span class="pulse"></span> A SINCRONIZAR CALENDÁRIO...</div>
                     </div>
                 </div>
 

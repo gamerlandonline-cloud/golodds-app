@@ -1276,6 +1276,9 @@ function renderSidebarLeagues() {
 function openLeaguePortal(leagueName) {
     switchTab('league-portal');
 
+    const league = LEAGUE_DIRECTORY.find(l => l.name === leagueName);
+    activeLeague = league; // Global tracker for round changes
+
     // Update Active Sidebar
     document.querySelectorAll('.sidebar-league-item').forEach(item => {
         const text = item.querySelector('span').innerText;
@@ -1288,7 +1291,6 @@ function openLeaguePortal(leagueName) {
         }
     });
 
-    const league = LEAGUE_DIRECTORY.find(l => l.name === leagueName);
     const header = document.getElementById('league-portal-header');
     const content = document.getElementById('league-portal-content');
     const fixturesContainer = document.getElementById('league-fixtures-container');
@@ -1309,10 +1311,13 @@ function openLeaguePortal(leagueName) {
         </div>
     `;
 
-    // 1. Render Current/Future Fixtures
+    // 1. Traditional Standings Table
+    renderLeagueStandings(league);
+
+    // 2. Traditional Calendar
     renderLeagueFixtures(league, fixturesContainer, roundBadge);
 
-    // 2. Render Highlights (Highlights filtering)
+    // 3. Render Highlights (Highlights filtering)
     const filtered = allMatchesData.filter(m => m.league_name === leagueName);
     content.innerHTML = '';
     if (filtered.length === 0) {
@@ -1324,45 +1329,123 @@ function openLeaguePortal(leagueName) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+let currentLeagueRound = 24;
+let activeLeague = null;
+
+function changeLeagueRound(offset) {
+    currentLeagueRound = Math.max(1, Math.min(38, currentLeagueRound + offset));
+    if (activeLeague) {
+        const fixturesContainer = document.getElementById('league-fixtures-container');
+        const roundBadge = document.getElementById('current-round-badge');
+        renderLeagueFixtures(activeLeague, fixturesContainer, roundBadge);
+    }
+}
+
+async function renderLeagueStandings(league) {
+    const container = document.getElementById('league-standings-container');
+    if (!container || !league) return;
+
+    if (!league.fd_id) {
+        container.innerHTML = '<div class="live-indicator">DADOS DE CLASSIFICAÇÃO INDISPONÍVEIS PARA ESTA LIGA</div>';
+        return;
+    }
+
+    container.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A RETOMBIR POSIÇÕES DA MATRIX...</div>';
+
+    try {
+        const data = await fetchStandingsFromFD(league.fd_id);
+        if (!data || !data.standings) throw new Error();
+
+        const tableData = data.standings[0].table;
+        let html = `
+            <table class="standings-table">
+                <thead>
+                    <tr>
+                        <th class="st-pos">#</th>
+                        <th>EQUIPA</th>
+                        <th class="st-num">J</th>
+                        <th class="st-num">V</th>
+                        <th class="st-num">E</th>
+                        <th class="st-num">D</th>
+                        <th class="st-num">G</th>
+                        <th class="st-pts">PTS</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        tableData.forEach(row => {
+            html += `
+                <tr>
+                    <td class="st-pos">${row.position}</td>
+                    <td class="st-team">
+                        <img src="${row.team.crest}" class="st-crest" onerror="this.src='https://www.thesportsdb.com/images/media/team/badge/small/default.png'">
+                        <span>${row.team.shortName || row.team.name}</span>
+                    </td>
+                    <td class="st-num">${row.playedGames}</td>
+                    <td class="st-num">${row.won}</td>
+                    <td class="st-num">${row.draw}</td>
+                    <td class="st-num">${row.lost}</td>
+                    <td class="st-num">${row.goalsFor}:${row.goalsAgainst}</td>
+                    <td class="st-pts">${row.points}</td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    } catch (e) {
+        container.innerHTML = '<div class="live-indicator">ERRO AO CARREGAR TABELA TRADICIONAL</div>';
+    }
+}
+
 
 async function renderLeagueFixtures(league, container, badge) {
     if (!container || !league) return;
-    container.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A RECUPERAR CALENDÁRIO...</div>';
+    container.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A SINCRONIZAR CALENDÁRIO COM A MATRIX...</div>';
 
-    // Real-based schedule for 2025/2026
     let fixtures = [];
+    badge.innerText = `JORNADA ${currentLeagueRound}`;
 
-    if (league.name.includes('Portugal')) {
-        fixtures = [
-            // Jornada 23 (Feb 22/23 2026)
-            { date: '2026-02-23', home: 'Rio Ave', away: 'FC Porto', round: 23 },
-            { date: '2026-02-23', home: 'Braga', away: 'Vitória SC', round: 23 },
-            { date: '2026-02-23', home: 'Sporting CP', away: 'Moreirense', round: 23 },
-            { date: '2026-02-23', home: 'Casa Pia', away: 'Famalicão', round: 23 },
-            { date: '2026-02-23', home: 'Gil Vicente', away: 'Estoril', round: 23 },
-            { date: '2026-02-23', home: 'Nacional', away: 'Arouca', round: 23 },
-            // Jornada 24 (March 1 2026)
-            { date: '2026-03-01', home: 'Estoril', away: 'Sporting CP', round: 24 },
-            { date: '2026-03-01', home: 'Arouca', away: 'FC Porto', round: 24 },
-            { date: '2026-03-01', home: 'Braga', away: 'Nacional', round: 24 },
-            { date: '2026-03-01', home: 'Famalicão', away: 'Rio Ave', round: 24 }
-        ];
-    } else {
-        // Generic logic for other leagues
-        const teamPool = league.name.includes('Premier') ? ['Arsenal', 'Chelsea', 'Liverpool', 'Man City', 'Man Utd', 'Tottenham'] :
-            ['Real Madrid', 'Barcelona', 'Atlético', 'Sevilla', 'Betis', 'Valencia'];
+    try {
+        if (league.fd_id) {
+            // Fetch matches for specific matchday (matchday=X in FD API)
+            const res = await fetch(`${API_CONFIG.STATS_URL}competitions/${league.fd_id}/matches?matchday=${currentLeagueRound}`, {
+                headers: { 'X-Auth-Token': API_CONFIG.FOOTBALL_DATA_KEY }
+            });
 
+            if (res.ok) {
+                const data = await res.json();
+                fixtures = data.matches.map(m => ({
+                    date: m.utcDate,
+                    home: m.homeTeam.shortName || m.homeTeam.name,
+                    away: m.awayTeam.shortName || m.awayTeam.name,
+                    round: m.matchday,
+                    hScore: m.score.fullTime.home,
+                    aScore: m.score.fullTime.away,
+                    status: m.status
+                }));
+            } else {
+                console.warn(`[FD] API Error: ${res.status}. Using local projections.`);
+            }
+        }
+    } catch (e) {
+        console.warn('[FD] Connection refused. Falling back to internal data.');
+    }
+
+    // Fallback Mock Logic if API fails or league is not tracked by FD
+    if (fixtures.length === 0) {
         fixtures = [
-            { date: '2026-02-24', home: teamPool[0], away: teamPool[1], round: 26 },
-            { date: '2026-02-25', home: teamPool[2], away: teamPool[3], round: 26 },
-            { date: '2026-03-01', home: teamPool[4], away: teamPool[5], round: 27 }
+            { date: '2026-02-23', home: `${league.name} A`, away: `${league.name} B`, round: currentLeagueRound, status: 'TIMED', hScore: null, aScore: null },
+            { date: '2026-02-24', home: `${league.name} C`, away: `${league.name} D`, round: currentLeagueRound, status: 'TIMED', hScore: null, aScore: null },
+            { date: '2026-02-24', home: `${league.name} E`, away: `${league.name} F`, round: currentLeagueRound, status: 'TIMED', hScore: null, aScore: null }
         ];
     }
 
-    badge.innerText = `JORNADA ${fixtures[0].round}`;
     container.innerHTML = '';
 
     fixtures.forEach(fix => {
+        const isFinished = fix.status === 'FINISHED';
         const item = document.createElement('div');
         item.className = 'fixture-item';
         item.onclick = () => {
@@ -1371,7 +1454,7 @@ async function renderLeagueFixtures(league, container, badge) {
                 home_team: fix.home,
                 away_team: fix.away,
                 league_name: league.name,
-                commence_time: new Date(fix.date).toISOString(),
+                commence_time: fix.date,
                 bookmakers: [{
                     markets: [{
                         outcomes: [
@@ -1388,14 +1471,17 @@ async function renderLeagueFixtures(league, container, badge) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
+        let scoreHtml = '<span style="color:var(--text-dim);">vs</span>';
+        if (isFinished) scoreHtml = `<span class="fi-score">${fix.hScore} - ${fix.aScore}</span>`;
+
         item.innerHTML = `
-            <div class="fi-date">${new Date(fix.date).toLocaleDateString('pt-PT')}</div>
+            <div class="fi-date">${new Date(fix.date).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}</div>
             <div class="fi-teams">
-                <span>${fix.home}</span>
-                <span style="color:var(--text-dim); font-size:9px;">vs</span>
-                <span>${fix.away}</span>
+                <span style="flex:1; text-align:right;">${fix.home}</span>
+                <span style="margin: 0 10px; font-family:'Orbitron'; font-weight:900;">${scoreHtml}</span>
+                <span style="flex:1; text-align:left;">${fix.away}</span>
             </div>
-            <div class="fi-round">Jornada ${fix.round}</div>
+            <div class="fi-round">${fix.status === 'FINISHED' ? 'FINALIZADO' : 'AGENDADO'} • JORNADA ${fix.round}</div>
         `;
         container.appendChild(item);
     });
