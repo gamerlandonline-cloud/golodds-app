@@ -1257,6 +1257,7 @@ function updateOddsUI(match, extraData = null) {
 }
 
 let allMatchesData = [];
+let plFixturesCache = null; // High-fidelity cache for Premier League
 
 function renderSidebarLeagues() {
     const sidebar = document.getElementById('dynamic-leagues-sidebar');
@@ -1324,8 +1325,20 @@ function openLeaguePortal(leagueName) {
     `;
 
     // 1. Traditional Standings Table (Now also detects current matchday)
-    renderLeagueStandings(league).then(() => {
-        // 2. Traditional Calendar (Render after standings to ensure correct round)
+    renderLeagueStandings(league).then(async () => {
+        // High-fidelity load for Premier League if not cached
+        if (leagueName === 'Premier League' && !plFixturesCache) {
+            try {
+                const res = await fetch('assets/pl_fixtures_2025.json');
+                if (res.ok) {
+                    const data = await res.json();
+                    plFixturesCache = data.matches;
+                }
+            } catch (e) {
+                console.warn('[HIFI] Local PL fixtures unavailable.');
+            }
+        }
+        // 2. Traditional Calendar
         renderLeagueFixtures(league, fixturesContainer, roundBadge);
     });
 
@@ -1425,7 +1438,21 @@ async function renderLeagueFixtures(league, container, badge) {
     badge.innerText = `JORNADA ${currentLeagueRound}`;
 
     try {
-        if (league.fd_id) {
+        // SPECIAL CASE: Premier League High-Fidelity Local Data
+        if (league.name === 'Premier League' && plFixturesCache) {
+            fixtures = plFixturesCache
+                .filter(m => m.matchday === currentLeagueRound)
+                .map(m => ({
+                    date: m.utcDate,
+                    home: m.homeTeam.shortName || m.homeTeam.name,
+                    away: m.awayTeam.shortName || m.awayTeam.name,
+                    round: m.matchday,
+                    hScore: m.score.fullTime.home,
+                    aScore: m.score.fullTime.away,
+                    status: m.status
+                }));
+        }
+        else if (league.fd_id) {
             // Fetch matches for specific matchday (matchday=X in FD API)
             const res = await fetch(`${API_CONFIG.STATS_URL}competitions/${league.fd_id}/matches?matchday=${currentLeagueRound}`, {
                 headers: { 'X-Auth-Token': API_CONFIG.FOOTBALL_DATA_KEY }
@@ -1442,12 +1469,10 @@ async function renderLeagueFixtures(league, container, badge) {
                     aScore: m.score.fullTime.away,
                     status: m.status
                 }));
-            } else {
-                console.warn(`[FD] API Error: ${res.status}. Using local projections.`);
             }
         }
     } catch (e) {
-        console.warn('[FD] Connection refused. Falling back to internal data.');
+        console.warn('[FD] Sync failed. Falling back to internal data.');
     }
 
     // Fallback Mock Logic with Real Teams (Global Traditional fallback)
