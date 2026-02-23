@@ -256,14 +256,88 @@ h3,
 
 .sidebar {
     width: 280px;
-    background: rgba(2, 4, 9, 0.7);
+    background: rgba(2, 4, 9, 0.85);
     backdrop-filter: blur(20px);
-    border-right: var(--glass-border);
+    border-right: 1px solid rgba(0, 242, 255, 0.1);
     padding: 30px 0;
     display: flex;
     flex-direction: column;
-    z-index: 10;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+    z-index: 2000;
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.6);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow-x: hidden;
+}
+
+.sidebar.collapsed {
+    width: 15px;
+    padding: 30px 0;
+}
+
+.sidebar.collapsed :not(.sidebar-toggle) {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 60px;
+    background: var(--accent-cyan);
+    color: black;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 0 0 15px var(--accent-cyan);
+    transition: 0.3s;
+}
+
+.sidebar-toggle:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 0 25px var(--accent-cyan);
+}
+
+.sidebar.collapsed .sidebar-toggle {
+    right: -20px;
+    opacity: 0.8;
+}
+
+.sidebar-toggle i {
+    font-size: 12px;
+    transition: 0.5s;
+}
+
+.sidebar.collapsed .sidebar-toggle i {
+    transform: rotate(180deg);
+}
+
+.sidebar.collapsed::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent-cyan);
+    box-shadow: 0 0 10px var(--accent-cyan);
+    opacity: 0.5;
+    transition: 0.3s;
+}
+
+.sidebar.collapsed:hover {
+    width: 20px;
+    background: rgba(0, 242, 255, 0.05);
+}
+
+.sidebar.collapsed:hover::after {
+    opacity: 1;
+    box-shadow: 0 0 20px var(--accent-cyan);
 }
 
 .nav-item {

@@ -1845,6 +1845,18 @@ function renderFutureRadar() {
     });
 }
 
+function toggleSidebar() {
+    const sidebar = document.getElementById('app-sidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('collapsed');
+
+        // Optional: notify three.js or other layouts of resize if needed
+        setTimeout(() => {
+            if (window.onresize) window.onresize();
+        }, 500);
+    }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initThree();

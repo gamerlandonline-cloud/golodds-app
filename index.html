@@ -55,7 +55,10 @@
     </div>
 
     <main class="dashboard">
-        <aside class="sidebar">
+        <aside class="sidebar" id="app-sidebar">
+            <div class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-chevron-left"></i>
+            </div>
             <div class="nav-item active" onclick="switchTab('war-room')"><i class="fas fa-th-large"></i><span>Sala de
                     Guerra</span></div>
             <div class="nav-item" onclick="switchTab('top-picks')"><i class="fas fa-crown"></i><span>Top 10
