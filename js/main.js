@@ -1426,7 +1426,7 @@ async function renderLeagueFixtures(league, container, badge) {
 
     try {
         if (league.fd_id) {
-            // Priority 1: Official La Liga High-Fidelity Repo (Direct Matchday Data)
+            // Priority 1: Official League High-Fidelity Repos
             if (league.name === 'La Liga') {
                 const repoRes = await fetch('https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/es.1.json');
                 if (repoRes.ok) {
@@ -1445,6 +1445,26 @@ async function renderLeagueFixtures(league, container, badge) {
                             status: m.score ? 'FINISHED' : 'TIMED'
                         }));
                         console.log(`[Repo] Loaded La Liga Matchday ${currentLeagueRound}`);
+                    }
+                }
+            } else if (league.name === 'Bundesliga') {
+                const repoRes = await fetch('https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/de.1.json');
+                if (repoRes.ok) {
+                    const repoData = await repoRes.json();
+                    const roundStr = `Matchday ${currentLeagueRound}`;
+                    const matches = repoData.matches.filter(m => m.round === roundStr);
+
+                    if (matches.length > 0) {
+                        fixtures = matches.map(m => ({
+                            date: m.date,
+                            home: m.team1.replace('FC ', '').replace('1. ', '').replace(' SV', '').replace(' München', '').replace(' 04', ''),
+                            away: m.team2.replace('FC ', '').replace('1. ', '').replace(' SV', '').replace(' München', '').replace(' 04', ''),
+                            round: currentLeagueRound,
+                            hScore: m.score ? m.score.ft[0] : null,
+                            aScore: m.score ? m.score.ft[1] : null,
+                            status: m.score ? 'FINISHED' : 'TIMED'
+                        }));
+                        console.log(`[Repo] Loaded Bundesliga Matchday ${currentLeagueRound}`);
                     }
                 }
             }
