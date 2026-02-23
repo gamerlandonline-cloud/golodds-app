@@ -1437,14 +1437,13 @@ async function renderLeagueFixtures(league, container, badge) {
                     if (matches.length > 0) {
                         fixtures = matches.map(m => ({
                             date: m.date,
-                            home: m.team1.replace(' CF', '').replace(' FC', '').replace(' de Fútbol', ''),
-                            away: m.team2.replace(' CF', '').replace(' FC', '').replace(' de Fútbol', ''),
+                            home: m.team1.replace(' CF', '').replace(' FC', '').replace(' de Fútbol', '').replace(' SAD', ''),
+                            away: m.team2.replace(' CF', '').replace(' FC', '').replace(' de Fútbol', '').replace(' SAD', ''),
                             round: currentLeagueRound,
                             hScore: m.score ? m.score.ft[0] : null,
                             aScore: m.score ? m.score.ft[1] : null,
                             status: m.score ? 'FINISHED' : 'TIMED'
                         }));
-                        console.log(`[Repo] Loaded La Liga Matchday ${currentLeagueRound}`);
                     }
                 }
             } else if (league.name === 'Bundesliga') {
@@ -1464,7 +1463,78 @@ async function renderLeagueFixtures(league, container, badge) {
                             aScore: m.score ? m.score.ft[1] : null,
                             status: m.score ? 'FINISHED' : 'TIMED'
                         }));
-                        console.log(`[Repo] Loaded Bundesliga Matchday ${currentLeagueRound}`);
+                    }
+                }
+            } else if (league.name === 'Premier League') {
+                const repoRes = await fetch('https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/en.1.json');
+                if (repoRes.ok) {
+                    const repoData = await repoRes.json();
+                    const roundStr = `Matchday ${currentLeagueRound}`;
+                    const matches = repoData.matches.filter(m => m.round === roundStr);
+                    if (matches.length > 0) {
+                        fixtures = matches.map(m => ({
+                            date: m.date,
+                            home: m.team1.replace(' FC', ''),
+                            away: m.team2.replace(' FC', ''),
+                            round: currentLeagueRound,
+                            hScore: m.score ? m.score.ft[0] : null,
+                            aScore: m.score ? m.score.ft[1] : null,
+                            status: m.score ? 'FINISHED' : 'TIMED'
+                        }));
+                    }
+                }
+            } else if (league.name === 'Serie A') {
+                const repoRes = await fetch('https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/it.1.json');
+                if (repoRes.ok) {
+                    const repoData = await repoRes.json();
+                    const roundStr = `Matchday ${currentLeagueRound}`;
+                    const matches = repoData.matches.filter(m => m.round === roundStr);
+                    if (matches.length > 0) {
+                        fixtures = matches.map(m => ({
+                            date: m.date,
+                            home: m.team1,
+                            away: m.team2,
+                            round: currentLeagueRound,
+                            hScore: m.score ? m.score.ft[0] : null,
+                            aScore: m.score ? m.score.ft[1] : null,
+                            status: m.score ? 'FINISHED' : 'TIMED'
+                        }));
+                    }
+                }
+            } else if (league.name === 'Ligue 1') {
+                const repoRes = await fetch('https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/fr.1.json');
+                if (repoRes.ok) {
+                    const repoData = await repoRes.json();
+                    const roundStr = `Matchday ${currentLeagueRound}`;
+                    const matches = repoData.matches.filter(m => m.round === roundStr);
+                    if (matches.length > 0) {
+                        fixtures = matches.map(m => ({
+                            date: m.date,
+                            home: m.team1,
+                            away: m.team2,
+                            round: currentLeagueRound,
+                            hScore: m.score ? m.score.ft[0] : null,
+                            aScore: m.score ? m.score.ft[1] : null,
+                            status: m.score ? 'FINISHED' : 'TIMED'
+                        }));
+                    }
+                }
+            } else if (league.name === 'Liga Portugal') {
+                const repoRes = await fetch('https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/pt.1.json');
+                if (repoRes.ok) {
+                    const repoData = await repoRes.json();
+                    const roundStr = `Matchday ${currentLeagueRound}`;
+                    const matches = repoData.matches.filter(m => m.round === roundStr);
+                    if (matches.length > 0) {
+                        fixtures = matches.map(m => ({
+                            date: m.date,
+                            home: m.team1.replace('FC ', '').replace('SL ', '').replace('SC ', '').replace(' SAD', ''),
+                            away: m.team2.replace('FC ', '').replace('SL ', '').replace('SC ', '').replace(' SAD', ''),
+                            round: currentLeagueRound,
+                            hScore: m.score ? m.score.ft[0] : null,
+                            aScore: m.score ? m.score.ft[1] : null,
+                            status: m.score ? 'FINISHED' : 'TIMED'
+                        }));
                     }
                 }
             }
