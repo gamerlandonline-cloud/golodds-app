@@ -1424,19 +1424,33 @@ async function renderLeagueFixtures(league, container, badge) {
     let fixtures = [];
     badge.innerText = `JORNADA ${currentLeagueRound}`;
 
-    // Priority 1: Use Static Data if available (e.g., Liga Portugal)
-    if (league.name === 'Liga Portugal' && typeof PPL_FIXTURES !== 'undefined') {
-        fixtures = PPL_FIXTURES.filter(m => m.round === currentLeagueRound);
-        if (fixtures.length > 0) {
-            console.log(`[Static] Loaded ${fixtures.length} matches from PPL_FIXTURES for round ${currentLeagueRound}`);
-        }
-    }
+    try {
+        if (league.fd_id) {
+            // Priority 1: Official La Liga High-Fidelity Repo (Direct Matchday Data)
+            if (league.name === 'La Liga') {
+                const repoRes = await fetch('https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/es.1.json');
+                if (repoRes.ok) {
+                    const repoData = await repoRes.json();
+                    const roundStr = `Matchday ${currentLeagueRound}`;
+                    const matches = repoData.matches.filter(m => m.round === roundStr);
 
-    // Priority 2: Use API if no static data found
-    if (fixtures.length === 0) {
-        try {
-            if (league.fd_id) {
-                // Fetch matches for specific matchday (matchday=X in FD API)
+                    if (matches.length > 0) {
+                        fixtures = matches.map(m => ({
+                            date: m.date,
+                            home: m.team1.replace(' CF', '').replace(' FC', '').replace(' de Fútbol', ''),
+                            away: m.team2.replace(' CF', '').replace(' FC', '').replace(' de Fútbol', ''),
+                            round: currentLeagueRound,
+                            hScore: m.score ? m.score.ft[0] : null,
+                            aScore: m.score ? m.score.ft[1] : null,
+                            status: m.score ? 'FINISHED' : 'TIMED'
+                        }));
+                        console.log(`[Repo] Loaded La Liga Matchday ${currentLeagueRound}`);
+                    }
+                }
+            }
+
+            // Priority 2: Football-Data.org API (Standard Stream)
+            if (fixtures.length === 0) {
                 const res = await fetch(`${API_CONFIG.STATS_URL}competitions/${league.fd_id}/matches?matchday=${currentLeagueRound}`, {
                     headers: { 'X-Auth-Token': API_CONFIG.FOOTBALL_DATA_KEY }
                 });
@@ -1454,9 +1468,9 @@ async function renderLeagueFixtures(league, container, badge) {
                     }));
                 }
             }
-        } catch (e) {
-            console.warn('[FD] Connection refused. Falling back to internal catalog.');
         }
+    } catch (e) {
+        console.warn('[Data Bridge] Neural sync error. Falling back to local catalog.');
     }
 
     // Fallback Mock Logic with Real Teams (Global Traditional fallback)
