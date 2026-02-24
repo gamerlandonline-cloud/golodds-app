@@ -2161,16 +2161,18 @@ async function renderEliteDashboard() {
     if (!container) return;
 
     const eliteLeagues = [
+        { name: 'Liga Portugal', id: 'PPL', country: 'PORTUGAL', flag: 'pt' },
         { name: 'Premier League', id: 'PL', country: 'ENGLAND', flag: 'gb' },
         { name: 'La Liga', id: 'PD', country: 'ESPANHA', flag: 'es' },
-        { name: 'Bundesliga', id: 'BL1', country: 'ALEMANHA', flag: 'de' },
-        { name: 'Liga Portugal', id: 'PPL', country: 'PORTUGAL', flag: 'pt' }
+        { name: 'Bundesliga', id: 'BL1', country: 'ALEMANHA', flag: 'de' }
     ];
 
     container.innerHTML = '<div class="live-indicator"><span class="pulse"></span> A CONFIGURAR RADAR DE LIGAS ELITE...</div>';
 
     try {
-        const dashboardHtml = await Promise.all(eliteLeagues.map(async (league) => {
+        let allHtml = '';
+
+        for (const league of eliteLeagues) {
             // Fetch competition data to get current matchday
             const compRes = await fetch(`${API_CONFIG.STATS_URL}competitions/${league.id}`, {
                 headers: { 'X-Auth-Token': API_CONFIG.FOOTBALL_DATA_KEY }
@@ -2178,70 +2180,70 @@ async function renderEliteDashboard() {
             const compData = await compRes.json();
             const currentRound = compData.currentSeason ? compData.currentSeason.currentMatchday : 24;
 
-            // Fetch matches for this round
+            // Fetch ALL matches for this round
             const matchesRes = await fetch(`${API_CONFIG.STATS_URL}competitions/${league.id}/matches?matchday=${currentRound}`, {
                 headers: { 'X-Auth-Token': API_CONFIG.FOOTBALL_DATA_KEY }
             });
             const matchesData = await matchesRes.json();
 
-            // Pick a "Big Match" (usually first or one with famous teams)
-            const match = matchesData.matches[0];
-            if (!match) return '';
+            if (matchesData.matches && matchesData.matches.length > 0) {
+                matchesData.matches.forEach(match => {
+                    const isLive = match.status === 'IN_PLAY' || match.status === 'PAUSED';
+                    const isFinished = match.status === 'FINISHED';
+                    const displayScore = (isFinished || isLive) ? `${match.score.fullTime.home} - ${match.score.fullTime.away}` : 'VS';
 
-            const isLive = match.status === 'IN_PLAY' || match.status === 'PAUSED';
-            const isFinished = match.status === 'FINISHED';
-            const displayScore = (isFinished || isLive) ? `${match.score.fullTime.home} - ${match.score.fullTime.away}` : 'VS';
+                    const matchDate = new Date(match.utcDate);
+                    const dateStr = matchDate.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' });
+                    const timeStr = matchDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
 
-            const matchDate = new Date(match.utcDate);
-            const dateStr = matchDate.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            const timeStr = matchDate.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
-
-            return `
-                <div class="elite-scoreboard" onclick="openLeaguePortal('${league.name}')">
-                    <div class="elite-header">
-                        <div class="elite-breadcrumb">
-                            <i class="fas fa-futbol"></i> 
-                            <span>FUTEBOL</span> 
-                            <span class="separator">/</span> 
-                            <img src="https://flagcdn.com/16x12/${league.flag}.png" style="border-radius:2px;"> 
-                            <span>${league.country}</span> 
-                            <span class="separator">/</span> 
-                            <span class="league-name">${league.name.toUpperCase()} - JORNADA ${currentRound}</span>
-                        </div>
-                        <i class="fas fa-external-link-alt elite-external"></i>
-                    </div>
-                    <div class="elite-content">
-                        <i class="far fa-star elite-side-icon"></i>
-                        
-                        <div class="elite-team-box">
-                            <div class="elite-crest-bg">
-                                <img src="${match.homeTeam.crest}" onerror="this.src='https://www.thesportsdb.com/images/media/team/badge/small/default.png'">
+                    allHtml += `
+                        <div class="elite-scoreboard" onclick="openLeaguePortal('${league.name}')">
+                            <div class="elite-header">
+                                <div class="elite-breadcrumb">
+                                    <i class="fas fa-futbol"></i> 
+                                    <span>FUTEBOL</span> 
+                                    <span class="separator">/</span> 
+                                    <img src="https://flagcdn.com/16x12/${league.flag}.png" style="border-radius:2px;"> 
+                                    <span>${league.country}</span> 
+                                    <span class="separator">/</span> 
+                                    <span class="league-name">${league.name.toUpperCase()} - JORNADA ${currentRound}</span>
+                                </div>
+                                <i class="fas fa-external-link-alt elite-external"></i>
                             </div>
-                            <div class="elite-team-name">${match.homeTeam.shortName || match.homeTeam.name}</div>
-                        </div>
+                            <div class="elite-content">
+                                <i class="far fa-star elite-side-icon"></i>
+                                
+                                <div class="elite-team-box">
+                                    <div class="elite-crest-bg">
+                                        <img src="${match.homeTeam.crest}" onerror="this.src='https://www.thesportsdb.com/images/media/team/badge/small/default.png'">
+                                    </div>
+                                    <div class="elite-team-name">${match.homeTeam.shortName || match.homeTeam.name}</div>
+                                </div>
 
-                        <div class="elite-center-info">
-                            <div class="elite-time">${dateStr} ${timeStr}</div>
-                            <div class="elite-score ${!isFinished && !isLive ? 'vs' : ''}">${displayScore}</div>
-                            <div class="elite-status ${isLive ? 'live' : ''}">
-                                ${isLive ? '<span class="pulse"></span> EM DIRETO' : (isFinished ? 'TERMINADO' : 'AGENDADO')}
+                                <div class="elite-center-info">
+                                    <div class="elite-time">${dateStr} ${timeStr}</div>
+                                    <div class="elite-score ${!isFinished && !isLive ? 'vs' : ''}">${displayScore}</div>
+                                    <div class="elite-status ${isLive ? 'live' : ''}">
+                                        ${isLive ? '<span class="pulse"></span> EM DIRETO' : (isFinished ? 'TERMINADO' : 'AGENDADO')}
+                                    </div>
+                                </div>
+
+                                <div class="elite-team-box">
+                                    <div class="elite-crest-bg">
+                                        <img src="${match.awayTeam.crest}" onerror="this.src='https://www.thesportsdb.com/images/media/team/badge/small/default.png'">
+                                    </div>
+                                    <div class="elite-team-name">${match.awayTeam.shortName || match.awayTeam.name}</div>
+                                </div>
+
+                                <i class="far fa-star elite-side-icon"></i>
                             </div>
                         </div>
+                    `;
+                });
+            }
+        }
 
-                        <div class="elite-team-box">
-                            <div class="elite-crest-bg">
-                                <img src="${match.awayTeam.crest}" onerror="this.src='https://www.thesportsdb.com/images/media/team/badge/small/default.png'">
-                            </div>
-                            <div class="elite-team-name">${match.awayTeam.shortName || match.awayTeam.name}</div>
-                        </div>
-
-                        <i class="far fa-star elite-side-icon"></i>
-                    </div>
-                </div>
-            `;
-        }));
-
-        container.innerHTML = dashboardHtml.join('');
+        container.innerHTML = allHtml;
     } catch (e) {
         container.innerHTML = '<div class="live-indicator">ERRO AO CARREGAR DASHBOARD ELITE. LIMITE DE API ATINGIDO?</div>';
     }
