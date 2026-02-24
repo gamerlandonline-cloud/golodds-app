@@ -1312,13 +1312,15 @@ function openLeaguePortal(leagueName) {
     const color = league ? league.color : '#0099ff';
 
     header.innerHTML = `
-        <div class="league-portal-banner" style="border-left: 5px solid ${color};">
-            <div class="league-icon-large" style="color: ${color};">
-                <i class="fas ${icon}"></i>
-            </div>
-            <div class="league-portal-info">
-                <h1>PORTAL ${leagueName.toUpperCase()}</h1>
-                <p>Análise Neuronal e Dados de Mercado em Tempo Real</p>
+        <div class="league-portal-banner" style="background: linear-gradient(135deg, ${color}22, transparent); border-left: 6px solid ${color}; border-radius: var(--radius-lg); padding: 30px; margin-bottom: 30px; backdrop-filter: var(--glass-blur); border: var(--glass-border); border-left: 6px solid ${color};">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="league-icon-large" style="color: ${color}; font-size: 40px; filter: drop-shadow(0 0 15px ${color}44);">
+                    <i class="fas ${icon}"></i>
+                </div>
+                <div class="league-portal-info">
+                    <h1 style="margin:0; font-size: 28px;">PORTAL ${leagueName.toUpperCase()}</h1>
+                    <p style="margin:5px 0 0; color: var(--text-dim); font-weight: 600;">Monitorização Global & Projeções Matrix</p>
+                </div>
             </div>
         </div>
     `;
@@ -1670,16 +1672,29 @@ function createMatchCard(match, contextName = null) {
 }
 
 function switchTab(tabId) {
-    // Nav UI
+    // Nav UI (Desktop Sidebar)
     document.querySelectorAll('.nav-item').forEach(item => {
         const span = item.querySelector('span');
         if (span) {
             const label = span.innerText.toLowerCase();
-            if (tabId === 'war-room' && label.includes('sala de guerra')) item.classList.add('active');
-            else if (tabId === 'top-picks' && label.includes('top 10')) item.classList.add('active');
-            else if (tabId === 'market-odds' && label.includes('odds de mercado')) item.classList.add('active');
-            else if (tabId === 'news' && label.includes('notícias')) item.classList.add('active');
+            const isMatch = (tabId === 'war-room' && label.includes('sala de guerra')) ||
+                (tabId === 'top-picks' && label.includes('top 10')) ||
+                (tabId === 'market-odds' && label.includes('odds de mercado')) ||
+                (tabId === 'news' && label.includes('notícias')) ||
+                (tabId === 'timeline' && label.includes('linhas do tempo'));
+
+            if (isMatch) item.classList.add('active');
             else item.classList.remove('active');
+        }
+    });
+
+    // Nav UI (Mobile Bottom Hub)
+    document.querySelectorAll('.nav-bottom-item').forEach(item => {
+        const onclick = item.getAttribute('onclick');
+        if (onclick && onclick.includes(`'${tabId}'`)) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
         }
     });
 
